@@ -1,0 +1,47 @@
+{
+  "applicationId": "com.github.Vexcited.SolidCord",
+  "version": "0.0.0",
+  "defaultMode": "window",
+  "port": 0,
+  "documentRoot": "/dist/",
+  "url": "/",
+  "enableServer": true,
+  "enableNativeAPI": true,
+  "exportAuthInfo": true,
+  "logging": {
+    "enabled": false,
+    "writeToLogFile": false
+  },
+  "nativeBlockList": [],
+  "globalVariables": {},
+  "modes": {
+    "window": {
+      "title": "SolidCord",
+      "width": 1280,
+      "height": 720,
+      "minWidth": 400,
+      "minHeight": 200,
+      "fullScreen": false,
+      "alwaysOnTop": false,
+      "icon": "/public/icon.png",
+      "enableInspector": false,
+      "borderless": false,
+      "maximize": false,
+      "hidden": false,
+      "resizable": true,
+      "exitProcessOnClose": false
+    }
+  },
+  "cli": {
+    "binaryName": "solidcord",
+    "resourcesPath": "/dist/",
+    "extensionsPath": "/extensions/",
+    "clientLibrary": "/public/neutralino.js",
+    "binaryVersion": "4.9.0",
+    "clientVersion": "3.8.0",
+    "frontendLibrary": {
+      "patchFile": "/index.html",
+      "devUrl": "http://localhost:3000"
+    }
+  }
+}
