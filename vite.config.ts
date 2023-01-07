@@ -5,7 +5,6 @@ import path from "node:path";
 import solid from "vite-plugin-solid";
 import windi from "vite-plugin-windicss";
 
-// Re-define constants in `development` mode.
 // <https://github.com/neutralinojs/neutralinojs/issues/909>.
 const neutralino_dev = (): Plugin => {
   let config: ResolvedConfig;
@@ -26,12 +25,24 @@ const neutralino_dev = (): Plugin => {
     },
     load (id) {
       if (id === resolvedVirtualModuleId) {
-        if (config.mode !== "development") return "";
+        let code: string;
 
-        return `
-          const authInfo = await import("${path.join(__dirname, ".tmp", "auth_info.json")}");
-          window.NL_PORT = authInfo.port;
-          window.NL_TOKEN = authInfo.accessToken;
+        if (config.mode === "development") {
+          code = `
+            const authInfo = await import("${path.join(__dirname, ".tmp", "auth_info.json")}");
+            const neutralinoJsFileUrl = \`http://localhost:\${authInfo.port}/neutralino.js\`;
+          `;
+        }
+        else {
+          code = `
+            const neutralinoJsFileUrl = "/neutralino.js";
+          `;
+        }
+
+        return code + `
+          const neutralinoScript = document.createElement("script");
+          neutralinoScript.setAttribute("src", neutralinoJsFileUrl);
+          document.body.appendChild(neutralinoScript);
         `;
       }
     }

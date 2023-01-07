@@ -12,8 +12,6 @@
     "enabled": false,
     "writeToLogFile": false
   },
-  "nativeBlockList": [],
-  "globalVariables": {},
   "modes": {
     "window": {
       "title": "SolidCord",
