@@ -6,11 +6,12 @@ import { Show } from "solid-js";
 import HCaptcha from "solid-hcaptcha";
 import { A } from "@solidjs/router";
 
-import { callLoginAPI, callMfaTotpAPI } from "@/api/auth";
+import { callAuthLoginAPI, callAuthMfaTotpAPI } from "@/api/auth";
+import { callUsersMeAPI } from "@/api/users";
 
 const LoginPage: Component = () => {
   const [state, setState] = createStore<{
-    username: string
+    uid: string
     password: string
 
     hcaptcha_sitekey: null | string
@@ -19,7 +20,7 @@ const LoginPage: Component = () => {
     mfa_ticket: null | string
     mfa_code: string
   }>({
-    username: "",
+    uid: "",
     password: "",
 
     hcaptcha_sitekey: null,
@@ -30,8 +31,8 @@ const LoginPage: Component = () => {
   });
 
   const sendLoginRequest = async () => {
-    const response = await callLoginAPI({
-      login: state.username,
+    const response = await callAuthLoginAPI({
+      login: state.uid,
       password: state.password,
 
       hcaptcha_token: state.hcaptcha_token
@@ -47,25 +48,29 @@ const LoginPage: Component = () => {
       return;
     }
 
-    console.log("DONE", response.token);
+    await processUserToken(response.token);
   };
-
-
 
   const sendMfaRequest = async () => {
     if (!state.mfa_ticket) return;
 
-    const response = await callMfaTotpAPI({
+    const response = await callAuthMfaTotpAPI({
       code: state.mfa_code,
       ticket: state.mfa_ticket
     });
 
     if (!response.success) {
-      console.error("blblbl", response.debug);
+      // TODO: Handle the errors.
+      console.error(response.debug);
       return;
     }
 
-    console.info("DONE", response.token);
+    await processUserToken(response.token);
+  };
+
+  const processUserToken = async (token: string) => {
+    const response = await callUsersMeAPI({ token });
+    console.log(response);
   };
 
   const loginHandler: JSX.EventHandler<HTMLFormElement, SubmitEvent> = (event) => {
@@ -83,11 +88,13 @@ const LoginPage: Component = () => {
       <A href="/">Go back to home page</A>
 
       <form onSubmit={loginHandler}>
-        <input type="text" value={state.username}
-          onChange={({ currentTarget }) => setState("username", currentTarget.value)}
+        <input type="text" value={state.uid}
+          placeholder="E-Mail or Phone Number"
+          onChange={({ currentTarget }) => setState("uid", currentTarget.value)}
         />
 
         <input type="password" value={state.password}
+          placeholder="Password"
           onChange={({ currentTarget }) => setState("password", currentTarget.value)}
         />
 
@@ -114,11 +121,12 @@ const LoginPage: Component = () => {
       <Show when={state.mfa_ticket}>
         <form onSubmit={mfaHandler}>
           <input value={state.mfa_code}
+            placeholder="6 digits code"
             onChange={({ currentTarget }) => setState("mfa_code", currentTarget.value)}
           />
 
           <button type="submit">
-            Submit code
+            Submit MFA code
           </button>
         </form>
       </Show>
