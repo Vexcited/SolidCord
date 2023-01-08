@@ -1,6 +1,5 @@
 /* @refresh reload */
 import "virtual:windi.css";
-import "virtual:neutralino-dev";
 
 import { render } from "solid-js/web";
 

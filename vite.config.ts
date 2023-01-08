@@ -1,50 +1,38 @@
 import type { Plugin, ResolvedConfig } from "vite";
 import { defineConfig } from "vite";
+import fs from "node:fs/promises";
 import path from "node:path";
 
 import solid from "vite-plugin-solid";
 import windi from "vite-plugin-windicss";
 
 // <https://github.com/neutralinojs/neutralinojs/issues/909>.
-const neutralino_dev = (): Plugin => {
+const neutralino = (): Plugin => {
   let config: ResolvedConfig;
-  const virtualModuleId = "virtual:neutralino-dev";
-  const resolvedVirtualModuleId = "\0" + virtualModuleId;
 
   return {
-    name: "neutralino-dev",
+    name: "neutralino",
 
     configResolved (resolvedConfig) {
       config = resolvedConfig;
     },
 
-    resolveId (id) {
-      if (id === virtualModuleId) {
-        return resolvedVirtualModuleId;
-      }
-    },
-    load (id) {
-      if (id === resolvedVirtualModuleId) {
-        let code: string;
+    async transformIndexHtml (html) {
+      if (config.mode === "development") {
+        const auth_info_file = await fs.readFile(path.join(__dirname, ".tmp", "auth_info.json"), {
+          encoding: "utf-8"
+        });
 
-        if (config.mode === "development") {
-          code = `
-            const authInfo = await import("${path.join(__dirname, ".tmp", "auth_info.json")}");
-            const neutralinoJsFileUrl = \`http://localhost:\${authInfo.port}/neutralino.js\`;
-          `;
-        }
-        else {
-          code = `
-            const neutralinoJsFileUrl = "/neutralino.js";
-          `;
-        }
+        const auth_info = JSON.parse(auth_info_file);
+        const port = auth_info.port;
 
-        return code + `
-          const neutralinoScript = document.createElement("script");
-          neutralinoScript.setAttribute("src", neutralinoJsFileUrl);
-          document.body.appendChild(neutralinoScript);
-        `;
+        return html.replace(
+          "<script src=\"neutralino.js\"></script>",
+          `<script src="http://localhost:${port}/neutralino.js"></script>`
+        );
       }
+
+      return html;
     }
   };
 };
@@ -53,9 +41,7 @@ export default defineConfig({
   plugins: [
     solid(),
     windi(),
-
-    // Will only apply development code on development mode.
-    neutralino_dev()
+    neutralino()
   ],
 
   server: {
