@@ -27,7 +27,7 @@ type FunctionResponse =
     ticket: string;
   }
 
-export const callLoginAPI = async (req: {
+export const callAuthLoginAPI = async (req: {
   login: string,
   password: string,
   hcaptcha_token: string | null

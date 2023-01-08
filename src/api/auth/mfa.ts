@@ -13,7 +13,7 @@ type FunctionResponse =
     debug: string;
   }
 
-export const callMfaTotpAPI = async (req: {
+export const callAuthMfaTotpAPI = async (req: {
   code: string,
   ticket: string
 }): Promise<FunctionResponse> => {

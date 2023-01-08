@@ -15,7 +15,7 @@ type FunctionResponse =
 
 // TODO: Find where `fingerprint` comes from.
 
-export const callRegisterAPI = async (req: {
+export const callAuthRegisterAPI = async (req: {
   username: string,
   password: string,
   email: string,
