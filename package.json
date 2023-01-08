@@ -26,6 +26,8 @@
   },
   "dependencies": {
     "@solidjs/router": "^0.6.0",
+    "localforage": "^1.10.0",
+    "solid-hcaptcha": "^0.2.6",
     "solid-js": "^1.6.6"
   }
 }

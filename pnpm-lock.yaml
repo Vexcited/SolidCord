@@ -9,7 +9,9 @@ specifiers:
   concurrently: ^7.6.0
   eslint: ^8.31.0
   eslint-plugin-solid: ^0.9.1
+  localforage: ^1.10.0
   neutralinojs-types: ^2.0.0
+  solid-hcaptcha: ^0.2.6
   solid-js: ^1.6.6
   typescript: ^4.9.4
   vite: ^4.0.3
@@ -19,6 +21,8 @@ specifiers:
 
 dependencies:
   '@solidjs/router': 0.6.0_solid-js@1.6.6
+  localforage: 1.10.0
+  solid-hcaptcha: 0.2.6_solid-js@1.6.6
   solid-js: 1.6.6
 
 devDependencies:
@@ -572,6 +576,10 @@ packages:
       - supports-color
     dev: true
 
+  /@hcaptcha/types/1.0.3:
+    resolution: {integrity: sha512-1mbU6eSGawRrqeahRrOzZo/SVLI6oZ5/azuBpSyVrRRR96CnS3fOVDWfzxpngfxKD0/I9Rwu6c/3ITqD8rXeTQ==}
+    dev: false
+
   /@humanwhocodes/config-array/0.11.8:
     resolution: {integrity: sha512-UybHIJzJnR5Qc/MsD9Kr+RpO2h+/P1GhOwdiLPXK5TWk5sgTdu88bTD9UP+CKbPPh5Rni1u0GjAdYQLemG8g+g==}
     engines: {node: '>=10.10.0'}
@@ -673,6 +681,14 @@ packages:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.14.0
     dev: true
+
+  /@solid-primitives/script-loader/1.1.2_solid-js@1.6.6:
+    resolution: {integrity: sha512-gOIsRMI6u/9WsetHK3fQKYVyadQzr4qPU3+WXmsotqggYcea2XAT9UCGEUSBTD0WFPchZiibXFxH2hg9eExaSg==}
+    peerDependencies:
+      solid-js: ^1.5.0
+    dependencies:
+      solid-js: 1.6.6
+    dev: false
 
   /@solidjs/router/0.6.0_solid-js@1.6.6:
     resolution: {integrity: sha512-7ug2fzXXhvvDBL4CQyMvMM9o3dgBE6PoRh38T8UTmMnYz4rcCfROqSZc9yq+YEC96qWt5OvJgZ1Uj/4EAQXlfA==}
@@ -1948,6 +1964,10 @@ packages:
     engines: {node: '>= 4'}
     dev: true
 
+  /immediate/3.0.6:
+    resolution: {integrity: sha512-XXOFtyqDjNDAQxVfYxuF7g9Il/IbWmmlQg2MYKOH8ExIT1qg6xc4zyS3HaEEATgs1btfzxq15ciUiY7gjSXRGQ==}
+    dev: false
+
   /import-fresh/3.3.0:
     resolution: {integrity: sha512-veYYhQa+D1QBKznvhUHxb8faxlrwUnxseDAbAp457E0wLNio2bOSKnjYDhMj+YiAq61xrMGhQk9iXVk5FzgQMw==}
     engines: {node: '>=6'}
@@ -2248,9 +2268,21 @@ packages:
       type-check: 0.4.0
     dev: true
 
+  /lie/3.1.1:
+    resolution: {integrity: sha512-RiNhHysUjhrDQntfYSfY4MU24coXXdEOgw9WGcKHNeEwffDYbF//u87M1EWaMGzuFoSbqW0C9C6lEEhDOAswfw==}
+    dependencies:
+      immediate: 3.0.6
+    dev: false
+
   /listenercount/1.0.1:
     resolution: {integrity: sha512-3mk/Zag0+IJxeDrxSgaDPy4zZ3w05PRZeJNnlWhzFz5OkX49J4krc+A8X2d2M69vGMBEX0uyl8M+W+8gH+kBqQ==}
     dev: true
+
+  /localforage/1.10.0:
+    resolution: {integrity: sha512-14/H1aX7hzBBmmh7sGPd+AOMkkIrHM3Z1PAyGgZigA1H1p5O5ANnMyWzvpAETtG68/dC4pC0ncy3+PPGzXZHPg==}
+    dependencies:
+      lie: 3.1.1
+    dev: false
 
   /locate-path/6.0.0:
     resolution: {integrity: sha512-iPZK6eYjbxRu3uB4/WZ3EsEIMJFMqAoopl3R+zuq0UjcAm/MO6KCweDgPfP3elTztoKP3KtnVHxTn2NHBSDVUw==}
@@ -2701,6 +2733,16 @@ packages:
     resolution: {integrity: sha512-g9Q1haeby36OSStwb4ntCGGGaKsaVSjQ68fBxoQcutl5fS1vuY18H3wSt3jFyFtrkx+Kz0V1G85A4MyAdDMi2Q==}
     engines: {node: '>=8'}
     dev: true
+
+  /solid-hcaptcha/0.2.6_solid-js@1.6.6:
+    resolution: {integrity: sha512-EKoSgYMAyRdw1ef3LbZaGynjmZCzSQxVsGclwWnTfjJc9GkGNESDYPly1qkE+0+7PFf+lq1Vxvkzc9sg2PVwAw==}
+    peerDependencies:
+      solid-js: ^1.6.5
+    dependencies:
+      '@hcaptcha/types': 1.0.3
+      '@solid-primitives/script-loader': 1.1.2_solid-js@1.6.6
+      solid-js: 1.6.6
+    dev: false
 
   /solid-js/1.6.6:
     resolution: {integrity: sha512-5x33mEbPI8QLuywvFjQP4krjWDr8xiYFgZx9KCBH7b0ZzypQCHaUubob7bK6i+1u6nhaAqhWtvXS587Kb8DShA==}
