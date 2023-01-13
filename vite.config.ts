@@ -39,9 +39,14 @@ const neutralino = (): Plugin => {
             `NL_TOKEN='${token}'`
           );
 
+        const shouldKeepNeutralinoScript = !neutralinoScriptContent.includes("var Neutralino");
+
         return html.replace(
           scriptToFind,
-          `<script>${neutralinoScriptContent}</script>` + scriptToFind
+          `
+            <script>${neutralinoScriptContent}</script>
+            ${shouldKeepNeutralinoScript ? scriptToFind : ""}
+          `.trim()
         );
       }
 
