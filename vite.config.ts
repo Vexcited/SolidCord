@@ -1,5 +1,7 @@
 import type { Plugin, ResolvedConfig } from "vite";
 import { defineConfig } from "vite";
+
+import { execSync } from "node:child_process";
 import fs from "node:fs/promises";
 import path from "node:path";
 
@@ -24,11 +26,22 @@ const neutralino = (): Plugin => {
         });
 
         const auth_info = JSON.parse(auth_info_file);
-        const port = auth_info.port;
+        const port = auth_info.port as number;
+        const token = auth_info.accessToken as string;
+
+        const scriptToFind = "<script src=\"/neutralino.js\"></script>";
+        const curl_executable = process.platform === "win32" ? "curl.exe" : "curl";
+
+        const neutralinoScriptContent = execSync(`${curl_executable} http://localhost:${port}/neutralino.js`, { stdio: "pipe" })
+          .toString()
+          .replace(
+            "NL_TOKEN=''",
+            `NL_TOKEN='${token}'`
+          );
 
         return html.replace(
-          "<script src=\"neutralino.js\"></script>",
-          `<script src="http://localhost:${port}/neutralino.js"></script>`
+          scriptToFind,
+          `<script>${neutralinoScriptContent}</script>` + scriptToFind
         );
       }
 

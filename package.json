@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "neu": "neu",
-    "dev": "concurrently \"vite\" \"neu run --frontend-lib-dev -- --window-enable-inspector=true\"",
+    "dev:browser": "concurrently \"vite\" \"neu run --frontend-lib-dev -- --mode=cloud\"",
+    "dev:window": "concurrently \"vite\" \"neu run --frontend-lib-dev -- --window-enable-inspector=true\"",
     "build": "vite build && neu build --release",
     "preview": "vite build && neu run"
   },
