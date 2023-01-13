@@ -42,6 +42,7 @@ pnpm install
 
 > Run `pnpm neu update` to update binaries for NeutralinoJS.
 
-- `dev`: Runs development app.
+- `dev:browser`: Runs development server to make it work in a any web browser, just go to `http://localhost:3000`.
+- `dev:window`: Runs development app with a Neutralino window.
 - `build`: Builds a release version of the app.
 - `preview`: Builds the app and run it.
