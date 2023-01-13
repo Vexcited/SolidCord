@@ -1,5 +1,6 @@
 import type { JSX, Component } from "solid-js";
 
+import { useNavigate } from "@solidjs/router";
 import { createStore } from "solid-js/store";
 import { Show } from "solid-js";
 
@@ -9,7 +10,11 @@ import { A } from "@solidjs/router";
 import { callAuthLoginAPI, callAuthMfaTotpAPI } from "@/api/auth";
 import { callUsersMeAPI } from "@/api/users";
 
+import { initializeAcount } from "@/utils/storage/accounts";
+
 const LoginPage: Component = () => {
+  const navigate = useNavigate();
+
   const [state, setState] = createStore<{
     uid: string
     password: string
@@ -31,6 +36,8 @@ const LoginPage: Component = () => {
   });
 
   const sendLoginRequest = async () => {
+    if (!state.uid || !state.password) return;
+
     const response = await callAuthLoginAPI({
       login: state.uid,
       password: state.password,
@@ -70,7 +77,9 @@ const LoginPage: Component = () => {
 
   const processUserToken = async (token: string) => {
     const response = await callUsersMeAPI({ token });
-    console.log(response);
+    await initializeAcount(token, response);
+    navigate("/");
+    return;
   };
 
   const loginHandler: JSX.EventHandler<HTMLFormElement, SubmitEvent> = (event) => {

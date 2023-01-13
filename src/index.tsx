@@ -6,14 +6,22 @@ import { render } from "solid-js/web";
 import { Router, Routes, Route } from "@solidjs/router";
 import { Suspense, lazy } from "solid-js";
 
-const HomePage = lazy(() => import("@/pages/index"));
+const AccountSelectionPage = lazy(() => import("@/pages/index"));
 const LoginPage = lazy(() => import("@/pages/login"));
+
+const AppMainLayout = lazy(() => import("@/pages/[id].js"));
+const AppHomePage = lazy(() => import("@/pages/[id]/index"));
+
 render(() => (
   <Router>
     <Suspense fallback={<p>Loading route...</p>}>
       <Routes>
-        <Route path="/" component={HomePage} />
+        <Route path="/" component={AccountSelectionPage} />
         <Route path="/login" component={LoginPage} />
+
+        <Route path="/:id" component={AppMainLayout}>
+          <Route path="/" component={AppHomePage} />
+        </Route>
       </Routes>
     </Suspense>
   </Router>
