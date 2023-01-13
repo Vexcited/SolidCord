@@ -8,6 +8,10 @@
   "enableServer": true,
   "enableNativeAPI": true,
   "exportAuthInfo": true,
+  "nativeAllowList": [
+    "app.*",
+    "os.*"
+  ],
   "logging": {
     "enabled": false,
     "writeToLogFile": false
