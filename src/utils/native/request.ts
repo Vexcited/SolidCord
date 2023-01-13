@@ -20,7 +20,7 @@ export interface RequestOptions {
   /** @default "http2" */
   http_client?: RequestOptionsHttpClient;
 
-  body?: unknown,
+  body?: string,
   headers?: HeadersInit
 }
 
@@ -75,6 +75,13 @@ export const request = async (url: string, options: RequestOptions = {
 
   command.push(`'${url}'`);
 
+  // /* For debugging purposes.
+  console.groupCollapsed(`[native:request:input] ${options.method} ${url}`);
+  console.table(Object.fromEntries([...(options.headers as Headers)]));
+  options.body && console.info(options.headers?.get("content-type") === "application/json" ? JSON.parse(options.body) : options.body);
+  console.groupEnd();
+  // */
+
   const { stdOut, stdErr, exitCode } = await Neutralino.os.execCommand(command.join(" "));
 
   if (exitCode !== 0 && !stdOut && stdErr) {
@@ -123,6 +130,13 @@ export const request = async (url: string, options: RequestOptions = {
   const [http_version, raw_status_code, ...raw_status_message] = raw_status.split(" ");
   const status_message = raw_status_message.join(" ") || undefined;
   const status_code = parseInt(raw_status_code);
+
+  // /* For debugging purposes.
+  console.groupCollapsed(`[native:request:output] ${options.method} ${url}`);
+  console.table(received_headers);
+  console.info(received_headers["content-type"] === "application/json" ? JSON.parse(raw_body) : raw_body);
+  console.groupEnd();
+  // */
 
   return {
     http_version,
