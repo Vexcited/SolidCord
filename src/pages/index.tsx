@@ -1,11 +1,28 @@
+import type { DiscordMeResponse } from "@/api/users";
 import type { Component } from "solid-js";
 import { A } from "@solidjs/router";
 
 import { For, Show, createResource } from "solid-js";
-import { listAccounts } from "@/utils/storage/accounts";
+
+import { accounts_storage } from "@/utils/storage/accounts";
+import { getCache, StoredCacheEndpoint } from "@/utils/storage/caching";
+
+const fetcher = async () => {
+  const keys = await accounts_storage.keys();
+  const accounts: DiscordMeResponse[] = [];
+
+  for (const user_id of keys) {
+    const informations = await getCache<DiscordMeResponse>(user_id, StoredCacheEndpoint.USERS_ME);
+    if (!informations) continue;
+
+    accounts.push(informations);
+  }
+
+  return accounts;
+};
 
 const AccountSelectionPage: Component = () => {
-  const [accounts] = createResource(listAccounts);
+  const [accounts] = createResource(fetcher);
 
   return (
     <>
@@ -18,10 +35,10 @@ const AccountSelectionPage: Component = () => {
 
       <For each={accounts()}>
         {account => (
-          <A href={`/${account.informations.id}/`}>
+          <A href={`/${account.id}/`}>
             <div class="flex flex-col border-2">
-              <p class="text-lg font-medium">{account.informations.username}#{account.informations.discriminator}</p>
-              <span class="text-sm">{account.informations.id}</span>
+              <p class="text-lg font-medium">{account.username}#{account.discriminator}</p>
+              <span class="text-sm">{account.id}</span>
             </div>
           </A>
         )}
@@ -31,4 +48,3 @@ const AccountSelectionPage: Component = () => {
 };
 
 export default AccountSelectionPage;
-

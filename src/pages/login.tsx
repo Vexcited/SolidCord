@@ -10,7 +10,8 @@ import { A } from "@solidjs/router";
 import { callAuthLoginAPI, callAuthMfaTotpAPI } from "@/api/auth";
 import { callUsersMeAPI } from "@/api/users";
 
-import { initializeAcount } from "@/utils/storage/accounts";
+import { setAccount } from "@/utils/storage/accounts";
+import { createCacheStorage } from "@/utils/storage/caching";
 
 const LoginPage: Component = () => {
   const navigate = useNavigate();
@@ -77,7 +78,10 @@ const LoginPage: Component = () => {
 
   const processUserToken = async (token: string) => {
     const response = await callUsersMeAPI({ token });
-    await initializeAcount(token, response);
+
+    await setAccount(response.id, token);
+    await createCacheStorage(response);
+
     navigate("/");
     return;
   };

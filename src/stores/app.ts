@@ -1,13 +1,9 @@
 import { createStore } from "solid-js/store";
 
-type UserStore =
-  | {
-    token: string;
-    informations: Record<string, string>;
-  }
-  | { token: null }
-
-export const [user_store, setUserStore] = createStore<UserStore>({
-  token: null
+export const [user, setUser] = createStore<{
+  token: string | null,
+  id: string | null
+}>({
+  token: null,
+  id: null
 });
-

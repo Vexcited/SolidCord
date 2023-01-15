@@ -1,30 +1,21 @@
-import type { DiscordMeResponse } from "@/api/users";
-
 import localforage from "localforage";
 
 export interface StoredAccount {
   token: string;
-  informations: DiscordMeResponse;
 }
 
 export const accounts_storage = localforage.createInstance({
-  name: "solidcord",
+  name: "accounts",
   storeName: "accounts"
 });
 
-export const listAccounts = async () => {
-  const accounts: StoredAccount[] = [];
-  await accounts_storage.iterate((value: StoredAccount) => accounts.push(value));
-
-  return accounts;
-};
-
-export const initializeAcount = async (token: string, informations: DiscordMeResponse) => {
-  const key = informations.id;
-
-  await accounts_storage.setItem<StoredAccount>(key, {
-    token,
-    informations
+export const setAccount = async (user_id: string, token: string) => {
+  return accounts_storage.setItem<StoredAccount>(user_id, {
+    token
   });
 };
 
+export const getAccount = async (user_id: string) => {
+  const account = await accounts_storage.getItem<StoredAccount>(user_id);
+  return account;
+};
