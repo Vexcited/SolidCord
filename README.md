@@ -15,7 +15,9 @@ By handmade, I mean without using `discord.js` or any npm package that gives us 
 
 #### Prerequisites
 
-Make sure you enabled accessing localhost from a UWP context using the following command **with administrator rights**.
+Make sure you have [**PowerShell >= 3.0 installed**](https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell-on-windows) and also make sure you have **enabled accessing localhost from a UWP context**.
+
+If you didn't enabled it yet, use the following command **with administrator rights**.
 
 ```powershell
 CheckNetIsolation.exe LoopbackExempt -a -n="Microsoft.Win32WebViewHost_cw5n1h2txyewy"
