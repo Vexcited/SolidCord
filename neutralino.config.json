@@ -9,8 +9,11 @@
   "enableNativeAPI": true,
   "exportAuthInfo": true,
   "nativeAllowList": [
-    "app.*",
-    "os.*"
+    "filesystem.getStats",
+    "filesystem.createDirectory",
+
+    "os.execCommand",
+    "os.getPath"
   ],
   "logging": {
     "enabled": false,

@@ -12,9 +12,13 @@ const LoginPage = lazy(() => import("@/pages/login"));
 const AppMainLayout = lazy(() => import("@/pages/[id].js"));
 const AppHomePage = lazy(() => import("@/pages/[id]/index"));
 
+import { installCurlWindows } from "@/utils/native/appdata";
+
 render(() => (
   <Router>
     <Suspense fallback={<p>Loading route...</p>}>
+      <button onClick={installCurlWindows}>Install cURL for Windows</button>
+
       <Routes>
         <Route path="/" component={AccountSelectionPage} />
         <Route path="/login" component={LoginPage} />

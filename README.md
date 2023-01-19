@@ -15,9 +15,9 @@ By handmade, I mean without using `discord.js` or any npm package that gives us 
 
 #### Prerequisites
 
-Windows support is very limited currently since you'll need to provide your own `cURL` binary if your Windows' version doesn't already provide it.
+Make sure you have [**PowerShell >= 3.0 installed**](https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell-on-windows) and also make sure you have **enabled accessing localhost from a UWP context**.
 
-Also, make sure you enabled accessing localhost from a UWP context using the following command with administrator rights.
+If you didn't enabled it yet, use the following command **with administrator rights**.
 
 ```powershell
 CheckNetIsolation.exe LoopbackExempt -a -n="Microsoft.Win32WebViewHost_cw5n1h2txyewy"
