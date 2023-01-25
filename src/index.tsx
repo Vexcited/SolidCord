@@ -4,7 +4,7 @@ import "virtual:windi.css";
 import { render } from "solid-js/web";
 
 import { Router, Routes, Route } from "@solidjs/router";
-import { Suspense, lazy } from "solid-js";
+import { Suspense, lazy, Show } from "solid-js";
 
 const AccountSelectionPage = lazy(() => import("@/pages/index"));
 const LoginPage = lazy(() => import("@/pages/login"));
@@ -17,7 +17,9 @@ import { installCurlWindows } from "@/utils/native/appdata";
 render(() => (
   <Router>
     <Suspense fallback={<p>Loading route...</p>}>
-      <button onClick={installCurlWindows}>Install cURL for Windows</button>
+      <Show when={NL_OS === "Windows"}>
+        <button onClick={installCurlWindows}>Install cURL for Windows</button>
+      </Show>
 
       <Routes>
         <Route path="/" component={AccountSelectionPage} />
