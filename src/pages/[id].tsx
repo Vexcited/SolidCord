@@ -6,6 +6,8 @@ import { setUser } from "@/stores/app";
 import { getAccount } from "@/utils/storage/accounts";
 import { useUsersMeAPI } from "@/api/users";
 
+import DiscordClientWS from "@/websockets/client";
+
 const AppMainLayout: Component = () => {
   const navigate = useNavigate();
   const params = useParams();
@@ -22,6 +24,8 @@ const AppMainLayout: Component = () => {
       token: account.token,
       id: params.id
     });
+
+    const client = new DiscordClientWS(account.token);
   });
 
   onCleanup(() => {
