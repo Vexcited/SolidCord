@@ -1,3 +1,5 @@
+import { getCurlInstallation } from "./appdata";
+
 export type RequestOptionsMethod =
   | "GET"
   | "POST"
@@ -24,8 +26,6 @@ export interface RequestOptions {
   headers?: HeadersInit
 }
 
-/** `curl.exe` on Windows to prevent using the default `curl` alias. */
-const CURL_PATH = NL_OS === "Windows" ? "curl.exe" : "curl";
 const NEW_LINE_REGEX = "[\\r]?\\n";
 
 export const request = async (url: string, options: RequestOptions = {
@@ -33,6 +33,8 @@ export const request = async (url: string, options: RequestOptions = {
   followRedirects: true,
   http_client: "http2"
 }) => {
+  const CURL_PATH = await getCurlInstallation()
+
   const command = [
     CURL_PATH,
     "-i" // Or `--include`, it includes protocol response headers in the output.
@@ -65,15 +67,15 @@ export const request = async (url: string, options: RequestOptions = {
       options.headers.set("user-agent", navigator.userAgent);
 
     for (const [key, value] of options.headers.entries()) {
-      command.push(`-H '${key}: ${value}'`);
+      command.push(`-H "${key}: ${value}"`);
     }
   }
 
   if (options.body && method !== "GET")
     // Or `--data <data>`, it adds HTTP POST data.
-    command.push("-d", `'${options.body}'`);
+    command.push("-d", `"${options.body}"`);
 
-  command.push(`'${url}'`);
+  command.push(`"${url}"`);
 
   // /* For debugging purposes.
   console.groupCollapsed(`[native:request:input] ${options.method} ${url}`);
