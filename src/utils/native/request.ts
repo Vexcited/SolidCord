@@ -73,7 +73,7 @@ export const request = async (url: string, options: RequestOptions = {
 
   if (options.body && method !== "GET")
     // Or `--data <data>`, it adds HTTP POST data.
-    command.push("-d", `"${options.body}"`);
+    command.push("-d", `"${options.body.replaceAll("\"", "\\\"")}"`);
 
   command.push(`"${url}"`);
 
@@ -81,6 +81,7 @@ export const request = async (url: string, options: RequestOptions = {
   console.groupCollapsed(`[native:request:input] ${options.method} ${url}`);
   console.table(Object.fromEntries([...(options.headers as Headers)]));
   options.body && console.info(options.headers?.get("content-type") === "application/json" ? JSON.parse(options.body) : options.body);
+  console.info(command.join(" "));
   console.groupEnd();
   // */
 
