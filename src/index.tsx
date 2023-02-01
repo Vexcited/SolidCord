@@ -12,13 +12,18 @@ const LoginPage = lazy(() => import("@/pages/login"));
 const AppMainLayout = lazy(() => import("@/pages/[id].js"));
 const AppHomePage = lazy(() => import("@/pages/[id]/index"));
 
-import { installCurlWindows } from "@/utils/native/appdata";
+import { installCurlWindows, checkCurlInstallation } from "@/utils/native/appdata";
 
 render(() => (
   <Router>
     <Suspense fallback={<p>Loading route...</p>}>
       <Show when={NL_OS === "Windows"}>
         <button onClick={installCurlWindows}>Install cURL for Windows</button>
+        <button onClick={async () => {
+          const result = await checkCurlInstallation();
+          console.log("installation of cURL result:", result);
+        }
+      }>Check cURL installation (look console)</button>
       </Show>
 
       <Routes>

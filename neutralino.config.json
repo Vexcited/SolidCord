@@ -11,6 +11,8 @@
   "nativeAllowList": [
     "filesystem.getStats",
     "filesystem.createDirectory",
+    "filesystem.readDirectory",
+    "filesystem.writeFile",
 
     "os.execCommand",
     "os.getPath"
