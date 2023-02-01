@@ -19,6 +19,7 @@ const LoginPage: Component = () => {
   const [state, setState] = createStore<{
     uid: string
     password: string
+    errors: null | any[] // TODO: Please, type this.
 
     hcaptcha_sitekey: null | string
     hcaptcha_token: null | string
@@ -28,6 +29,7 @@ const LoginPage: Component = () => {
   }>({
     uid: "",
     password: "",
+    errors: null,
 
     hcaptcha_sitekey: null,
     hcaptcha_token: null,
@@ -53,6 +55,11 @@ const LoginPage: Component = () => {
 
     if (response.need_mfa) {
       setState("mfa_ticket", response.ticket);
+      return;
+    }
+
+    if (response.need_email_verification) {
+      setState("errors", []); // TODO: Handle this step.
       return;
     }
 

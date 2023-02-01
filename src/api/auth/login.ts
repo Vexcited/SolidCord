@@ -7,20 +7,48 @@ import type {
 import { DISCORD_API_ENDPOINT } from "@/api";
 import { request } from "@/utils/native";
 
+/**
+ * When logging-in from a new location, we need to implement this
+ * error message.
+ * 
+ {
+    "code": 50035,
+    "errors": {
+        "login": {
+            "_errors": [
+                {
+                    "code": "ACCOUNT_LOGIN_VERIFICATION_EMAIL",
+                    "message": "New login location detected, please check your e-mail."
+                }
+            ]
+        }
+    },
+    "message": "Invalid Form Body"
+  }
+ */
+
 type FunctionResponse =
   | {
+    need_email_verification: true;
+    need_captcha: false;
+    need_mfa: false;
+  }
+  | {
+    need_email_verification: false;
     need_captcha: false;
     need_mfa: false;
 
     token: string;
   }
   | {
+    need_email_verification: false;
     need_captcha: true;
     need_mfa: false;
 
     sitekey: string;
   }
   | {
+    need_email_verification: false;
     need_captcha: false;
     need_mfa: true;
 
