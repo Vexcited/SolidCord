@@ -1,15 +1,30 @@
 {
   "compilerOptions": {
-    "strict": true,
+    "moduleResolution": "Node",
     "target": "ESNext",
     "module": "ESNext",
-    "moduleResolution": "Node",
+    
     "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
     "esModuleInterop": true,
-    "jsx": "preserve",
-    "jsxImportSource": "solid-js",
-    "types": ["vite/client"],
+    "isolatedModules": true,
+
+    "strict": true,
     "noEmit": true,
-    "isolatedModules": true
-  }
+
+    "jsxImportSource": "solid-js",
+    "jsx": "preserve",
+
+    "baseUrl": "src",
+    "paths": {
+      "@/*": ["./*"]
+    },
+
+    "types": [
+      "vite/client",
+      "vite-plugin-pages/client-solid"
+    ]
+  },
+
+  "include": ["src"]
 }
