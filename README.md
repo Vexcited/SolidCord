@@ -1,9 +1,8 @@
 # SolidCord
 
-> A Tauri+SolidJS handcrafted client for Discord that was made with performance in mind while keeping the look of Discord. \
+A [Tauri](https://tauri.app/) + [SolidJS](https://www.solidjs.com/) handcrafted client for [Discord](https://discord.com/) that was made with performance in mind while keeping the look of Discord.
+
 > By "handcrafted", I actually mean "without using any package that gives us helpers for Discord's API, even typings".
-
-
 
 ## Development
 
