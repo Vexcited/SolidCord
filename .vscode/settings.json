@@ -1,0 +1,14 @@
+{
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+
+  "editor.detectIndentation": false,
+  "editor.insertSpaces": true,
+  "editor.tabSize": 2,
+  
+  "typescript.tsdk": "node_modules\\typescript\\lib",
+  "rust-analyzer.diagnostics.disabled": [
+    "unresolved-proc-macro"
+  ]
+}

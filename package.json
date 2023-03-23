@@ -1,0 +1,27 @@
+{
+  "name": "solidcord",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "A Tauri+SolidJS client for Discord that was made with performance in mind while keeping the look of Discord.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "tauri": "tauri"
+  },
+  "license": "MIT",
+  "author": "Mikkel RINGAUD <mikkel@milescode.dev>",
+  "repository": "https://github.com/Vexcited/SolidCord",
+  "dependencies": {
+    "@tauri-apps/api": "^1.2.0",
+    "solid-js": "^1.4.7"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^1.2.2",
+    "@types/node": "^18.7.10",
+    "eslint": "^8.36.0",
+    "typescript": "^4.7.4",
+    "vite": "^4.0.0",
+    "vite-plugin-solid": "^2.3.0"
+  }
+}
