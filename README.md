@@ -19,7 +19,14 @@ cd SolidCord
 pnpm install
 ```
 
-Please, try to stick with `pnpm` so we don't confict with any other package manager.
+Please, try to stick with `pnpm` so we don't confict with any other Node.js package manager.
+
+If you need to update `cargo` packages for `src-tauri` folder,
+
+```bash
+cd src-tauri
+cargo update
+```
 
 ### Available Scripts
 
