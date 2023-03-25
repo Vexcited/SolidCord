@@ -1,7 +1,7 @@
 import type { DiscordCaptchaRequiredResponse } from "./types";
 
 import { DISCORD_API_ENDPOINT } from "@/api";
-import { request } from "@/utils/native";
+import { Body, fetch } from "@tauri-apps/api/http";
 
 type FunctionResponse =
   | {
@@ -26,43 +26,49 @@ export const callAuthRegisterAPI = async (req: {
 
   hcaptcha_token: string | null
 }): Promise<FunctionResponse> => {
-  const response = await request(DISCORD_API_ENDPOINT + "v9/auth/register", {
+  const uri = DISCORD_API_ENDPOINT + "v9/auth/register";
+  const body = Body.json({
+    // fingerprint: "000000000.xxxxxxxxxxxxxxxxxxxxxxx",
+
+    email: req.email,
+    username: req.username,
+    password: req.password,
+    // Date in this format: "YYYY-MM-DD"
+    date_of_birth: req.birth,
+
+    invite: null,
+    gift_code_sku_id: null,
+
+    consent: req.consent, // Should be `true` to continue.
+    promotional_email_opt_in: req.promotional_mails, // Optional, should default to `false`
+
+    // Token from HCaptcha, if required.
+    captcha_key: req.hcaptcha_token
+  });
+
+  const response = await fetch(uri, {
     method: "POST",
-    body: JSON.stringify({
-      // fingerprint: "000000000.xxxxxxxxxxxxxxxxxxxxxxx",
+    body,
 
-      email: req.email,
-      username: req.username,
-      password: req.password,
-      // Date in this format: "YYYY-MM-DD"
-      date_of_birth: req.birth,
-
-      invite: null,
-      gift_code_sku_id: null,
-
-      consent: req.consent, // Should be `true` to continue.
-      promotional_email_opt_in: req.promotional_mails, // Optional, should default to `false`
-
-      // Token from HCaptcha, if required.
-      captcha_key: req.hcaptcha_token
-    }),
     headers: {
-      "Content-Type": "application/json"
       // "x-fingerprint": "000000000.xxxxxxxxxxxxxxxxxxxxxxx"
     }
   });
 
-  const body = response.json();
+  console.log(response);
+  return;
 
-  if (body.captcha_sitekey) {
-    return {
-      need_captcha: true,
-      sitekey: (body as DiscordCaptchaRequiredResponse).captcha_sitekey
-    };
-  }
+  // const body = response.json();
 
-  return {
-    need_captcha: false,
-    token: (body as { token: string }).token
-  };
+  // if (body.captcha_sitekey) {
+  //   return {
+  //     need_captcha: true,
+  //     sitekey: (body as DiscordCaptchaRequiredResponse).captcha_sitekey
+  //   };
+  // }
+
+  // return {
+  //   need_captcha: false,
+  //   token: (body as { token: string }).token
+  // };
 };

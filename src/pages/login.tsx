@@ -95,12 +95,17 @@ const LoginPage: Component = () => {
 
   const loginHandler: JSX.EventHandler<HTMLFormElement, SubmitEvent> = (event) => {
     event.preventDefault();
-    sendLoginRequest();
+    return sendLoginRequest();
   };
 
   const mfaHandler: JSX.EventHandler<HTMLFormElement, SubmitEvent> = (event) => {
     event.preventDefault();
-    sendMfaRequest();
+    return sendMfaRequest();
+  };
+
+  const hcaptchaVerifyHandler = (token: string) => {
+    setState("hcaptcha_token", token);
+    return sendLoginRequest();
   };
 
   return (
@@ -130,11 +135,7 @@ const LoginPage: Component = () => {
            * Took from <https://github.com/hCaptcha/react-native-hcaptcha/blob/1569dc22501cfa63754d49683f6c278cee2bab80/Hcaptcha.js#L25>.
            */
           config={{ host: `${state.hcaptcha_sitekey}.react-native.hcaptcha.com` }}
-
-          onVerify={(token) => {
-            setState("hcaptcha_token", token);
-            sendLoginRequest();
-          }}
+          onVerify={hcaptchaVerifyHandler}
         />
       </Show>
 

@@ -5,23 +5,23 @@ import type {
 } from "./types";
 
 import { DISCORD_API_ENDPOINT } from "@/api";
-import { request } from "@/utils/native";
+import { Body, fetch } from "@tauri-apps/api/http";
 
 /**
  * When logging-in from a new location, we need to implement this
  * error message.
- * 
+ *
  {
     "code": 50035,
     "errors": {
-        "login": {
-            "_errors": [
-                {
-                    "code": "ACCOUNT_LOGIN_VERIFICATION_EMAIL",
-                    "message": "New login location detected, please check your e-mail."
-                }
-            ]
-        }
+      "login": {
+        "_errors": [
+          {
+            "code": "ACCOUNT_LOGIN_VERIFICATION_EMAIL",
+            "message": "New login location detected, please check your e-mail."
+          }
+        ]
+      }
     },
     "message": "Invalid Form Body"
   }
@@ -60,46 +60,49 @@ export const callAuthLoginAPI = async (req: {
   password: string,
   hcaptcha_token: string | null
 }): Promise<FunctionResponse> => {
-  const response = await request(DISCORD_API_ENDPOINT + "v9/auth/login", {
-    method: "POST",
-    body: JSON.stringify({
-      login: req.login,
-      password: req.password,
-      captcha_key: req.hcaptcha_token,
+  const uri = DISCORD_API_ENDPOINT + "v9/auth/login";
+  const body = Body.json({
+    login: req.login,
+    password: req.password,
+    captcha_key: req.hcaptcha_token,
 
-      undelete: false,
-      login_source: null,
-      gift_code_sku_id: null
-    }),
-    headers: {
-      "Content-Type": "application/json"
-    }
+    undelete: false,
+    login_source: null,
+    gift_code_sku_id: null
   });
 
-  const body = response.json();
+  const response = await fetch(uri, {
+    method: "POST",
+    body
+  });
 
-  if (body.captcha_sitekey) {
-    return {
-      need_captcha: true,
-      need_mfa: false,
+  console.log(response);
+  return;
 
-      sitekey: (body as DiscordCaptchaRequiredResponse).captcha_sitekey
-    };
-  }
+  // const body = response.json();
 
-  if (body.token === null && body.mfa) {
-    return {
-      need_captcha: false,
-      need_mfa: true,
+  // if (body.captcha_sitekey) {
+  //   return {
+  //     need_captcha: true,
+  //     need_mfa: false,
 
-      ticket: (body as DiscordLoginMfaRequiredResponse).ticket
-    };
-  }
+  //     sitekey: (body as DiscordCaptchaRequiredResponse).captcha_sitekey
+  //   };
+  // }
 
-  return {
-    need_captcha: false,
-    need_mfa: false,
+  // if (body.token === null && body.mfa) {
+  //   return {
+  //     need_captcha: false,
+  //     need_mfa: true,
 
-    token: (body as DiscordLoginTokenResponse).token
-  };
+  //     ticket: (body as DiscordLoginMfaRequiredResponse).ticket
+  //   };
+  // }
+
+  // return {
+  //   need_captcha: false,
+  //   need_mfa: false,
+
+  //   token: (body as DiscordLoginTokenResponse).token
+  // };
 };

@@ -1,7 +1,7 @@
 import type { DiscordLoginTokenResponse } from "./types";
 
 import { DISCORD_API_ENDPOINT } from "@/api";
-import { request } from "@/utils/native";
+import { Body, fetch } from "@tauri-apps/api/http";
 
 type FunctionResponse =
   | {
@@ -17,31 +17,34 @@ export const callAuthMfaTotpAPI = async (req: {
   code: string,
   ticket: string
 }): Promise<FunctionResponse> => {
-  const response = await request(DISCORD_API_ENDPOINT + "v9/auth/mfa/totp", {
-    method: "POST",
-    body: JSON.stringify({
-      code: req.code,
-      ticket: req.ticket,
+  const uri = DISCORD_API_ENDPOINT + "v9/auth/mfa/totp";
+  const body = Body.json({
+    code: req.code,
+    ticket: req.ticket,
 
-      login_source: null,
-      gift_code_sku_id: null
-    }),
-    headers: {
-      "Content-Type": "application/json"
-    }
+    login_source: null,
+    gift_code_sku_id: null
   });
 
-  const body = response.json();
+  const response = await fetch(uri, {
+    method: "POST",
+    body
+  });
 
-  if (body.token) {
-    return {
-      success: true,
-      token: (body as DiscordLoginTokenResponse).token
-    };
-  }
+  console.log(response);
+  return;
 
-  return {
-    success: false,
-    debug: body
-  };
+  // const body = response.json();
+
+  // if (body.token) {
+  //   return {
+  //     success: true,
+  //     token: (body as DiscordLoginTokenResponse).token
+  //   };
+  // }
+
+  // return {
+  //   success: false,
+  //   debug: body
+  // };
 };
