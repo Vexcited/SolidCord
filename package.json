@@ -13,6 +13,7 @@
   "author": "Mikkel RINGAUD <mikkel@milescode.dev>",
   "repository": "https://github.com/Vexcited/SolidCord",
   "dependencies": {
+    "@fontsource/rubik": "^4.5.14",
     "@solidjs/router": "^0.8.1",
     "@tauri-apps/api": "^1.2.0",
     "localforage": "^1.10.0",

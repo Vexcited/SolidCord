@@ -109,49 +109,97 @@ const LoginPage: Component = () => {
   };
 
   return (
-    <>
-      <A href="/">Go back to home page</A>
+    <div class="min-h-screen flex items-center justify-center bg-[#5865F2]">
+      <div class="bg-[#313338] flex justify-between gap-8 w-full max-w-[480px] md:max-w-[784px] p-8 rounded-md shadow-lg">
+        <div class="w-full">
+          <div class="flex flex-col gap-5">
+            <div class="flex flex-col items-center gap-2">
+              <h1 class="text-[#F2F3F5] font-semibold text-[24px] leading-[30px]">
+                Ha, te revoilà !
+              </h1>
+              <p class="text-[#B5BAC1] text-[16px] leading-[20px]">
+                Nous sommes si heureux de te revoir !
+              </p>
+            </div>
 
-      <form onSubmit={loginHandler}>
-        <input type="text" value={state.uid}
-          placeholder="E-Mail or Phone Number"
-          onChange={({ currentTarget }) => setState("uid", currentTarget.value)}
-        />
+            <form class="flex flex-col gap-5"
+              onSubmit={loginHandler}
+            >
+              <label>
+                <p class="uppercase text-[#B5BAC1] text-[12px] leading-[16px] font-bold mb-2 tracking-wide">
+                  E-Mail ou numéro de téléphone
+                  <span class="text-[#F23F42] pl-1">*</span>
+                </p>
+                <input type="text" value={state.uid}
+                  class="bg-[#1E1F22] text-[#DBDEE1] w-full p-[10px] rounded-[3px] outline-none"
+                  placeholder="epic.g@mer.com"
+                  onChange={({ currentTarget }) => setState("uid", currentTarget.value)}
+                />
+              </label>
 
-        <input type="password" value={state.password}
-          placeholder="Password"
-          onChange={({ currentTarget }) => setState("password", currentTarget.value)}
-        />
+              <label>
+                <p class="uppercase text-[#B5BAC1] text-[12px] leading-[16px] font-bold mb-2 tracking-wide">
+                  Mot de passe
+                  <span class="text-[#F23F42] pl-1">*</span>
+                </p>
+                <input type="password" value={state.password}
+                  class="bg-[#1E1F22] text-[#DBDEE1] w-full p-[10px] rounded-[3px] outline-none"
+                  placeholder="********"
+                  onChange={({ currentTarget }) => setState("password", currentTarget.value)}
+                />
+              </label>
 
-        <button type="submit">
-          Login to Discord!
-        </button>
-      </form>
+              <button type="submit"
+                class="rounded-[3px] w-full text-white bg-[#5865F2] px-4 py-0.5 text-[16px] font-medium h-[44px] leading-[24px] min-w-[130px] min-h-[44px] text-center "
+              >
+                Connexion
+              </button>
+            </form>
+          </div>
 
-      <Show when={state.hcaptcha_sitekey}>
-        <HCaptcha sitekey={state.hcaptcha_sitekey as string}
-          /**
+          <Show when={state.hcaptcha_sitekey}>
+            <HCaptcha sitekey={state.hcaptcha_sitekey as string}
+              /**
            * Workaround to bypass the `localhost` check.
            * Took from <https://github.com/hCaptcha/react-native-hcaptcha/blob/1569dc22501cfa63754d49683f6c278cee2bab80/Hcaptcha.js#L25>.
            */
-          config={{ host: `${state.hcaptcha_sitekey}.react-native.hcaptcha.com` }}
-          onVerify={hcaptchaVerifyHandler}
-        />
-      </Show>
+              config={{ host: `${state.hcaptcha_sitekey}.react-native.hcaptcha.com` }}
+              onVerify={hcaptchaVerifyHandler}
+            />
+          </Show>
 
-      <Show when={state.mfa_ticket}>
-        <form onSubmit={mfaHandler}>
-          <input value={state.mfa_code}
-            placeholder="6 digits code"
-            onChange={({ currentTarget }) => setState("mfa_code", currentTarget.value)}
-          />
+          <Show when={state.mfa_ticket}>
+            <form onSubmit={mfaHandler}>
+              <input value={state.mfa_code}
+                placeholder="6 digits code"
+                onChange={({ currentTarget }) => setState("mfa_code", currentTarget.value)}
+              />
 
-          <button type="submit">
+              <button type="submit">
             Submit MFA code
-          </button>
-        </form>
-      </Show>
-    </>
+              </button>
+            </form>
+          </Show>
+
+
+        </div>
+
+        <div class="hidden md:flex flex-col gap-8 items-center flex-shrink-0 w-[240px]">
+          <div class="bg-white h-[160px] w-[160px] rounded p-2">
+            <div class="bg-black h-full w-full" />
+          </div>
+
+          <div>
+            <h2 class="text-[#F2F3F5] text-[24px] font-semibold text-center leading-[30px]">
+              Se connecter avec un code QR
+            </h2>
+          </div>
+        </div>
+      </div>
+
+
+
+    </div>
   );
 };
 

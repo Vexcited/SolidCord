@@ -6,8 +6,11 @@ module.exports = {
   ],
 
   theme: {
-    extend: {}
+    extend: {},
+    fontFamily: {
+      sans: ["Rubik", "sans-serif"]
+    }
   },
 
   plugins: []
-}
+};
