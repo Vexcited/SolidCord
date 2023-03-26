@@ -2,11 +2,11 @@ import type { Component } from "solid-js";
 import { onMount, onCleanup } from "solid-js";
 import { A, Outlet, useParams, useNavigate } from "@solidjs/router";
 
-import { setUser } from "@/stores/user";
+import { setUserStore } from "@/stores/user";
 import { getAccountStorage } from "@/utils/storage/accounts";
 import { useUsersMeAPI } from "@/api/users";
 
-import DiscordClientWS from "@/websockets/client";
+import DiscordClientWS from "@/websockets/gateway";
 
 const AppMainLayout: Component = () => {
   const navigate = useNavigate();
@@ -20,7 +20,7 @@ const AppMainLayout: Component = () => {
       return;
     }
 
-    setUser({
+    setUserStore({
       token: account.token,
       id: params.id
     });
@@ -29,7 +29,7 @@ const AppMainLayout: Component = () => {
   });
 
   onCleanup(() => {
-    setUser({
+    setUserStore({
       token: null,
       id: null
     });

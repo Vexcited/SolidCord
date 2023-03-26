@@ -3,6 +3,8 @@ import { createSignal } from "solid-js";
 export interface AccountStore {
   id: string,
   username: string,
+  /** Can be used to generate the avatar URL, if exists. */
+  avatar_hash: string | null,
   discriminator: string
 }
 

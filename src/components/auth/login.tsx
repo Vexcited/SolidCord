@@ -11,6 +11,7 @@ import { callUsersMeAPI } from "@/api/users";
 
 import { setAccountStorageToken } from "@/utils/storage/accounts";
 import { createCacheStorage } from "@/utils/storage/caching";
+import { accountsStore, setAccountsStore } from "@/stores/accounts";
 
 import { IoArrowBack } from "solid-icons/io";
 
@@ -88,13 +89,26 @@ const AuthLogin: Component<{
   };
 
   const processUserToken = async (token: string) => {
-    const response = await callUsersMeAPI({ token });
+    const user = await callUsersMeAPI({ token });
 
+    const current_accounts_store = accountsStore();
+    const new_accounts_store = current_accounts_store
+      // We clear every already existing accounts with the same ID.
+      .filter(account => account.id !== user.id);
 
-    await setAccountStorageToken(response.id, token);
-    await createCacheStorage(response);
+    new_accounts_store.push({
+      id: user.id,
+      username: user.username,
+      avatar_hash: user.avatar,
+      discriminator: user.discriminator
+    });
 
-    navigate("/");
+    setAccountsStore(new_accounts_store);
+
+    await setAccountStorageToken(user.id, token);
+    await createCacheStorage(user);
+
+    navigate(`/${user.id}`);
     return;
   };
 
@@ -127,10 +141,10 @@ const AuthLogin: Component<{
         <div class="flex flex-col gap-5">
           <div class="flex flex-col items-center gap-2">
             <h1 class="text-[#F2F3F5] font-semibold text-[24px] leading-[30px]">
-                Ha, te revoilà !
+              Welcome back!
             </h1>
             <p class="text-[#B5BAC1] text-[16px] leading-[20px]">
-                Nous sommes si heureux de te revoir !
+              We're so excited to see you again!
             </p>
           </div>
 
