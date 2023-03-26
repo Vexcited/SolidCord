@@ -1,21 +1,26 @@
 import localforage from "localforage";
 
-export interface StoredAccount {
+export interface AccountStorage {
   token: string;
 }
 
-export const accounts_storage = localforage.createInstance({
+export const accountsStorage = localforage.createInstance({
   name: "accounts",
   storeName: "accounts"
 });
 
-export const setAccount = async (user_id: string, token: string) => {
-  return accounts_storage.setItem<StoredAccount>(user_id, {
+/**
+ * Retrieves storage from an account in the localForage
+ * depending on the `user_id` key.
+ */
+export const getAccountStorage = async (user_id: string) => {
+  const account = await accountsStorage.getItem<AccountStorage>(user_id);
+  return account;
+};
+
+export const setAccountStorageToken = async (user_id: string, token: string) => {
+  return accountsStorage.setItem<AccountStorage>(user_id, {
     token
   });
 };
 
-export const getAccount = async (user_id: string) => {
-  const account = await accounts_storage.getItem<StoredAccount>(user_id);
-  return account;
-};

@@ -5,14 +5,14 @@
  */
 const DISCORD_WS_URL = "wss://gateway.discord.gg/?v=10&encoding=json";
 
-import { user } from "@/stores/app";
+import { userStore } from "@/stores/user";
 
 class DiscordClientWS {
   token: string;
   connection: WebSocket;
 
   constructor (token?: string) {
-    const client_token = token || user.token;
+    const client_token = token || userStore.token;
     if (!client_token) throw new Error("`token` is undefined! Check if you passed a `token` argument or if the `user` store has been initialized.");
 
     this.token = client_token;
@@ -25,7 +25,7 @@ class DiscordClientWS {
           token: this.token,
           capabilities: 4093,
           properties: {
-            os: NL_OS,
+            os: "Windows", // TODO
             browser: "Chrome", // TODO
             device: "",
             system_locale: navigator.language,

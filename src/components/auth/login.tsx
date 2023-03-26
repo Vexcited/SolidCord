@@ -5,21 +5,25 @@ import { createStore } from "solid-js/store";
 import { Show } from "solid-js";
 
 import HCaptcha from "solid-hcaptcha";
-import { A } from "@solidjs/router";
 
 import { callAuthLoginAPI, callAuthMfaTotpAPI } from "@/api/auth";
 import { callUsersMeAPI } from "@/api/users";
 
-import { setAccount } from "@/utils/storage/accounts";
+import { setAccountStorageToken } from "@/utils/storage/accounts";
 import { createCacheStorage } from "@/utils/storage/caching";
 
-const AuthLogin: Component = () => {
+import { IoArrowBack } from "solid-icons/io";
+
+const AuthLogin: Component<{
+  showBackArrow?: boolean,
+  onBackArrowClick?: () => void
+}> = (props) => {
   const navigate = useNavigate();
 
   const [state, setState] = createStore<{
     uid: string
     password: string
-    errors: null | any[] // TODO: Please, type this.
+    error: null | string
 
     hcaptcha_sitekey: null | string
     hcaptcha_token: null | string
@@ -29,7 +33,7 @@ const AuthLogin: Component = () => {
   }>({
     uid: "",
     password: "",
-    errors: null,
+    error: null,
 
     hcaptcha_sitekey: null,
     hcaptcha_token: null,
@@ -59,7 +63,7 @@ const AuthLogin: Component = () => {
     }
 
     if (response.need_email_verification) {
-      setState("errors", []); // TODO: Handle this step.
+      setState("error", "New location, please check your email for a quick verification.");
       return;
     }
 
@@ -86,7 +90,8 @@ const AuthLogin: Component = () => {
   const processUserToken = async (token: string) => {
     const response = await callUsersMeAPI({ token });
 
-    await setAccount(response.id, token);
+
+    await setAccountStorageToken(response.id, token);
     await createCacheStorage(response);
 
     navigate("/");
@@ -109,7 +114,15 @@ const AuthLogin: Component = () => {
   };
 
   return (
-    <div class="bg-[#313338] flex justify-between gap-8 w-full max-w-[480px] md:max-w-[784px] p-8 rounded-md shadow-lg">
+    <div class="bg-[#313338] relative flex justify-between gap-8 w-full max-w-[480px] md:max-w-[784px] p-8 rounded-md shadow-lg">
+      <Show when={props.showBackArrow}>
+        <button type="button" class="absolute top-12 left-8"
+          onClick={() => props.onBackArrowClick && props.onBackArrowClick()}
+        >
+          <IoArrowBack size={24} color="#DBDEE1" />
+        </button>
+      </Show>
+
       <div class="w-full">
         <div class="flex flex-col gap-5">
           <div class="flex flex-col items-center gap-2">
@@ -183,7 +196,7 @@ const AuthLogin: Component = () => {
 
       </div>
 
-      <div class="hidden md:flex flex-col gap-8 items-center flex-shrink-0 w-[240px]">
+      {/* <div class="hidden md:flex flex-col gap-8 items-center flex-shrink-0 w-[240px]">
         <div class="bg-white h-[160px] w-[160px] rounded p-2">
           <div class="bg-black h-full w-full" />
         </div>
@@ -193,7 +206,7 @@ const AuthLogin: Component = () => {
               Se connecter avec un code QR
           </h2>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

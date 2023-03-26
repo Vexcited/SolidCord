@@ -2,8 +2,8 @@ import type { Component } from "solid-js";
 import { onMount, onCleanup } from "solid-js";
 import { A, Outlet, useParams, useNavigate } from "@solidjs/router";
 
-import { setUser } from "@/stores/app";
-import { getAccount } from "@/utils/storage/accounts";
+import { setUser } from "@/stores/user";
+import { getAccountStorage } from "@/utils/storage/accounts";
 import { useUsersMeAPI } from "@/api/users";
 
 import DiscordClientWS from "@/websockets/client";
@@ -14,7 +14,7 @@ const AppMainLayout: Component = () => {
   const [user] = useUsersMeAPI();
 
   onMount(async () => {
-    const account = await getAccount(params.id);
+    const account = await getAccountStorage(params.id);
     if (!account) {
       navigate("/?account_not_found=true");
       return;

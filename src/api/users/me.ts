@@ -3,13 +3,13 @@ import type { DiscordMeResponse } from "./types";
 import { fetch } from "@tauri-apps/api/http";
 import { DISCORD_API_ENDPOINT } from "@/api";
 
-import { user } from "@/stores/app";
+import { userStore } from "@/stores/user";
 import { createResource } from "solid-js";
 
-import { setCache, StoredCacheEndpoint } from "@/utils/storage/caching";
+import { setCache, CachingStorageEndpoints } from "@/utils/storage/caching";
 
 export const callUsersMeAPI = async (req?: { token?: string }) => {
-  const token = req?.token || user.token;
+  const token = req?.token || userStore.token;
   if (!token) throw new Error("User not available.");
 
   const uri = DISCORD_API_ENDPOINT + "v9/users/@me";
@@ -20,15 +20,18 @@ export const callUsersMeAPI = async (req?: { token?: string }) => {
     }
   });
 
-  console.log(response);
-  return;
+  const data = response.data as (
+    DiscordMeResponse
+  );
 
-  // const body = response.json() as DiscordMeResponse;
-  // if (user.token && user.id) {
-  //   setCache<DiscordMeResponse>(user.id, StoredCacheEndpoint.USERS_ME, body);
-  // }
+  if (userStore.token && userStore.id) {
+    setCache<DiscordMeResponse>(userStore.id, CachingStorageEndpoints.USERS_ME, data);
+  }
 
-  // return body;
+  return data;
 };
 
-export const useUsersMeAPI = () => createResource(() => user.token, () => callUsersMeAPI());
+export const useUsersMeAPI = () => createResource(
+  () => userStore.token,
+  () => callUsersMeAPI()
+);
