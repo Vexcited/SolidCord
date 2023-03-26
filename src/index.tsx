@@ -10,12 +10,15 @@ import { render } from "solid-js/web";
 import { Router, useRoutes } from "@solidjs/router";
 import routes from "~solid-pages";
 
+import WindowTitlebar from "@/components/native/window-titlebar";
+
 const mount = document.getElementById("root") as HTMLDivElement;
 render(() => {
   const Routes = useRoutes(routes);
 
   return (
     <Router>
+      <WindowTitlebar />
       <Routes />
     </Router>
   );

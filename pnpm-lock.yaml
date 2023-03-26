@@ -14,6 +14,7 @@ specifiers:
   localforage: ^1.10.0
   postcss: ^8.4.21
   solid-hcaptcha: ^0.2.6
+  solid-icons: ^1.0.4
   solid-js: ^1.4.7
   tailwindcss: ^3.2.7
   typescript: ^4.7.4
@@ -27,6 +28,7 @@ dependencies:
   '@tauri-apps/api': 1.2.0
   localforage: 1.10.0
   solid-hcaptcha: 0.2.6_solid-js@1.6.15
+  solid-icons: 1.0.4_solid-js@1.6.15
   solid-js: 1.6.15
 
 devDependencies:
@@ -2559,6 +2561,15 @@ packages:
     dependencies:
       '@hcaptcha/types': 1.0.3
       '@solid-primitives/script-loader': 1.1.3_solid-js@1.6.15
+      solid-js: 1.6.15
+    dev: false
+
+  /solid-icons/1.0.4_solid-js@1.6.15:
+    resolution: {integrity: sha512-gJTp4in3+OYCs9WvDkSLt4Los2unR3Uoder8wjh15GsfP20xiNOLfPTJllXmn+fI8+k3x7bRYtLGIgWd9fUQug==}
+    engines: {node: '>= 16'}
+    peerDependencies:
+      solid-js: '*'
+    dependencies:
       solid-js: 1.6.15
     dev: false
 

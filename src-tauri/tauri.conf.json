@@ -23,6 +23,17 @@
         "scope": [
           "https://discord.com/api/*"
         ]
+      },
+      "window": {
+        "all": false,
+        "close": true,
+        "hide": true,
+        "show": true,
+        "maximize": true,
+        "minimize": true,
+        "unmaximize": true,
+        "unminimize": true,
+        "startDragging": true
       }
     },
     "bundle": {
@@ -47,10 +58,23 @@
       {
         "fullscreen": false,
         "resizable": true,
+        "center": true,
+        "focus": true,
+        
+        "decorations": false,
+        "titleBarStyle": "Overlay",
+        
         "title": "SolidCord",
+
         "width": 1280,
-        "height": 720
+        "height": 720,
+        "minWidth": 800,
+        "minHeight": 600
       }
-    ]
+    ],
+    "systemTray": {
+      "iconPath": "icons/icon.png",
+      "iconAsTemplate": true
+    }
   }
 }
