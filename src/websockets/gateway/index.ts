@@ -1,7 +1,9 @@
+import type { OpCode } from "./types";
+import { OpCodes } from "./types";
+
 /**
  * Here, we use version 10 of their API, with JSON encoding.
- * We currently don't compress the data. Should be something TODO.
- *
+ * TODO: Compress the data.
  */
 const DISCORD_WS_URL = "wss://gateway.discord.gg/?v=10&encoding=json";
 
@@ -58,14 +60,21 @@ class DiscordClientWS {
           }
         }
       });
-
-      // Replies with
-      // {"t":null,"s":null,"op":10,"d":{"heartbeat_interval":41250,"_trace":["[\"gateway-prd-us-east1-d-02fl\",{\"micros\":0.0}]"]}}
     });
+
+    this.connection.addEventListener("message", (message) => this.handleGatewayMessage(message.data));
   }
 
   sendJSON <T>(message: T) {
     this.connection.send(JSON.stringify(message));
+  }
+
+  async handleGatewayMessage (message: OpCode) {
+    switch (message.op) {
+    case OpCodes.Hello:
+      console.log(message.d.heartbeat_interval);
+      break;
+    }
   }
 }
 
