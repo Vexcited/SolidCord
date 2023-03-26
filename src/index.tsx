@@ -18,8 +18,10 @@ render(() => {
 
   return (
     <Router>
-      <WindowTitlebar />
-      <Routes />
+      <main class="flex flex-col h-screen">
+        <WindowTitlebar />
+        <Routes />
+      </main>
     </Router>
   );
 }, mount);
