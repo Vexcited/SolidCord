@@ -14,7 +14,6 @@ type FunctionResponse =
   }
 
 // TODO: Find where `fingerprint` comes from.
-
 export const callAuthRegisterAPI = async (req: {
   username: string,
   password: string,
@@ -55,20 +54,20 @@ export const callAuthRegisterAPI = async (req: {
     }
   });
 
-  console.log(response);
-  return;
+  const data = response.data as (
+    | DiscordCaptchaRequiredResponse
+    | { token: string }
+  );
 
-  // const body = response.json();
+  if ("captcha_sitekey" in data) {
+    return {
+      need_captcha: true,
+      sitekey: data.captcha_sitekey
+    };
+  }
 
-  // if (body.captcha_sitekey) {
-  //   return {
-  //     need_captcha: true,
-  //     sitekey: (body as DiscordCaptchaRequiredResponse).captcha_sitekey
-  //   };
-  // }
-
-  // return {
-  //   need_captcha: false,
-  //   token: (body as { token: string }).token
-  // };
+  return {
+    need_captcha: false,
+    token: data.token
+  };
 };

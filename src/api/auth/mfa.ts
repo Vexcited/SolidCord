@@ -31,20 +31,19 @@ export const callAuthMfaTotpAPI = async (req: {
     body
   });
 
-  console.log(response);
-  return;
+  const data = response.data as (
+    DiscordLoginTokenResponse
+  );
 
-  // const body = response.json();
+  if ("token" in data) {
+    return {
+      success: true,
+      token: data.token
+    };
+  }
 
-  // if (body.token) {
-  //   return {
-  //     success: true,
-  //     token: (body as DiscordLoginTokenResponse).token
-  //   };
-  // }
-
-  // return {
-  //   success: false,
-  //   debug: body
-  // };
+  return {
+    success: false,
+    debug: data
+  };
 };

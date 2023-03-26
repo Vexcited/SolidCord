@@ -1,31 +1,12 @@
 import type {
   DiscordLoginMfaRequiredResponse,
   DiscordCaptchaRequiredResponse,
-  DiscordLoginTokenResponse
+  DiscordLoginTokenResponse,
+  DiscordLoginVerificationEmailResponse
 } from "./types";
 
 import { DISCORD_API_ENDPOINT } from "@/api";
 import { Body, fetch } from "@tauri-apps/api/http";
-
-/**
- * When logging-in from a new location, we need to implement this
- * error message.
- *
- {
-    "code": 50035,
-    "errors": {
-      "login": {
-        "_errors": [
-          {
-            "code": "ACCOUNT_LOGIN_VERIFICATION_EMAIL",
-            "message": "New login location detected, please check your e-mail."
-          }
-        ]
-      }
-    },
-    "message": "Invalid Form Body"
-  }
- */
 
 type FunctionResponse =
   | {
@@ -76,33 +57,49 @@ export const callAuthLoginAPI = async (req: {
     body
   });
 
-  console.log(response);
-  return;
+  const data = response.data as (
+    | DiscordCaptchaRequiredResponse
+    | DiscordLoginMfaRequiredResponse
+    | DiscordLoginTokenResponse
+    | DiscordLoginVerificationEmailResponse
+  );
 
-  // const body = response.json();
+  if ("captcha_sitekey" in data) {
+    return {
+      need_email_verification: false,
+      need_captcha: true,
+      need_mfa: false,
 
-  // if (body.captcha_sitekey) {
-  //   return {
-  //     need_captcha: true,
-  //     need_mfa: false,
+      sitekey: data.captcha_sitekey
+    };
+  }
 
-  //     sitekey: (body as DiscordCaptchaRequiredResponse).captcha_sitekey
-  //   };
-  // }
+  else if ("mfa" in data) {
+    return {
+      need_email_verification: false,
+      need_captcha: false,
+      need_mfa: true,
 
-  // if (body.token === null && body.mfa) {
-  //   return {
-  //     need_captcha: false,
-  //     need_mfa: true,
+      ticket: data.ticket
+    };
+  }
 
-  //     ticket: (body as DiscordLoginMfaRequiredResponse).ticket
-  //   };
-  // }
+  else if ("errors" in data) {
+    // TODO: Handle more errors so we can switch between errors.
 
-  // return {
-  //   need_captcha: false,
-  //   need_mfa: false,
+    // if (data.errors.login._errors[0].code === "ACCOUNT_LOGIN_VERIFICATION_EMAIL")
+    return {
+      need_email_verification: true,
+      need_captcha: false,
+      need_mfa: false
+    };
+  }
 
-  //   token: (body as DiscordLoginTokenResponse).token
-  // };
+  return {
+    need_email_verification: false,
+    need_captcha: false,
+    need_mfa: false,
+
+    token: data.token
+  };
 };
