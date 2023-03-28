@@ -9,9 +9,8 @@ import HCaptcha from "solid-hcaptcha";
 import { callAuthLoginAPI, callAuthMfaTotpAPI } from "@/api/auth";
 import { callUsersMeAPI } from "@/api/users";
 
-import { setAccountStorageToken } from "@/utils/storage/accounts";
 import { createCacheStorage } from "@/utils/storage/caching";
-import { accountsStore, setAccountsStore } from "@/stores/accounts";
+import accounts from "@/stores/accounts";
 
 import { IoArrowBack } from "solid-icons/io";
 
@@ -91,21 +90,18 @@ const AuthLogin: Component<{
   const processUserToken = async (token: string) => {
     const user = await callUsersMeAPI({ token });
 
-    const current_accounts_store = accountsStore();
-    const new_accounts_store = current_accounts_store
-      // We clear every already existing accounts with the same ID.
-      .filter(account => account.id !== user.id);
+    // Make sure to remove any instance of this user account before.
+    accounts.remove(user.id);
 
-    new_accounts_store.push({
+    // Add the account into our storage/store.
+    accounts.add({
       id: user.id,
       username: user.username,
       avatar_hash: user.avatar,
-      discriminator: user.discriminator
+      discriminator: user.discriminator,
+      token
     });
 
-    setAccountsStore(new_accounts_store);
-
-    await setAccountStorageToken(user.id, token);
     await createCacheStorage(user);
 
     navigate(`/${user.id}`);

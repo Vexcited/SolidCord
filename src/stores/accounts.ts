@@ -1,26 +1,14 @@
 import { createSignal } from "solid-js";
 
-export interface AccountStore {
-  id: string,
-  username: string,
-  /** Can be used to generate the avatar URL, if exists. */
-  avatar_hash: string | null,
-  discriminator: string
-}
+import type { AccountStorage } from "@/utils/storage/accounts";
+import AccountsStorage from "@/utils/storage/accounts";
 
-const [
-  accountsStore,
-  _setAccountsStore
-] = createSignal<AccountStore[]>(
-  // Get default value from localStorage.
-  JSON.parse(localStorage.getItem("accounts") || "[]")
-);
+const [accountsStore, setAccountsStore] = createSignal<AccountStorage[]>([]);
+const accountsManager = new AccountsStorage(setAccountsStore);
 
-const setAccountsStore = (new_store: AccountStore[]) => {
-  localStorage.setItem("accounts", JSON.stringify(new_store));
-  _setAccountsStore(new_store);
-};
-
-export {
-  accountsStore, setAccountsStore
+export default {
+  values: accountsStore,
+  add: accountsManager.add,
+  get: accountsManager.get,
+  remove: accountsManager.remove
 };

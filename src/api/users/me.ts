@@ -6,7 +6,7 @@ import { DISCORD_API_ENDPOINT } from "@/api";
 import { userStore } from "@/stores/user";
 import { createResource } from "solid-js";
 
-import { setCache, CachingStorageEndpoints } from "@/utils/storage/caching";
+import { setCacheInStorage, CachingStorageEndpoints } from "@/utils/storage/caching";
 
 export const callUsersMeAPI = async (req?: { token?: string }) => {
   const token = req?.token || userStore.token;
@@ -25,7 +25,7 @@ export const callUsersMeAPI = async (req?: { token?: string }) => {
   );
 
   if (userStore.token && userStore.id) {
-    setCache<DiscordMeResponse>(userStore.id, CachingStorageEndpoints.USERS_ME, data);
+    setCacheInStorage<DiscordMeResponse>(userStore.id, CachingStorageEndpoints.USERS_ME, data);
   }
 
   return data;

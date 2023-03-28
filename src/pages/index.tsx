@@ -4,10 +4,10 @@ import { Switch, Match, createSignal } from "solid-js";
 import AuthAccountSelector from "@/components/auth/account-selector";
 import AuthLogin from "@/components/auth/login";
 
-import { accountsStore } from "@/stores/accounts";
+import accounts from "@/stores/accounts";
 
 const LoginPage: Component = () => {
-  const userHasNoAccount = () => accountsStore().length <= 0;
+  const userHasNoAccount = () => accounts.values().length <= 0;
 
   const [component, setComponent] = createSignal<
     | "ACCOUNT_SELECTOR"

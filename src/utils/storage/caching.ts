@@ -21,12 +21,12 @@ export const createCacheStorage = (discordUsersMe: DiscordMeResponse) => {
     .setItem(CachingStorageEndpoints.USERS_ME, discordUsersMe);
 };
 
-export const getCache = <T>(user_id: string, endpoint: CachingStorageEndpoints) => {
+export const getCacheInStorage = <T>(user_id: string, endpoint: CachingStorageEndpoints) => {
   return cachingStorage(user_id)
     .getItem<T>(endpoint);
 };
 
-export const setCache = <T>(user_id: string, endpoint: CachingStorageEndpoints, data: T) => {
+export const setCacheInStorage = <T>(user_id: string, endpoint: CachingStorageEndpoints, data: T) => {
   return cachingStorage(user_id)
     .setItem<T>(endpoint, data);
 };

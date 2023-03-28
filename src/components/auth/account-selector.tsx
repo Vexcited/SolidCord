@@ -3,7 +3,7 @@ import type { Component } from "solid-js";
 import { Show, For } from "solid-js";
 import { A } from "@solidjs/router";
 
-import { accountsStore } from "@/stores/accounts";
+import accounts from "@/stores/accounts";
 import { getUserAvatarURL } from "@/utils/api/images";
 
 const AuthAccountSelector: Component<{
@@ -22,7 +22,7 @@ const AuthAccountSelector: Component<{
 
       <div class="flex flex-col items-center w-full px-4">
         <div class="flex flex-col w-full divide-y-2 divide-[#313338] rounded bg-[#2b2d31]">
-          <For each={accountsStore()}>
+          <For each={accounts.values()}>
             {account => (
               <div class="py-3 px-4">
                 <div class="flex justify-between items-center">
