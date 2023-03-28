@@ -1,6 +1,8 @@
 import type { Component } from "solid-js";
 
 import { Show, For } from "solid-js";
+import { A } from "@solidjs/router";
+
 import { accountsStore } from "@/stores/accounts";
 import { getUserAvatarURL } from "@/utils/api/images";
 
@@ -48,11 +50,11 @@ const AuthAccountSelector: Component<{
                     </div>
                   </div>
 
-                  <button type="button"
-                    class="px-4 py-0.5 text-white text-[14px] h-[38px] leading-[16px] min-h-[38px] min-w-[96px] bg-[#4e5058] rounded-[3px]"
+                  <A href={`/${account.id}`}
+                    class="flex justify-center items-center px-4 py-0.5 text-white text-[14px] h-[38px] leading-[16px] min-h-[38px] min-w-[96px] bg-[#4e5058] rounded-[3px]"
                   >
                     Log in
-                  </button>
+                  </A>
                 </div>
               </div>
             )}
