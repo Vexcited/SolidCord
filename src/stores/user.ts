@@ -1,11 +1,28 @@
+import type { OpDispatchReady } from "@/websockets/gateway/handlers/dispatch";
 import { createStore } from "solid-js/store";
 
-export interface UserStore {
-  token: string | null,
-  id: string | null
+export interface UserStoreDefault {
+  token: null;
+  ready: false;
 }
 
-export const [userStore, setUserStore] = createStore<UserStore>({
+export interface UserStoreInitializing {
+  token: string;
+  ready: false;
+}
+
+export interface UserStoreReady {
+  token: string;
+  ready: true;
+
+  user: OpDispatchReady["d"]["user"];
+  users: OpDispatchReady["d"]["users"];
+  guilds: OpDispatchReady["d"]["guilds"];
+  relationships: OpDispatchReady["d"]["relationships"];
+  private_channels: OpDispatchReady["d"]["private_channels"];
+}
+
+export const [userStore, setUserStore] = createStore<UserStoreDefault | UserStoreInitializing | UserStoreReady>({
   token: null,
-  id: null
+  ready: false
 });
