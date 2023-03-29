@@ -6,7 +6,8 @@ import type {
 } from "./types";
 
 import { DISCORD_API_ENDPOINT } from "@/api";
-import { Body, fetch } from "@tauri-apps/api/http";
+import { Body } from "@tauri-apps/api/http";
+import fetch from "@/utils/native/fetch";
 
 type FunctionResponse =
   | {
@@ -37,9 +38,9 @@ type FunctionResponse =
   }
 
 export const callAuthLoginAPI = async (req: {
-  login: string,
-  password: string,
-  hcaptcha_token: string | null
+  login: string;
+  password: string;
+  hcaptcha_token: string | null;
 }): Promise<FunctionResponse> => {
   const uri = DISCORD_API_ENDPOINT + "v9/auth/login";
   const body = Body.json({

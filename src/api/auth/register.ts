@@ -1,7 +1,8 @@
 import type { DiscordCaptchaRequiredResponse } from "./types";
 
 import { DISCORD_API_ENDPOINT } from "@/api";
-import { Body, fetch } from "@tauri-apps/api/http";
+import { Body } from "@tauri-apps/api/http";
+import fetch from "@/utils/native/fetch";
 
 type FunctionResponse =
   | {
@@ -15,15 +16,15 @@ type FunctionResponse =
 
 // TODO: Find where `fingerprint` comes from.
 export const callAuthRegisterAPI = async (req: {
-  username: string,
-  password: string,
-  email: string,
-  birth: string,
+  username: string;
+  password: string;
+  email: string;
+  birth: string;
 
-  consent: boolean,
-  promotional_mails: boolean,
+  consent: boolean;
+  promotional_mails: boolean;
 
-  hcaptcha_token: string | null
+  hcaptcha_token: string | null;
 }): Promise<FunctionResponse> => {
   const uri = DISCORD_API_ENDPOINT + "v9/auth/register";
   const body = Body.json({

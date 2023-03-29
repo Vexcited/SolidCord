@@ -26,7 +26,7 @@ render(() => {
   );
 }, mount);
 
-import { fetch } from "@tauri-apps/api/http";
+import fetch from "@/utils/native/fetch";
 
 // Internal API
 // TODO: Declare a module exposing the types and publish it as a module to make external plugins easier to do.

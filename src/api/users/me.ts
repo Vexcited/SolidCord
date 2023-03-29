@@ -1,6 +1,6 @@
 import type { DiscordMeResponse } from "./types";
 
-import { fetch } from "@tauri-apps/api/http";
+import fetch from "@/utils/native/fetch";
 import { DISCORD_API_ENDPOINT } from "@/api";
 
 import { userStore } from "@/stores/user";
