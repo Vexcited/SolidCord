@@ -7,7 +7,7 @@ import accounts from "@/stores/accounts";
 import { getUserAvatarURL } from "@/utils/api/images";
 
 const AuthAccountSelector: Component<{
-  onAddAccountClick: () => void
+  onAddAccountClick: () => void;
 }> = (props) => {
   return (
     <div class="bg-[#313338] flex flex-col items-center w-full max-w-[480px] rounded-md shadow-lg">

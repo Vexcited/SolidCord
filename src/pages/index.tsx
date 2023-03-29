@@ -13,7 +13,11 @@ const LoginPage: Component = () => {
     | "ACCOUNT_SELECTOR"
     | "SIGNIN"
     | "SIGNUP"
-  >(userHasNoAccount() ? "SIGNIN" : "ACCOUNT_SELECTOR");
+  >(
+    // We automatically show the sign-in component if
+    // the user don't have any account stored.
+    userHasNoAccount() ? "SIGNIN" : "ACCOUNT_SELECTOR"
+  );
 
   return (
     <div class="h-full flex items-center justify-center bg-[#5865F2]">
