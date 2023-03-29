@@ -1,5 +1,7 @@
-import type { OpCode } from "./types";
+import type { OpCode, OpHearbeat } from "./types";
 import { OpCodes } from "./types";
+
+import { handleDispatchGatewayMessage } from "./handlers/dispatch";
 
 /**
  * Here, we use version 10 of their API, with JSON encoding.
@@ -10,14 +12,18 @@ const DISCORD_WS_URL = "wss://gateway.discord.gg/?v=10&encoding=json";
 import { userStore } from "@/stores/user";
 
 class DiscordClientWS {
-  token: string;
-  connection: WebSocket;
+  private token: string;
+  public connection: WebSocket;
+
+  private heartbeat_interval_ms?: number;
+  private heartbeat_interval?: number;
 
   constructor (token?: string) {
     const client_token = token || userStore.token;
     if (!client_token) throw new Error("`token` is undefined! Check if you passed a `token` argument or if the `user` store has been initialized.");
 
     this.token = client_token;
+    console.info("[gateway] opening new connection.");
 
     this.connection = new WebSocket(DISCORD_WS_URL);
     this.connection.addEventListener("open", () => {
@@ -62,20 +68,57 @@ class DiscordClientWS {
       });
     });
 
-    this.connection.addEventListener("message", (message) => this.handleGatewayMessage(message.data));
+    this.connection.addEventListener("message", this.handleGatewayMessage);
   }
 
-  sendJSON <T>(message: T) {
+  public destroy = () => {
+    this.stopHeartbeatInterval();
+    this.connection.close();
+
+    console.info("[gateway] closed connection.");
+  };
+
+  private sendJSON = <T>(message: T) => {
+    console.info("[websockets/gateway] sending message to gateway.", message);
     this.connection.send(JSON.stringify(message));
-  }
+  };
 
-  async handleGatewayMessage (message: OpCode) {
+  private handleGatewayMessage = async (event: MessageEvent<string>) => {
+    const message_raw = event.data;
+    // Remember we use JSON encoding, for now.
+    const message = JSON.parse(message_raw) as OpCode;
+
     switch (message.op) {
     case OpCodes.Hello:
-      console.log(message.d.heartbeat_interval);
+      this.heartbeat_interval_ms = message.d.heartbeat_interval;
+      this.startHeartbeatInterval();
+      break;
+    case OpCodes.Dispatch:
+      handleDispatchGatewayMessage(message);
+      break;
+    case OpCodes.Ack:
+      console.info("[websockets/gateway] server received heartbeat - we got `ack`.");
+      break;
+    default:
+      console.log("unknown message from gateway", message);
       break;
     }
-  }
+  };
+
+  private startHeartbeatInterval = () => {
+    if (typeof this.heartbeat_interval_ms === "undefined") return;
+    console.info(`[websockets/gateway] starting \`OpHeartbeat\` interval (\`heartbeat_interval_ms\` -> ${this.heartbeat_interval_ms})`);
+
+    this.heartbeat_interval = setInterval(() => this.sendJSON<OpHearbeat>({
+      op: OpCodes.Heartbeat,
+      d: null // TODO: Handle sequence number.
+    }), this.heartbeat_interval_ms);
+  };
+
+  private stopHeartbeatInterval = () => {
+    if (this.heartbeat_interval)
+      clearInterval(this.heartbeat_interval);
+  };
 }
 
 export default DiscordClientWS;

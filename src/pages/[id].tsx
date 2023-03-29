@@ -1,8 +1,9 @@
 import type { Component } from "solid-js";
-import { onMount, onCleanup } from "solid-js";
+import { onMount, onCleanup, Show } from "solid-js";
 import { A, Outlet, useParams, useNavigate } from "@solidjs/router";
 
-import { setUserStore } from "@/stores/user";
+import type { UserStoreReady } from "@/stores/user";
+import { setUserStore, userStore } from "@/stores/user";
 import accounts from "@/stores/accounts";
 import { useUsersMeAPI } from "@/api/users";
 
@@ -13,6 +14,8 @@ const AppMainLayout: Component = () => {
   const params = useParams();
   const [user] = useUsersMeAPI();
 
+  let client: DiscordClientWS | undefined;
+
   onMount(async () => {
     const account = accounts.get(params.id);
     if (!account) {
@@ -22,27 +25,35 @@ const AppMainLayout: Component = () => {
 
     setUserStore({
       token: account.token,
-      id: params.id
+      ready: false
     });
 
-    const client = new DiscordClientWS(account.token);
+    client = new DiscordClientWS(account.token);
   });
 
   onCleanup(() => {
-    setUserStore({
-      token: null,
-      id: null
-    });
+    if (client) client.destroy();
+    setUserStore({ token: null });
   });
 
   return (
-    <>
-      <p>Welcome back, {user()?.username}#{user()?.discriminator}!</p>
-      <A href="/">Go to account selection page</A>
-      <Outlet />
-    </>
+    <Show when={userStore.token && userStore.ready}>
+      <Layout store={userStore as UserStoreReady} />
+    </Show>
   );
 };
 
 export default AppMainLayout;
 
+const Layout: Component<{ store: UserStoreReady }> = (props) => {
+  return (
+    <>
+      <p>Welcome back, {props.store.user.username}#{props.store.user.discriminator}!</p>
+      <p>You're in {props.store.guilds.length} guilds!</p>
+      <p>You have {props.store.relationships.length} friends!</p>
+      <p>You have {props.store.private_channels.length} DMs!</p>
+      <A href="/">Go to account selection page</A>
+      <Outlet />
+    </>
+  );
+};
