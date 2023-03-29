@@ -1,4 +1,5 @@
 {
+  "root": true,
   "env": {
     "browser": true,
     "node": true
@@ -37,6 +38,7 @@
     ],
     
     "no-return-await": "error",
-    "no-trailing-spaces": "error"
+    "no-trailing-spaces": "error",
+    "@typescript-eslint/member-delimiter-style": "error"
   }
 }
