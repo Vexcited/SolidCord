@@ -15,21 +15,21 @@ import accounts from "@/stores/accounts";
 import { IoArrowBack } from "solid-icons/io";
 
 const AuthLogin: Component<{
-  showBackArrow?: boolean,
-  onBackArrowClick?: () => void
+  showBackArrow?: boolean;
+  onBackArrowClick?: () => void;
 }> = (props) => {
   const navigate = useNavigate();
 
   const [state, setState] = createStore<{
-    uid: string
-    password: string
-    error: null | string
+    uid: string;
+    password: string;
+    error: null | string;
 
-    hcaptcha_sitekey: null | string
-    hcaptcha_token: null | string
+    hcaptcha_sitekey: null | string;
+    hcaptcha_token: null | string;
 
-    mfa_ticket: null | string
-    mfa_code: string
+    mfa_ticket: null | string;
+    mfa_code: string;
   }>({
     uid: "",
     password: "",
@@ -89,6 +89,7 @@ const AuthLogin: Component<{
 
   const processUserToken = async (token: string) => {
     const user = await callUsersMeAPI({ token });
+    console.info("[.][processUserToken]: received `/users/me` data", user);
 
     // Make sure to remove any instance of this user account before.
     accounts.remove(user.id);
