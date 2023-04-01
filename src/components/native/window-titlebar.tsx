@@ -1,42 +1,60 @@
-import type { Component } from "solid-js";
+import type { Component, JSX } from "solid-js";
 
 import WindowDragger from "@/components/native/window-dragger";
 import { appWindow } from "@tauri-apps/api/window";
 
 import { VsChromeMinimize, VsChromeMaximize, VsChromeClose } from "solid-icons/vs";
 
-const WindowTitlebar: Component = () => (
-  <div class="bg-[#1e1f22] z-[999]">
-    <WindowDragger component="div" class="flex-shrink-0 mt-1 h-[18px] select-none flex justify-between items-center">
-      <p class="text-[#b6bcc9] text-xs pl-2 select-none pointer-events-none -mt-1">SolidCord</p>
-      <div class="flex">
-        <div
-          role="button"
-          aria-label="Minimize"
-          class="w-7 flex justify-center items-center text-[#b5bac1] h-full -mt-1"
-          onClick={() => appWindow.minimize()}
-        >
-          <VsChromeMinimize />
+const WindowTitlebar: Component = () => {
+  const TitlebarButton: Component<{
+    icon: JSX.Element,
+    label: string,
+    class: string,
+    action: () => unknown
+  }> = (props) => (
+    <div
+      role="button"
+      aria-label={props.label}
+      class={`w-7 h-[22px] flex justify-center items-center text-[#b5bac1] -mt-1 ${props.class}`}
+      onClick={() => props.action()}
+    >
+      {props.icon}
+    </div>
+  );
+
+  const minimizeAndMaximizeClasses = "hover:bg-[#4e5058] hover:bg-opacity-[0.3] active:text-white active:bg-opacity-[0.48]"; 
+  const closeClasses = "hover:bg-[#f23f42] hover:text-white";
+  
+  return (
+    <div class="bg-[#1e1f22] z-[999]">
+      <WindowDragger component="div" class="flex-shrink-0 mt-1 h-[18px] select-none flex justify-between items-center">
+        <p class="text-[#b6bcc9] text-xs pl-2 select-none pointer-events-none -mt-1">
+          SolidCord
+        </p>
+
+        <div class="flex items-center h-full">
+          <TitlebarButton
+            label="Minimize"
+            class={minimizeAndMaximizeClasses}
+            action={() => appWindow.minimize()}
+            icon={<VsChromeMinimize />}
+          />
+          <TitlebarButton
+            label="Maximize"
+            class={minimizeAndMaximizeClasses}
+            action={() => appWindow.toggleMaximize()}
+            icon={<VsChromeMaximize />}
+          />
+          <TitlebarButton
+            label="Close"
+            class={closeClasses}
+            action={() => appWindow.close()}
+            icon={<VsChromeClose />}
+          />
         </div>
-        <div
-          role="button"
-          aria-label="Maximize"
-          class="w-7 flex justify-center items-center text-[#b5bac1] h-full -mt-1"
-          onClick={() => appWindow.toggleMaximize()}
-        >
-          <VsChromeMaximize />
-        </div>
-        <div
-          role="button"
-          aria-label="Close"
-          class="w-7 flex justify-center items-center text-[#b5bac1] h-full -mt-1"
-          onClick={() => appWindow.close()}
-        >
-          <VsChromeClose />
-        </div>
-      </div>
-    </WindowDragger>
-  </div>
-);
+      </WindowDragger>
+    </div>
+  );
+};
 
 export default WindowTitlebar;
