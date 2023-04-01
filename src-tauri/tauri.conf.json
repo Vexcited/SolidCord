@@ -72,8 +72,8 @@
 
         "width": 1280,
         "height": 720,
-        "minWidth": 800,
-        "minHeight": 600
+        "minWidth": 940,
+        "minHeight": 500
       }
     ],
     "systemTray": {
