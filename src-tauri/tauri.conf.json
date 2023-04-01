@@ -1,14 +1,14 @@
 {
+  "$schema": "../node_modules/@tauri-apps/cli/schema.json",
   "build": {
-    "beforeDevCommand": "pnpm dev",
     "beforeBuildCommand": "pnpm build",
+    "beforeDevCommand": "pnpm dev",
     "devPath": "http://localhost:1420",
-    "distDir": "../dist",
-    "withGlobalTauri": false
+    "distDir": "../dist"
   },
   "package": {
     "productName": "SolidCord",
-    "version": "0.0.0"
+    "version": "0.1.0"
   },
   "tauri": {
     "allowlist": {
@@ -38,6 +38,7 @@
     },
     "bundle": {
       "active": true,
+      "category": "SocialNetworking",
       "icon": [
         "icons/32x32.png",
         "icons/128x128.png",
@@ -45,7 +46,9 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "com.tauri.dev",
+      "identifier": "com.github.vexcited.solidcord",
+      "longDescription": "A Tauri+SolidJS client for Discord that was made with performance in mind while keeping the look of Discord.",
+      "shortDescription": "A Tauri+SolidJS client for Discord.",
       "targets": "all"
     },
     "security": {
@@ -58,6 +61,7 @@
       {
         "fullscreen": false,
         "resizable": true,
+        "visible": true,
         "center": true,
         "focus": true,
         

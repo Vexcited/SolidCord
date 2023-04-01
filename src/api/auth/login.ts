@@ -6,7 +6,7 @@ import type {
 } from "./types";
 
 import { DISCORD_API_ENDPOINT } from "@/api";
-import { Body } from "@tauri-apps/api/http";
+import { Body, ResponseType } from "@tauri-apps/api/http";
 import fetch from "@/utils/native/fetch";
 
 type FunctionResponse =
@@ -53,17 +53,16 @@ export const callAuthLoginAPI = async (req: {
     gift_code_sku_id: null
   });
 
-  const response = await fetch(uri, {
-    method: "POST",
-    body
-  });
-
-  const data = response.data as (
+  const { data } = await fetch<(
     | DiscordCaptchaRequiredResponse
     | DiscordLoginMfaRequiredResponse
     | DiscordLoginTokenResponse
     | DiscordLoginVerificationEmailResponse
-  );
+  )>(uri, {
+      responseType: ResponseType.JSON,
+      method: "POST",
+      body
+    });
 
   if ("captcha_sitekey" in data) {
     return {

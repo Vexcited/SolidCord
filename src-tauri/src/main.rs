@@ -1,14 +1,21 @@
 // Prevents additional console window on Windows in release.
-#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+#![cfg_attr(
+  not(debug_assertions),
+  windows_subsystem = "windows"
+)]
 
 use tauri::{SystemTray, SystemTrayEvent, CustomMenuItem, SystemTrayMenu, SystemTrayMenuItem, Manager};
+use window_shadows::set_shadow;
 
 fn main() {
+  let title = CustomMenuItem::new("title".to_string(), "SolidCord").disabled();
   let github = CustomMenuItem::new("github".to_string(), "Report issue on GitHub");
   // let updater = CustomMenuItem::new("updater".to_string(), "Updater");
   let quit = CustomMenuItem::new("quit".to_string(), "Quit");
   
   let tray_menu = SystemTrayMenu::new()
+    .add_item(title)
+    .add_native_item(SystemTrayMenuItem::Separator)
     .add_item(github)
     // .add_item(updater)
     .add_native_item(SystemTrayMenuItem::Separator)
@@ -17,6 +24,12 @@ fn main() {
   let system_tray = SystemTray::new().with_menu(tray_menu);
 
   tauri::Builder::default()
+    .setup(| app | {
+      let window = app.get_window("main").unwrap();
+      set_shadow(&window, true).expect("Unsupported platform!");
+
+      Ok(())
+    })
     .system_tray(system_tray)
     .on_system_tray_event(|app, event| match event {
       SystemTrayEvent::LeftClick {
@@ -24,7 +37,8 @@ fn main() {
         size: _,
         ..
       } => {
-        if app.get_window("main").unwrap().set_focus().is_err() {
+        let window = app.get_window("main").unwrap();
+        if window.set_focus().is_err() {
           println!("[on_system_tray_event][:LeftClick] error when trying to set main window focus.");
         }
       }
