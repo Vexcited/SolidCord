@@ -1,6 +1,6 @@
 import type { Component } from "solid-js";
 import { onMount, onCleanup, Show, For } from "solid-js";
-import { A, Outlet, useParams, useNavigate } from "@solidjs/router";
+import { Outlet, useParams, useNavigate } from "@solidjs/router";
 
 import type { UserStoreReady } from "@/stores/user";
 import { setUserStore, userStore } from "@/stores/user";
@@ -46,15 +46,15 @@ export default AppMainLayout;
 
 const Layout: Component<{ store: UserStoreReady }> = (props) => {
   return (
-    <div class="flex h-full bg-[#1e1f22]">
+    <div class="h-full flex bg-[#1e1f22]">
       {/* Guild list. */}
-      <div class="flex flex-col flex-shrink-0 items-center pt-1 gap-2 w-[72px] overflow-y-auto">
+      <div class="w-[72px] flex flex-(shrink-0 col) items-center gap-2 overflow-y-auto pt-1">
         <For each={props.store.guilds}>
           {guild => (
             <Show when={guild.properties.icon}>
               {icon_hash => (
                 <img
-                  class="rounded-full h-12 w-12"
+                  class="h-12 w-12 rounded-full"
                   src={getGuildIconURL(guild.properties.id, icon_hash())}
                 />
               )}

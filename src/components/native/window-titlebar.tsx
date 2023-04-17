@@ -22,17 +22,17 @@ const WindowTitlebar: Component = () => {
     </div>
   );
 
-  const minimizeAndMaximizeClasses = "hover:bg-[#4e5058] hover:bg-opacity-[0.3] active:text-white active:bg-opacity-[0.48]";
-  const closeClasses = "hover:bg-[#f23f42] hover:text-white";
+  const minimizeAndMaximizeClasses = "hover:(bg-[#4e5058] bg-opacity-[0.3]) active:(text-white bg-opacity-[0.48])";
+  const closeClasses = "hover:(bg-[#f23f42] text-white)";
 
   return (
-    <div class="bg-[#1e1f22] z-[999]">
-      <WindowDragger component="div" class="flex-shrink-0 flex justify-between items-center mt-1 h-[18px] select-none">
-        <p class="select-none text-[#b6bcc9] text-xs pl-2 pointer-events-none -mt-1">
+    <div class="z-[999] bg-[#1e1f22]">
+      <WindowDragger component="div" class="mt-1 h-[18px] flex flex-shrink-0 select-none items-center justify-between">
+        <p class="pointer-events-none select-none pl-2 text-(xs [#b6bcc9]) -mt-1">
           SolidCord
         </p>
 
-        <div class="flex items-center h-full">
+        <div class="h-full flex items-center">
           <TitlebarButton
             label="Minimize"
             class={minimizeAndMaximizeClasses}
@@ -48,7 +48,7 @@ const WindowTitlebar: Component = () => {
           <TitlebarButton
             label="Close"
             class={closeClasses}
-            action={() => appWindow.close()}
+            action={() => appWindow.hide()}
             icon={<VsChromeClose />}
           />
         </div>
