@@ -3,13 +3,14 @@ import path from "node:path";
 
 import solid from "vite-plugin-solid";
 import pages from "vite-plugin-pages";
+import unocss from "unocss/vite";
 
 // const mobile =
 //   process.env.TAURI_PLATFORM === "android" ||
 //   process.env.TAURI_PLATFORM === "ios";
 
 export default defineConfig({
-  plugins: [solid(), pages()],
+  plugins: [solid(), pages(), unocss()],
 
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
   // prevent Vite from obscuring Rust errors.

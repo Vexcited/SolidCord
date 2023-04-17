@@ -10,5 +10,7 @@
   "typescript.tsdk": "node_modules\\typescript\\lib",
   "rust-analyzer.diagnostics.disabled": [
     "unresolved-proc-macro"
-  ]
+  ],
+
+  "unocss.underline": false
 }

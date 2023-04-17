@@ -10,6 +10,7 @@
     "@typescript-eslint"
   ],
   "extends": [
+    "@unocss",
     "eslint:recommended",
     "plugin:solid/typescript",
     "plugin:@typescript-eslint/recommended"

@@ -1,9 +1,10 @@
 /* @refresh reload */
-import "@/styles/globals.css";
 import "@fontsource/rubik/400.css";
 import "@fontsource/rubik/500.css";
 import "@fontsource/rubik/600.css";
 import "@fontsource/rubik/700.css";
+import "@unocss/reset/tailwind.css";
+import "virtual:uno.css";
 
 import { render } from "solid-js/web";
 
