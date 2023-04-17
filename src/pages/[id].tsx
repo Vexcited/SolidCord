@@ -48,7 +48,7 @@ const Layout: Component<{ store: UserStoreReady }> = (props) => {
   return (
     <div class="flex h-full bg-[#1e1f22]">
       {/* Guild list. */}
-      <div class="flex-shrink-0 flex flex-col items-center pt-1 gap-2 w-[72px] overflow-y-auto">
+      <div class="flex flex-col flex-shrink-0 items-center pt-1 gap-2 w-[72px] overflow-y-auto">
         <For each={props.store.guilds}>
           {guild => (
             <Show when={guild.properties.icon}>

@@ -10,7 +10,7 @@ const AppHomePage: Component = () => {
 
   const getRecipients = (ids: string[]) => {
     return ids.map(id => users().find(user => user.id === id));
-  }
+  };
 
   const PrivateChannelItem: Component<ReturnType<typeof channels>[number]> = (channel) => {
     const recipients = getRecipients(channel.recipient_ids);
@@ -19,7 +19,7 @@ const AppHomePage: Component = () => {
       <div class="flex items-center gap-2">
         <Show when={recipients[0]?.avatar}
           fallback={
-            <div class="bg-black w-8 h-8 rounded-full" />
+            <div class="rounded-full bg-black w-8 h-8" />
           }
         >
           <img class="w-8 h-8 rounded-full"
@@ -30,13 +30,13 @@ const AppHomePage: Component = () => {
           {channel.name ?? recipients.map(user => user?.nickname ?? user?.username).join(", ")}
         </p>
       </div>
-    )
-  }
+    );
+  };
 
   return (
     <div class="flex h-full">
-      <div class="flex-shrink-0 w-[240px] h-full bg-[#2b2d31] rounded-tl-lg">
-        <nav class="flex flex-col gap-4 p-4 overflow-y-auto h-full"
+      <div class="flex-shrink-0 h-full w-[240px] bg-[#2b2d31] rounded-tl-lg">
+        <nav class="flex flex-col overflow-y-auto h-full gap-4 p-4"
           aria-label="Private channels"
         >
           <For each={channels()}>
@@ -48,9 +48,7 @@ const AppHomePage: Component = () => {
           </For>
         </nav>
       </div>
-      <div class="w-full bg-black">
-
-      </div>
+      <div class="w-full bg-black" />
     </div>
   );
 };

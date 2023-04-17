@@ -20,7 +20,7 @@ const LoginPage: Component = () => {
   );
 
   return (
-    <div class="h-full flex items-center justify-center bg-[#5865F2]">
+    <div class="flex h-full items-center justify-center bg-[#5865F2]">
       <Switch>
         <Match when={component() === "ACCOUNT_SELECTOR"}>
           <AuthAccountSelector onAddAccountClick={() => setComponent("SIGNIN")} />

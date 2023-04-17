@@ -10,8 +10,8 @@ const AuthAccountSelector: Component<{
   onAddAccountClick: () => void;
 }> = (props) => {
   return (
-    <div class="bg-[#313338] flex flex-col items-center w-full max-w-[480px] rounded-md shadow-lg">
-      <div class="flex flex-col items-center px-4 py-6 gap-2">
+    <div class="flex flex-col items-center w-full bg-[#313338] max-w-[480px] rounded-md shadow-lg">
+      <div class="flex flex-col items-center gap-2 px-4 py-6">
         <h1 class="text-[24px] font-semibold text-[#F2F3F5] leading-[30px]">
           Choose an account
         </h1>
@@ -21,17 +21,17 @@ const AuthAccountSelector: Component<{
       </div>
 
       <div class="flex flex-col items-center w-full px-4">
-        <div class="flex flex-col w-full divide-y-2 divide-[#313338] rounded bg-[#2b2d31]">
+        <div class="flex flex-col w-full bg-[#2b2d31] divide-y-2 divide-[#313338] rounded">
           <For each={accounts.values()}>
             {account => (
-              <div class="py-3 px-4">
-                <div class="flex justify-between items-center">
+              <div class="px-4 py-3">
+                <div class="flex items-center justify-between">
                   <div class="flex items-center gap-2">
                     <Show when={account.avatar_hash}
                       fallback={
                         <>
                           {/** In case the user doesn't have any avatar. */}
-                          <div class="h-10 w-10 rounded-full" />
+                          <div class="rounded-full h-10 w-10" />
                         </>
                       }
                     >
@@ -41,7 +41,7 @@ const AuthAccountSelector: Component<{
                     </Show>
 
                     <div class="flex items-center">
-                      <p class="text-[#f2f3f5] text-[16px] leading-[20px] ">
+                      <p class="text-[16px] leading-[20px] text-[#f2f3f5]">
                         {account.username}
                       </p>
                       <p class="text-[#b5bac1] text-[14px] leading-[18px]">
@@ -51,7 +51,7 @@ const AuthAccountSelector: Component<{
                   </div>
 
                   <A href={`/${account.id}`}
-                    class="flex justify-center items-center px-4 py-0.5 text-white text-[14px] h-[38px] leading-[16px] min-h-[38px] min-w-[96px] bg-[#4e5058] rounded-[3px]"
+                    class="flex justify-center items-center px-4 text-white text-[14px] py-0.5 h-[38px] leading-[16px] min-h-[38px] min-w-[96px] bg-[#4e5058] rounded-[3px]"
                   >
                     Log in
                   </A>
@@ -62,10 +62,10 @@ const AuthAccountSelector: Component<{
         </div>
       </div>
 
-      <button type="button" class="py-0.5 px-4 group my-4 h-[38px]"
+      <button type="button" class="py-0.5 px-4 h-[38px] group my-4"
         onClick={() => props.onAddAccountClick()}
       >
-        <p class="text-center text-[#dbdee1] text-[14px] leading-[16px] border-b border-b-transparent group-hover:border-b-[#dbdee1]">
+        <p class="text-[14px] leading-[16px] text-center text-[#dbdee1] border-b border-b-transparent group-hover:border-b-[#dbdee1]">
           Add an account
         </p>
       </button>

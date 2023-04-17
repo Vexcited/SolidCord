@@ -7,10 +7,10 @@ import { VsChromeMinimize, VsChromeMaximize, VsChromeClose } from "solid-icons/v
 
 const WindowTitlebar: Component = () => {
   const TitlebarButton: Component<{
-    icon: JSX.Element,
-    label: string,
-    class: string,
-    action: () => unknown
+    icon: JSX.Element;
+    label: string;
+    class: string;
+    action: () => unknown;
   }> = (props) => (
     <div
       role="button"
@@ -22,13 +22,13 @@ const WindowTitlebar: Component = () => {
     </div>
   );
 
-  const minimizeAndMaximizeClasses = "hover:bg-[#4e5058] hover:bg-opacity-[0.3] active:text-white active:bg-opacity-[0.48]"; 
+  const minimizeAndMaximizeClasses = "hover:bg-[#4e5058] hover:bg-opacity-[0.3] active:text-white active:bg-opacity-[0.48]";
   const closeClasses = "hover:bg-[#f23f42] hover:text-white";
-  
+
   return (
     <div class="bg-[#1e1f22] z-[999]">
-      <WindowDragger component="div" class="flex-shrink-0 mt-1 h-[18px] select-none flex justify-between items-center">
-        <p class="text-[#b6bcc9] text-xs pl-2 select-none pointer-events-none -mt-1">
+      <WindowDragger component="div" class="flex-shrink-0 flex justify-between items-center mt-1 h-[18px] select-none">
+        <p class="select-none text-[#b6bcc9] text-xs pl-2 pointer-events-none -mt-1">
           SolidCord
         </p>
 

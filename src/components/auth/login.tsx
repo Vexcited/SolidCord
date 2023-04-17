@@ -173,7 +173,7 @@ const AuthLogin: Component<{
             </label>
 
             <button type="submit"
-              class="rounded-[3px] w-full text-white bg-[#5865F2] px-4 py-0.5 text-[16px] font-medium h-[44px] leading-[24px] min-w-[130px] min-h-[44px] text-center "
+              class="rounded-[3px] w-full text-white bg-[#5865F2] px-4 py-0.5 text-[16px] font-medium h-[44px] leading-[24px] min-w-[130px] min-h-[44px] text-center"
             >
                 Connexion
             </button>
