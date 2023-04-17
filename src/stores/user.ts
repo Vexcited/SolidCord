@@ -1,4 +1,4 @@
-import type { OpDispatchReady } from "@/websockets/gateway/handlers/dispatch";
+import type { OpDispatchReady } from "@/websockets/gateway/types";
 import { createStore } from "solid-js/store";
 
 export interface UserStoreDefault {

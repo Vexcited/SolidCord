@@ -1,6 +1,6 @@
 import type { LocalesIdentifier } from "@/locales";
 
-export interface User {
+export interface UserConnected {
   /** the user's id */
   id: string; // snowflake
   /** the user's username, not unique across the platform */
@@ -31,4 +31,15 @@ export interface User {
   premium_type?: number;
   /** The public flags on a user's account */
   public_flags?: number;
+}
+
+export interface User {
+  avatar: string | null;
+  avatar_decoration: null; // TODO
+  discriminator: string;
+  display_name: string | null;
+  global_name: string | null;
+  id: string;
+  public_flags: number;
+  username: string;
 }
