@@ -125,9 +125,9 @@ const AuthLogin: Component<{
   };
 
   return (
-    <div class="bg-[#313338] relative flex justify-between gap-8 w-full max-w-[480px] md:max-w-[784px] p-8 rounded-md shadow-lg">
+    <div class="relative max-w-[480px] w-full flex justify-between gap-8 rounded-md bg-[#313338] p-8 shadow-lg md:max-w-[784px]">
       <Show when={props.showBackArrow}>
-        <button type="button" class="absolute top-12 left-8"
+        <button type="button" class="absolute left-8 top-12"
           onClick={() => props.onBackArrowClick && props.onBackArrowClick()}
         >
           <IoArrowBack size={24} color="#DBDEE1" />
@@ -137,10 +137,10 @@ const AuthLogin: Component<{
       <div class="w-full">
         <div class="flex flex-col gap-5">
           <div class="flex flex-col items-center gap-2">
-            <h1 class="text-[#F2F3F5] font-semibold text-[24px] leading-[30px]">
+            <h1 class="text-([24px] [#F2F3F5]) font-semibold leading-[30px]">
               Welcome back!
             </h1>
-            <p class="text-[#B5BAC1] text-[16px] leading-[20px]">
+            <p class="text-([16px] [#B5BAC1]) leading-[20px]">
               We're so excited to see you again!
             </p>
           </div>
@@ -149,33 +149,33 @@ const AuthLogin: Component<{
             onSubmit={loginHandler}
           >
             <label>
-              <p class="uppercase text-[#B5BAC1] text-[12px] leading-[16px] font-bold mb-2 tracking-wide">
-                  E-Mail ou numéro de téléphone
-                <span class="text-[#F23F42] pl-1">*</span>
+              <p class="mb-2 text-([12px] [#B5BAC1]) font-bold leading-[16px] tracking-wide uppercase">
+                Email or Phone Number
+                <span class="pl-1 text-[#F23F42]">*</span>
               </p>
               <input type="text" value={state.uid}
-                class="bg-[#1E1F22] text-[#DBDEE1] w-full p-[10px] rounded-[3px] outline-none"
+                class="w-full rounded-[3px] bg-[#1E1F22] p-[10px] text-[#DBDEE1] outline-none"
                 placeholder="epic.g@mer.com"
                 onChange={({ currentTarget }) => setState("uid", currentTarget.value)}
               />
             </label>
 
             <label>
-              <p class="uppercase text-[#B5BAC1] text-[12px] leading-[16px] font-bold mb-2 tracking-wide">
-                  Mot de passe
-                <span class="text-[#F23F42] pl-1">*</span>
+              <p class="mb-2 text-([12px] [#B5BAC1]) font-bold leading-[16px] tracking-wide uppercase">
+                Password
+                <span class="pl-1 text-[#F23F42]">*</span>
               </p>
               <input type="password" value={state.password}
-                class="bg-[#1E1F22] text-[#DBDEE1] w-full p-[10px] rounded-[3px] outline-none"
+                class="w-full rounded-[3px] bg-[#1E1F22] p-[10px] text-[#DBDEE1] outline-none"
                 placeholder="********"
                 onChange={({ currentTarget }) => setState("password", currentTarget.value)}
               />
             </label>
 
             <button type="submit"
-              class="rounded-[3px] w-full text-white bg-[#5865F2] px-4 py-0.5 text-[16px] font-medium h-[44px] leading-[24px] min-w-[130px] min-h-[44px] text-center"
+              class="h-[44px] min-h-[44px] min-w-[130px] w-full rounded-[3px] bg-[#5865F2] px-4 py-0.5 text-(center [16px] white) font-medium leading-[24px]"
             >
-                Connexion
+              Log In
             </button>
           </form>
         </div>
@@ -183,9 +183,9 @@ const AuthLogin: Component<{
         <Show when={state.hcaptcha_sitekey}>
           <HCaptcha sitekey={state.hcaptcha_sitekey as string}
             /**
-               * Workaround to bypass the `localhost` check.
-               * Took from <https://github.com/hCaptcha/react-native-hcaptcha/blob/1569dc22501cfa63754d49683f6c278cee2bab80/Hcaptcha.js#L25>.
-               */
+             * Workaround to bypass the `localhost` check.
+             * Took from <https://github.com/hCaptcha/react-native-hcaptcha/blob/1569dc22501cfa63754d49683f6c278cee2bab80/Hcaptcha.js#L25>.
+             */
             config={{ host: `${state.hcaptcha_sitekey}.react-native.hcaptcha.com` }}
             onVerify={hcaptchaVerifyHandler}
           />
