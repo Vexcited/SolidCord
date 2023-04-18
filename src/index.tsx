@@ -19,7 +19,7 @@ render(() => {
 
   return (
     <Router>
-      <main class="flex flex-col h-screen">
+      <main class="h-screen flex flex-col">
         <WindowTitlebar />
         <Routes />
       </main>

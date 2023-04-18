@@ -10,8 +10,8 @@ export interface DiscordLoginTokenResponse {
   token: string;
   user_settings: {
     locale: string;
-    theme: "dark" | "light"
-  }
+    theme: "dark" | "light";
+  };
 }
 
 export interface DiscordLoginMfaRequiredResponse {
@@ -25,15 +25,15 @@ export interface DiscordLoginMfaRequiredResponse {
 
 /** When logging-in from a new location. */
 export interface DiscordLoginVerificationEmailResponse {
-  code: 50035,
-  message: string,
+  code: 50035;
+  message: string;
 
   errors: {
     login: {
       _errors: [{
-        code: "ACCOUNT_LOGIN_VERIFICATION_EMAIL",
-        message: string
-      }] // Should always be at index "0".
-    }
-  }
+        code: "ACCOUNT_LOGIN_VERIFICATION_EMAIL";
+        message: string;
+      }]; // Should always be at index "0".
+    };
+  };
 }

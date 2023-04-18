@@ -10,18 +10,18 @@ const AuthAccountSelector: Component<{
   onAddAccountClick: () => void;
 }> = (props) => {
   return (
-    <div class="flex flex-col items-center w-full bg-[#313338] max-w-[480px] rounded-md shadow-lg">
+    <div class="max-w-[480px] w-full flex flex-col items-center rounded-md bg-[#313338] shadow-lg">
       <div class="flex flex-col items-center gap-2 px-4 py-6">
-        <h1 class="text-[24px] font-semibold text-[#F2F3F5] leading-[30px]">
+        <h1 class="text-[24px] font-semibold leading-[30px] text-[#F2F3F5]">
           Choose an account
         </h1>
-        <p class="text-[16px] font-normal text-[#B5BAC1] leading-[20px]">
+        <p class="text-[16px] font-normal leading-[20px] text-[#B5BAC1]">
           Select an account to log in with or add a new one.
         </p>
       </div>
 
-      <div class="flex flex-col items-center w-full px-4">
-        <div class="flex flex-col w-full bg-[#2b2d31] divide-y-2 divide-[#313338] rounded">
+      <div class="w-full flex flex-col items-center px-4">
+        <div class="w-full flex flex-col rounded bg-[#2b2d31] divide-y-2 divide-[#313338]">
           <For each={accounts.values()}>
             {account => (
               <div class="px-4 py-3">
@@ -31,12 +31,12 @@ const AuthAccountSelector: Component<{
                       fallback={
                         <>
                           {/** In case the user doesn't have any avatar. */}
-                          <div class="rounded-full h-10 w-10" />
+                          <div class="h-10 w-10 rounded-full" />
                         </>
                       }
                     >
                       <img src={getUserAvatarURL(account.id, account.avatar_hash as string)}
-                        class="bg-[#313338] h-10 w-10 rounded-full"
+                        class="h-10 w-10 rounded-full bg-[#313338]"
                       />
                     </Show>
 
@@ -44,14 +44,14 @@ const AuthAccountSelector: Component<{
                       <p class="text-[16px] leading-[20px] text-[#f2f3f5]">
                         {account.username}
                       </p>
-                      <p class="text-[#b5bac1] text-[14px] leading-[18px]">
+                      <p class="text-[14px] leading-[18px] text-[#b5bac1]">
                         #{account.discriminator}
                       </p>
                     </div>
                   </div>
 
                   <A href={`/${account.id}`}
-                    class="flex justify-center items-center px-4 text-white text-[14px] py-0.5 h-[38px] leading-[16px] min-h-[38px] min-w-[96px] bg-[#4e5058] rounded-[3px]"
+                    class="h-[38px] min-h-[38px] min-w-[96px] flex items-center justify-center rounded-[3px] bg-[#4e5058] px-4 py-0.5 text-[14px] leading-[16px] text-white"
                   >
                     Log in
                   </A>
@@ -62,10 +62,10 @@ const AuthAccountSelector: Component<{
         </div>
       </div>
 
-      <button type="button" class="py-0.5 px-4 h-[38px] group my-4"
+      <button type="button" class="group my-4 h-[38px] px-4 py-0.5"
         onClick={() => props.onAddAccountClick()}
       >
-        <p class="text-[14px] leading-[16px] text-center text-[#dbdee1] border-b border-b-transparent group-hover:border-b-[#dbdee1]">
+        <p class="border-b border-b-transparent text-center text-[14px] leading-[16px] text-[#dbdee1] group-hover:border-b-[#dbdee1]">
           Add an account
         </p>
       </button>
