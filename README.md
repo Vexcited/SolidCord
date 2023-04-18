@@ -1,5 +1,7 @@
 # SolidCord
 
+> Still a WIP !
+
 A [Tauri](https://tauri.app/) + [SolidJS](https://www.solidjs.com/) handcrafted client for [Discord](https://discord.com/) that was made with performance in mind while keeping the look of Discord.
 
 > By "handcrafted", I actually mean "without using any package that gives us helpers for Discord's API, even typings".
@@ -44,6 +46,5 @@ Everything mentionned here is optional, but you'll get a better DX by installing
 
 - [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode)
 - [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
-- [Tailwind CSS IntelliSense](https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss)
-- [PostCSS Language Support](https://marketplace.visualstudio.com/items?itemName=csstools.postcss)
+- [UnoCSS](https://marketplace.visualstudio.com/items?itemName=antfu.unocss)
 - [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)
