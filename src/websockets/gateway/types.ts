@@ -35,6 +35,9 @@ export interface OpAck {
 
 export type OpDispatch = (
   | OpDispatchReady
+  | OpDispatchReadySupplemental
+  | OpDispatchRelationshipUpdate
+  | OpDispatchPresenceUpdate
 );
 
 export type OpCode = (
@@ -89,7 +92,7 @@ export interface OpDispatchReadyRelationship {
 export interface OpDispatchReady {
   t: "READY";
   op: OpCodes.Dispatch;
-  s: 1;
+  s: number;
 
   d: {
     v: number;
@@ -284,5 +287,93 @@ export interface OpDispatchReady {
     };
 
     users: User[];
+  };
+}
+
+export interface OpDispatchReadySupplemental {
+  t: "READY_SUPPLEMENTAL";
+  op: OpCodes.Dispatch;
+  s: number;
+
+  d: {
+    merged_presences: {
+      guilds: {
+        user_id: string;
+        status: "online";
+        client_status: {
+          desktop: "online";
+        };
+        activities: any[];
+      }[][];
+
+      friends: any[]; // TODO
+    };
+
+    merged_members: any[][];
+
+    lazy_private_channels: [];
+
+    guilds: {
+      voice_states: any[]; // TODO
+      id: string;
+      embedded_activities: any[]; // TODO
+    }[];
+
+    disclose: [];
+  };
+}
+
+export interface OpDispatchRelationshipUpdate {
+  t: "RELATIONSHIP_UPDATE";
+  op: OpCodes.Dispatch;
+  s: number;
+
+  d: {
+    type: 1;
+    nickname: string | null;
+    id: string;
+  };
+}
+
+export interface OpDispatchPresenceUpdate {
+  t: "PRESENCE_UPDATE";
+  s: number;
+  op: OpCodes.Dispatch;
+
+  d: {
+    user: {
+      id: string;
+    };
+
+    status: "online";
+    guild_id: string;
+    client_status: {
+      desktop: "online";
+    };
+    activities: (
+      {
+        type: 0;
+        timestamps: {
+          start: number;
+        };
+
+        id: string;
+        name: string;
+        details: string;
+        /** Sub-description of the activity. */
+        state: string;
+        session_id: string;
+        flags: number;
+        created_at: number;
+        buttons: string[];
+        assets: {
+          small_text: string;
+          small_image: string;
+          large_text: string;
+          large_image: string;
+        };
+        application_id: string;
+      }
+    )[];
   };
 }
