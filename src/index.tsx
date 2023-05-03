@@ -19,10 +19,12 @@ render(() => {
 
   return (
     <Router>
-      <main class="h-screen flex flex-col">
+      <div class="h-screen flex flex-col overflow-hidden">
         <WindowTitlebar />
-        <Routes />
-      </main>
+        <div class="min-h-0">
+          <Routes />
+        </div>
+      </div>
     </Router>
   );
 }, mount);
