@@ -5,6 +5,7 @@ import { User } from "@/types/discord/user";
 export enum OpCodes {
   Dispatch = 0,
   Heartbeat = 1,
+  Identify = 2,
   Hello = 10,
   Ack = 11
 }

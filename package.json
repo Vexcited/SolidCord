@@ -18,6 +18,7 @@
     "@solidjs/router": "^0.8.2",
     "@tauri-apps/api": "^1.2.0",
     "@unocss/reset": "^0.51.4",
+    "bowser": "^2.11.0",
     "localforage": "^1.10.0",
     "solid-hcaptcha": "^0.2.6",
     "solid-icons": "^1.0.4",

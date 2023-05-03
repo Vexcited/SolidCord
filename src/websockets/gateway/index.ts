@@ -2,14 +2,16 @@ import type { OpCode, OpHearbeat } from "./types";
 import { OpCodes } from "./types";
 
 import { handleDispatchGatewayMessage } from "./handlers/dispatch";
+import { userStore } from "@/stores/user";
+
+import Bowser from "bowser";
 
 /**
  * Here, we use version 10 of their API, with JSON encoding.
- * TODO: Compress the data.
+ * TODO: Compress using `zlib-stream`.
+ * TODO: Encode using `etf`.
  */
 const DISCORD_WS_URL = "wss://gateway.discord.gg/?v=10&encoding=json";
-
-import { userStore } from "@/stores/user";
 
 class DiscordClientWS {
   private token: string;
@@ -18,6 +20,9 @@ class DiscordClientWS {
   private heartbeat_interval_ms?: number;
   private heartbeat_interval?: number;
 
+  /** Sequence used for sessions and heartbeats. */
+  sequence: number | null = null;
+
   constructor (token?: string) {
     const client_token = token || userStore.token;
     if (!client_token) throw new Error("`token` is undefined! Check if you passed a `token` argument or if the `user` store has been initialized.");
@@ -25,27 +30,30 @@ class DiscordClientWS {
     this.token = client_token;
     console.info("[gateway] opening new connection.");
 
+    // Get informations on current browser to pass them in WS.
+    const browser_parser = Bowser.parse(window.navigator.userAgent);
+
     this.connection = new WebSocket(DISCORD_WS_URL);
     this.connection.addEventListener("open", () => {
       this.sendJSON({
-        op: 2,
+        op: OpCodes.Identify,
         d: {
           token: this.token,
-          capabilities: 4093,
+          capabilities: 8189, // Where those numbers come from?
           properties: {
-            os: "Windows", // TODO
-            browser: "Chrome", // TODO
+            os: browser_parser.os.name,
+            browser: browser_parser.browser.name,
             device: "",
-            system_locale: navigator.language,
-            browser_user_agent: navigator.userAgent,
-            browser_version: "109.0.0.0", // TODO
-            os_version: "",
+            system_locale: window.navigator.language,
+            browser_user_agent: window.navigator.userAgent,
+            browser_version: browser_parser.browser.version,
+            os_version: browser_parser.os.versionName,
             referrer: "",
             referring_domain: "",
             referrer_current: "",
             referring_domain_current: "",
-            release_channel: "stable", // TODO
-            client_build_number: 169617, // TODO
+            release_channel: "stable",
+            client_build_number: 195078, // Find a way to get this? Anyway, last updated, 03/05/2023 - in DD/MM/YYYY format.
             client_event_source: null
           },
           presence: {
@@ -88,6 +96,10 @@ class DiscordClientWS {
     // Remember we use JSON encoding, for now.
     const message = JSON.parse(message_raw) as OpCode;
 
+    if ("s" in message) {
+      this.sequence = message.s;
+    }
+
     switch (message.op) {
     case OpCodes.Hello:
       this.heartbeat_interval_ms = message.d.heartbeat_interval;
@@ -111,7 +123,7 @@ class DiscordClientWS {
 
     this.heartbeat_interval = setInterval(() => this.sendJSON<OpHearbeat>({
       op: OpCodes.Heartbeat,
-      d: null // TODO: Handle sequence number.
+      d: this.sequence
     }), this.heartbeat_interval_ms);
   };
 
