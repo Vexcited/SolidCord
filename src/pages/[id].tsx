@@ -1,6 +1,6 @@
 import type { Component } from "solid-js";
 import { onMount, onCleanup, Show, For } from "solid-js";
-import { Outlet, useParams, useNavigate } from "@solidjs/router";
+import { Outlet, useParams, useNavigate, A } from "@solidjs/router";
 
 import type { UserStoreReady } from "@/stores/user";
 import { setUserStore, userStore } from "@/stores/user";
@@ -49,16 +49,21 @@ const Layout: Component<{ store: UserStoreReady }> = (props) => {
     <div class="h-full flex bg-[#1e1f22]">
       {/* Guild list. */}
       <div class="w-[72px] flex flex-(shrink-0 col) items-center gap-2 overflow-y-auto pt-1">
+        <A href={`/${props.store.user.id}/@me`}>
+          USER
+        </A>
         <For each={props.store.guilds}>
           {guild => (
-            <Show when={guild.properties.icon}>
-              {icon_hash => (
-                <img
-                  class="h-12 w-12 rounded-full"
-                  src={getGuildIconURL(guild.properties.id, icon_hash())}
-                />
-              )}
-            </Show>
+            <A href={`/${props.store.user.id}/${guild.id}`}>
+              <Show when={guild.properties.icon}>
+                {icon_hash => (
+                  <img
+                    class="h-12 w-12 rounded-full"
+                    src={getGuildIconURL(guild.properties.id, icon_hash())}
+                  />
+                )}
+              </Show>
+            </A>
           )}
         </For>
       </div>

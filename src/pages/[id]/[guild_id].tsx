@@ -9,7 +9,12 @@ import { getUserAvatarURL, getChannelIconURL } from "@/utils/api/images";
 import { BsPeopleFill } from "solid-icons/bs";
 import { OpDispatchReadyPrivateChannelType } from "@/websockets/gateway/types";
 
+import { A, Outlet, useParams } from "@solidjs/router";
+
 const AppHomePage: Component = () => {
+  const params = useParams();
+  const guild_id = () => params.guild_id;
+
   const store = () => userStore as UserStoreReady;
 
   const channels = () => store().private_channels;
@@ -106,7 +111,7 @@ const AppHomePage: Component = () => {
     };
 
     return (
-      <div class="flex items-center gap-2">
+      <A class="flex items-center gap-2" href={`/${store().user.id}/@me/${channel.id}`}>
         <Show when={getChannelImageURL()}
           fallback={
             <div class="h-8 w-8 flex items-center justify-center rounded-full bg-black">
@@ -127,7 +132,7 @@ const AppHomePage: Component = () => {
         <p class="text-white">
           {getChannelName()}
         </p>
-      </div>
+      </A>
     );
   };
 
@@ -146,7 +151,10 @@ const AppHomePage: Component = () => {
           </For>
         </nav>
       </div>
-      <div class="w-full bg-black" />
+      <div class="w-full flex flex-col">
+        you're in server {guild_id()}
+        <Outlet />
+      </div>
     </div>
   );
 };
