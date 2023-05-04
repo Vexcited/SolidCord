@@ -13,9 +13,16 @@ import routes from "~solid-pages";
 
 import WindowTitlebar from "@/components/native/window-titlebar";
 
+import { invoke } from "@tauri-apps/api";
+import { listen } from "@tauri-apps/api/event";
+
 const mount = document.getElementById("root") as HTMLDivElement;
 render(() => {
   const Routes = useRoutes(routes);
+
+  listen("websocket-event", (e) => console.log(e)).then(() => {
+    invoke("create_websocket_connection", {invokeMessage: "is a bitch"});
+  });
 
   return (
     <Router>
