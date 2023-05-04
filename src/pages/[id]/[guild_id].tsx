@@ -1,6 +1,6 @@
 import type { UserStoreReady } from "@/stores/user";
 import type { User } from "@/types/discord/user";
-import { Component, For, Match, Show, Switch } from "solid-js";
+import { Component, For, Match, Show, Switch, createEffect } from "solid-js";
 
 import { createMemo } from "solid-js";
 import { userStore } from "@/stores/user";
@@ -20,6 +20,8 @@ const AppHomePage: Component = () => {
   const channels = () => store().private_channels;
   const friends = () => store().relationships;
   const users = () => store().users;
+
+  const guild = createMemo(() => store().guilds.find(guild => guild.id === guild_id()));
 
   const getRecipients = (ids: string[]) => {
     return ids.map(id => users().find(user => user.id === id));
@@ -139,17 +141,35 @@ const AppHomePage: Component = () => {
   return (
     <div class="h-full flex">
       <div class="h-full w-[240px] flex-shrink-0 rounded-tl-lg bg-[#2b2d31]">
-        <nav class="h-full flex flex-col gap-4 overflow-y-auto p-4"
-          aria-label="Private channels"
+        <Show when={guild_id() === "@me"}
+          fallback={
+            <nav class="h-full flex flex-col gap-4 overflow-y-auto p-4"
+              aria-label="Channels of the guild"
+            >
+              <For each={guild()?.channels}>
+                {channel => (
+                  <div>
+                    <A class="flex items-center gap-2" href={`/${store().user.id}/${guild_id()}/${channel.id}`}>
+                      <p>{channel.name}</p>
+                    </A>
+                  </div>
+                )}
+              </For>
+            </nav>
+          }
         >
-          <For each={channels()}>
-            {channel => (
-              <div>
-                <PrivateChannelEntry {...channel} />
-              </div>
-            )}
-          </For>
-        </nav>
+          <nav class="h-full flex flex-col gap-4 overflow-y-auto p-4"
+            aria-label="Private channels"
+          >
+            <For each={channels()}>
+              {channel => (
+                <div>
+                  <PrivateChannelEntry {...channel} />
+                </div>
+              )}
+            </For>
+          </nav>
+        </Show>
       </div>
       <div class="w-full flex flex-col">
         you're in server {guild_id()}
