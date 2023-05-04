@@ -21,7 +21,7 @@ render(() => {
     <Router>
       <div class="h-screen flex flex-col overflow-hidden">
         <WindowTitlebar />
-        <div class="min-h-0">
+        <div class="h-full min-h-0">
           <Routes />
         </div>
       </div>
