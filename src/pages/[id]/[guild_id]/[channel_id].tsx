@@ -4,7 +4,7 @@ import { For, createSignal } from "solid-js";
 import { useParams } from "@solidjs/router";
 import { callGetChannelsMessagesAPI, type Message } from "@/api/channels/messages";
 
-const PageLayout: Component = () => {
+const Page: Component = () => {
   const params = useParams();
   const channel_id = () => params.channel_id;
 
@@ -23,6 +23,8 @@ const PageLayout: Component = () => {
       limit: 50,
       before
     });
+
+    if (data.length === 0) return;
 
     setMessages(prev => (prev !== null ? [...data, ...prev] : data)
       .sort((a, b) => Date.parse(a.timestamp) - Date.parse(b.timestamp))
@@ -69,7 +71,7 @@ const PageLayout: Component = () => {
             <div class="flex flex-col text-white">
               <div class="flex gap-2">
                 <p class="text-lg font-bold">{message.author.username}</p>
-                <span>{message.timestamp}</span>
+                <span>{new Date(message.timestamp).toLocaleString()}</span>
               </div>
               <p>{message.content}</p>
             </div>
@@ -80,4 +82,4 @@ const PageLayout: Component = () => {
   );
 };
 
-export default PageLayout;
+export default Page;
