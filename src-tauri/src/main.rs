@@ -13,8 +13,32 @@ use tauri::{
   CustomMenuItem,
   SystemTrayMenu,
   SystemTrayMenuItem,
-  Manager
+  Manager,
+  Runtime
 };
+
+use futures_util::SinkExt;
+use futures_util::stream::StreamExt;
+use async_tungstenite::async_std::connect_async;
+// use async_tungstenite::tungstenite::protocol::Message;
+
+#[tauri::command]
+async fn create_websocket_connection<R: Runtime>(app: tauri::AppHandle<R>) {
+  let (mut ws_stream, _) = connect_async("wss://gateway.discord.gg/?v=10&encoding=json")
+    .await
+    .expect("Failed to connect");
+
+  // let message = "Hello, WebSocket server!";
+  // ws_stream.send(message.into()).await.unwrap();
+
+  // Receive messages from the server
+  while let Some(message) = ws_stream.next().await {
+    let message = message.unwrap();
+    let message_string = message.to_string();
+
+    println!("Received message_string: {}", message_string);
+  }
+}
 
 fn main() {
   let tray_menu = SystemTrayMenu::new()
@@ -96,6 +120,7 @@ fn main() {
       },
       _ => {}
     })
+    .invoke_handler(tauri::generate_handler![create_websocket_connection])
     .run(tauri::generate_context!())
     .expect("Error while running SolidCord.");
 }
