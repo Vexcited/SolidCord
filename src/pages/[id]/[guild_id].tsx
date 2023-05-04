@@ -10,6 +10,7 @@ import { BsPeopleFill } from "solid-icons/bs";
 import { OpDispatchReadyPrivateChannelType } from "@/websockets/gateway/types";
 
 import { A, Outlet, useParams } from "@solidjs/router";
+import { GuildChannelType } from "@/types/discord/guild";
 
 const AppHomePage: Component = () => {
   const params = useParams();
@@ -17,17 +18,48 @@ const AppHomePage: Component = () => {
 
   const store = () => userStore as UserStoreReady;
 
-  const channels = () => store().private_channels;
   const friends = () => store().relationships;
   const users = () => store().users;
 
   const guild = createMemo(() => store().guilds.find(guild => guild.id === guild_id()));
+  const guild_channels = createMemo(() => {
+    const guild_data = guild();
+    if (!guild_data) return;
+
+    const channels = guild_data.channels;
+    const sorted_channels = [];
+
+    const categories = channels?.filter(channel => channel.type === GuildChannelType.Category);
+
+    for (const category of categories!) {
+      const category_text_channels_sorted = [];
+      const category_vocal_channels_sorted = [];
+      const category_channels = channels.filter(channel => "parent_id" in channel && channel.parent_id === category.id);
+
+      for (const channel of category_channels!) {
+        if (channel.type === GuildChannelType.Vocal) {
+          category_vocal_channels_sorted[channel.position] = channel;
+          continue;
+        }
+
+        category_text_channels_sorted[channel.position] = channel;
+      }
+
+      sorted_channels[category.position] = {
+        data: category,
+        text_channels: category_text_channels_sorted.filter(Boolean),
+        vocal_channels: category_vocal_channels_sorted.filter(Boolean)
+      };
+    }
+
+    return sorted_channels.filter(Boolean);
+  });
 
   const getRecipients = (ids: string[]) => {
     return ids.map(id => users().find(user => user.id === id));
   };
 
-  const PrivateChannelEntry: Component<ReturnType<typeof channels>[number]> = (channel) => {
+  const PrivateChannelEntry: Component<UserStoreReady["private_channels"][number]> = (channel) => {
     const recipients = createMemo(() => getRecipients(channel.recipient_ids));
 
     /**
@@ -146,12 +178,26 @@ const AppHomePage: Component = () => {
             <nav class="h-full flex flex-col gap-4 overflow-y-auto p-4"
               aria-label="Channels of the guild"
             >
-              <For each={guild()?.channels}>
-                {channel => (
+              <For each={guild_channels()}>
+                {category => (
                   <div>
-                    <A class="flex items-center gap-2" href={`/${store().user.id}/${guild_id()}/${channel.id}`}>
-                      <p>{channel.name}</p>
-                    </A>
+                    <p class="text-lg font-semibold">{category.data.name}</p>
+                    <div class="flex flex-col gap-1">
+                      <For each={category.text_channels}>
+                        {channel => (
+                          <A class="ml-4 flex items-center gap-2" href={`/${store().user.id}/${guild_id()}/${channel.id}`}>
+                            <p>{channel.name}</p>
+                          </A>
+                        )}
+                      </For>
+                      <For each={category.vocal_channels}>
+                        {channel => (
+                          <div class="ml-4 flex items-center gap-2">
+                            <p>(vocal) {channel.name}</p>
+                          </div>
+                        )}
+                      </For>
+                    </div>
                   </div>
                 )}
               </For>
@@ -161,7 +207,7 @@ const AppHomePage: Component = () => {
           <nav class="h-full flex flex-col gap-4 overflow-y-auto p-4"
             aria-label="Private channels"
           >
-            <For each={channels()}>
+            <For each={store().private_channels}>
               {channel => (
                 <div>
                   <PrivateChannelEntry {...channel} />
