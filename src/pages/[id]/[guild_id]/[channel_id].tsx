@@ -1,8 +1,12 @@
-import { Component, Show, createEffect, on, onCleanup } from "solid-js";
+import type { Message } from "@/types/discord/message";
+import { Component, Match, Show, Switch, createEffect, on, onCleanup } from "solid-js";
 
 import { For, createSignal } from "solid-js";
 import { useParams } from "@solidjs/router";
-import { callGetChannelsMessagesAPI, callPostChannelsMessagesAPI, type Message } from "@/api/channels/messages";
+import { callGetChannelsMessagesAPI, callPostChannelsMessagesAPI } from "@/api/channels/messages";
+
+import { open } from "@tauri-apps/api/shell";
+
 
 const Page: Component = () => {
   const params = useParams();
@@ -59,8 +63,8 @@ const Page: Component = () => {
   }));
 
   return (
-    <div class="min-h-0 flex flex-col">
-      <div ref={chatContainerRef} class="min-h-0 overflow-y-auto"
+    <div class="h-full min-h-0 flex flex-col">
+      <div ref={chatContainerRef} class="h-full min-h-0 flex flex-col gap-2 overflow-y-auto px-[72px] pb-[24px]"
         onScroll={(event) => {
           const latest_messages = messages();
           if (latest_messages === null) return;
@@ -81,12 +85,42 @@ const Page: Component = () => {
                   <span>{new Date(message.timestamp).toLocaleString()}</span>
                 </div>
                 <p>{message.content}</p>
+                <For each={message.attachments}>
+                  {attachment => (
+                    <Switch
+                      fallback={
+                        <button type="button" onClick={() => open(attachment.url)}
+                          class="w-fit rounded-lg bg-blue p-2 text-white"
+                        >
+                          {attachment.filename} ({attachment.content_type})
+                        </button>
+                      }
+                    >
+                      <Match when={attachment.content_type.startsWith("image/")}>
+                        <img class="block h-auto max-w-[550px] rounded-2 object-cover"
+                          src={attachment.url}
+                          alt={attachment.filename}
+                        />
+                      </Match>
+                      <Match when={attachment.content_type.startsWith("video/")}>
+                        <video controls class="block h-auto max-w-[550px] rounded-2 object-cover"
+                          src={attachment.url}
+                        />
+                      </Match>
+                      <Match when={attachment.content_type.startsWith("audio/")}>
+                        <audio controls
+                          src={attachment.url}
+                        />
+                      </Match>
+                    </Switch>
+                  )}
+                </For>
               </div>
             )}
           </For>
         </Show>
       </div>
-      <div class="h-[128px]">
+      <div class="h-auto">
         <form onSubmit={async (event) => {
           event.preventDefault();
           const message = await callPostChannelsMessagesAPI(channel_id(), {
@@ -100,7 +134,7 @@ const Page: Component = () => {
           scrollDownChatContainer();
           setMessageContent("");
         }}>
-          <input class="w-full" type="text" onInput={(e) => setMessageContent(e.currentTarget.value)} value={message_content()} />
+          <input class="w-full p-2 outline-none" type="text" onInput={(e) => setMessageContent(e.currentTarget.value)} value={message_content()} />
         </form>
       </div>
     </div>

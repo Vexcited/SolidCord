@@ -1,25 +1,10 @@
+import type { Message } from "@/types/discord/message";
+
 import { DISCORD_API_ENDPOINT } from "@/api";
 import { ResponseType, Body } from "@tauri-apps/api/http";
 import fetch from "@/utils/native/fetch";
 
 import { userStore } from "@/stores/user";
-
-export interface Message {
-  id: string;
-  type: 0;
-  content: string;
-  channel_id: string;
-
-  tts: boolean;
-  pinned: boolean;
-
-  timestamp: string;
-
-  author: {
-    id: string;
-    username: string;
-  };
-}
 
 export const callGetChannelsMessagesAPI = async (req: {
   channel_id: string;
