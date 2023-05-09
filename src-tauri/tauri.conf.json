@@ -34,6 +34,9 @@
         "unmaximize": true,
         "unminimize": true,
         "startDragging": true
+      },
+      "notification": {
+        "all": true
       }
     },
     "bundle": {
