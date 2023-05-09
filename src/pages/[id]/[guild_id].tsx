@@ -15,6 +15,7 @@ import { GuildChannelType } from "@/types/discord/guild";
 const AppHomePage: Component = () => {
   const params = useParams();
   const guild_id = () => params.guild_id;
+  const channel_id = () => params.channel_id;
 
   const store = () => userStore as UserStoreReady;
 
@@ -54,6 +55,8 @@ const AppHomePage: Component = () => {
 
     return sorted_channels.filter(Boolean);
   });
+
+  const channel = createMemo(() => guild()?.channels.find(channel => channel.id === channel_id()));
 
   const getRecipients = (ids: string[]) => {
     return ids.map(id => users().find(user => user.id === id));
@@ -175,38 +178,56 @@ const AppHomePage: Component = () => {
       <div class="h-full w-[240px] flex-shrink-0 rounded-tl-lg bg-[#2b2d31]">
         <Show when={guild_id() === "@me"}
           fallback={
-            <nav class="h-full flex flex-col gap-4 overflow-y-auto p-4"
-              aria-label="Channels of the guild"
-            >
-              <For each={guild_channels()}>
-                {category => (
-                  <div>
-                    <p class="text-lg font-semibold">{category.data.name}</p>
+            <div class="h-full flex flex-col border-gray divide-y">
+              <div class="w-full p-3">
+                <p class="font-semibold text-white">{guild()?.properties.name}</p>
+              </div>
+              <nav class="h-full flex flex-col gap-4 overflow-y-auto p-4 text-white"
+                aria-label="Channels of the guild"
+              >
+                <For each={guild_channels()}>
+                  {category => (
                     <div class="flex flex-col gap-1">
-                      <For each={category.text_channels}>
-                        {channel => (
-                          <A class="ml-4 flex items-center gap-2" href={`/${store().user.id}/${guild_id()}/${channel.id}`}>
-                            <p>{channel.name}</p>
-                          </A>
-                        )}
-                      </For>
-                      <For each={category.vocal_channels}>
-                        {channel => (
-                          <div class="ml-4 flex items-center gap-2">
-                            <p>(vocal) {channel.name}</p>
-                          </div>
-                        )}
-                      </For>
+                      <p class="text-sm font-semibold uppercase">
+                        {category.data.name}
+                      </p>
+                      <div class="flex flex-col gap-1">
+                        <For each={category.text_channels}>
+                          {channel => (
+                            <A class="flex items-center gap-2 rounded-md px-2 py-1 pl-4"
+                              href={`/${store().user.id}/${guild_id()}/${channel.id}`}
+                              classList={{
+                                "bg-white/20 text-white ": channel.id === channel_id()
+                              }}
+                            >
+                              <p>{channel.name}</p>
+                            </A>
+                          )}
+                        </For>
+                        <For each={category.vocal_channels}>
+                          {channel => (
+                            <div class="ml-4 flex items-center gap-2">
+                              <p>(vocal) {channel.name}</p>
+                            </div>
+                          )}
+                        </For>
+                      </div>
                     </div>
-                  </div>
-                )}
-              </For>
-            </nav>
+                  )}
+                </For>
+              </nav>
+            </div>
           }
         >
           <nav class="h-full flex flex-col gap-4 overflow-y-auto p-4"
             aria-label="Private channels"
           >
+            <A class="flex items-center gap-2" href={`/${store().user.id}/@me/friends`}>
+              <p class="text-white">
+                Friends
+              </p>
+            </A>
+
             <For each={store().private_channels}>
               {channel => (
                 <div>
@@ -218,7 +239,9 @@ const AppHomePage: Component = () => {
         </Show>
       </div>
       <div class="w-full flex flex-col">
-        you're in server {guild_id()}
+        <div>
+          {channel()?.name}
+        </div>
         <Outlet />
       </div>
     </div>
