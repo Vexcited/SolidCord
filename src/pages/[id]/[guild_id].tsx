@@ -9,11 +9,12 @@ import { getUserAvatarURL, getChannelIconURL } from "@/utils/api/images";
 import { BsPeopleFill } from "solid-icons/bs";
 import { OpDispatchReadyPrivateChannelType } from "@/websockets/gateway/types";
 
-import { A, Outlet, useParams } from "@solidjs/router";
+import { A, Outlet, useNavigate, useParams } from "@solidjs/router";
 import { GuildChannelType } from "@/types/discord/guild";
 
 const AppHomePage: Component = () => {
   const params = useParams();
+  const navigate = useNavigate();
   const guild_id = () => params.guild_id;
   const channel_id = () => params.channel_id;
 
@@ -253,7 +254,14 @@ const AppHomePage: Component = () => {
             </nav>
           </Show>
           <div class="h-[58px] w-full p-3">
-            <p class="font-semibold text-white">switch acc</p>
+            <button type="submit" class="font-semibold text-white"
+              onClick={() => {
+                localStorage.removeItem("lastVisitedAccount");
+                navigate("/");
+              }}
+            >
+              switch acc
+            </button>
           </div>
         </div>
       </div>
