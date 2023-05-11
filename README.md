@@ -6,6 +6,16 @@ A [Tauri](https://tauri.app/) + [SolidJS](https://www.solidjs.com/) handcrafted 
 
 > By "handcrafted", I actually mean "without using any package that gives us helpers for Discord's API, even typings".
 
+## Features
+
+### Simulataneous connections
+
+Whenever you add an account, a connection to the gateway with this account will be kept until the app is quited or until you sign out the account from SolidCord.
+
+That allows to have notifications for multiple accounts.
+
+Of course, this behaviour can be disabled by signing out of the account in the account selector. 
+
 ## Development
 
 ### Environment

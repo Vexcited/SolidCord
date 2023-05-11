@@ -1,13 +1,13 @@
 import type { Component } from "solid-js";
 
-import { type UserStoreReady, userStore } from "@/stores/user";
+import accounts from "@/stores/accounts";
 import { Navigate } from "@solidjs/router";
 
 const Page: Component = () => {
-  const store = () => userStore as UserStoreReady;
+  const [account] = accounts.useCurrent();
 
   return (
-    <Navigate href={`/${store().user.id}/@me`} />
+    <Navigate href={`/${account().id}/@me`} />
   );
 };
 

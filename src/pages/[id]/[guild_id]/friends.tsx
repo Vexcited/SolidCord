@@ -2,15 +2,15 @@ import type { Component } from "solid-js";
 
 import { Show, For, createMemo } from "solid-js";
 import { Navigate, useParams } from "@solidjs/router";
-import { userStore, type UserStoreReady } from "@/stores/user";
+import caching, { type CacheStoreReady } from "@/stores/caching";
 
 const Page: Component = () => {
   const params = useParams();
-  const store = () => userStore as UserStoreReady;
+  const [cache] = caching.useCurrent<CacheStoreReady>();
 
   const friends = createMemo(() => {
-    const users = store().users;
-    const relations = store().relationships;
+    const users = cache.gateway.users;
+    const relations = cache.gateway.relationships;
 
     return users.filter(
       (user) => relations.find(
@@ -23,7 +23,7 @@ const Page: Component = () => {
     <>
       {/** We check that the user is in `@me` guild so it doesn't conflict. */}
       <Show when={params.guild_id !== "@me"}>
-        <Navigate href={`/${store().user.id}/@me/friends`} />
+        <Navigate href={`/${cache.gateway.user.id}/@me/friends`} />
       </Show>
 
       <div>
