@@ -22,7 +22,7 @@ export interface CacheStoreReady {
   token: string;
   ready: true;
 
-  channels: Array<Channel & { messages: Message[] }>;
+  channels: Array<Channel & { messages: Record<string, Message> }>;
 
   gateway: {
     user: CacheUser;

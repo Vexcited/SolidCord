@@ -1,6 +1,7 @@
 import { LocalesIdentifier } from "@/locales";
 import { GuildCategoryChannel, DMChannel, GroupDMChannel, GuildTextChannel, GuildVoiceChannel } from "@/types/discord/channel";
 import { GuildExplicitContentFilterLevel, GuildFeatures, GuildMessageNotificationLevel, GuildMfaLevel, GuildNsfwLevel, GuildPremiumTier, GuildSystemChannelFlags, GuildVerificationLevel } from "@/types/discord/guild";
+import { Message } from "@/types/discord/message";
 import { User } from "@/types/discord/user";
 
 export enum OpCodes {
@@ -40,6 +41,7 @@ export type OpDispatch = (
   | OpDispatchReadySupplemental
   | OpDispatchRelationshipUpdate
   | OpDispatchPresenceUpdate
+  | OpDispatchMessageCreate
 );
 
 export type OpCode = (
@@ -300,4 +302,11 @@ export interface OpDispatchPresenceUpdate {
       }
     )[];
   };
+}
+
+export interface OpDispatchMessageCreate {
+  t: "MESSAGE_CREATE";
+  s: number;
+  op: OpCodes.Dispatch;
+  d: Message;
 }

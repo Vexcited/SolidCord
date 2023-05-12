@@ -1,10 +1,14 @@
+import type { SetStoreFunction } from "solid-js/store";
 import type { CacheDMChannel, CacheGuildChannel } from "@/types/cache";
 import type { OpCode, OpDispatch, OpHearbeat } from "./types";
 import { OpCodes } from "./types";
 
 import caching, { CacheStoreReady } from "@/stores/caching";
+import app from "@/stores/app";
 
 import Bowser from "bowser";
+import { sendNativeNotification } from "@/utils/native/notify";
+import { UserAttentionType, appWindow } from "@tauri-apps/api/window";
 
 /**
  * Here, we use version 10 of their API, with JSON encoding.
@@ -16,7 +20,7 @@ const DISCORD_WS_URL = "wss://gateway.discord.gg/?v=10&encoding=json";
 class DiscordClientWS {
   private token: string;
   private account_id: string;
-  private setAccountCache: ReturnType<typeof caching["useSetterOf"]>;
+  private setAccountCache: SetStoreFunction<CacheStoreReady>;
 
   public connection: WebSocket;
 
@@ -29,7 +33,7 @@ class DiscordClientWS {
   constructor (token: string, account_id: string) {
     this.token = token;
     this.account_id = account_id;
-    this.setAccountCache = caching.useSetterOf(this.account_id);
+    this.setAccountCache = caching.useSetterOf<CacheStoreReady>(this.account_id);
 
     console.info("[websockets/gateway] opening new connection for account", this.account_id);
 
@@ -138,7 +142,7 @@ class DiscordClientWS {
       clearInterval(this.heartbeat_interval);
   };
 
-  private handleDispatchGatewayMessage = (message: OpDispatch) => {
+  private handleDispatchGatewayMessage = async (message: OpDispatch) => {
     switch (message.t) {
     case "READY": {
       const channels: CacheStoreReady["channels"] = [];
@@ -146,7 +150,7 @@ class DiscordClientWS {
       // Append every DM channels.
       for (const channel_raw of message.d.private_channels) {
         const channel = channel_raw as CacheDMChannel;
-        channel.messages = [];
+        channel.messages = {};
 
         channels.push(channel);
       }
@@ -155,7 +159,7 @@ class DiscordClientWS {
       for (const guild of message.d.guilds) {
         for (const channel_raw of guild.channels) {
           const channel = channel_raw as CacheGuildChannel;
-          channel.messages = [];
+          channel.messages = {};
 
           channels.push(channel);
         }
@@ -176,6 +180,21 @@ class DiscordClientWS {
           user: message.d.user
         }
       } as CacheStoreReady);
+      break;
+    }
+
+    case "MESSAGE_CREATE": {
+      const { channel_id } = message.d;
+      this.setAccountCache("channels", channel => channel.id === channel_id, "messages", prev => ({ ...prev, [message.d.id]: message.d }));
+
+      if (!app.isFocused()) {
+        await appWindow.requestUserAttention(UserAttentionType.Critical);
+        await sendNativeNotification({
+          title: message.d.author.username,
+          body: message.d.content
+        });
+      }
+
       break;
     }
 

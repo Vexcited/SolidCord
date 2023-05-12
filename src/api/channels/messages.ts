@@ -25,9 +25,8 @@ export const callGetChannelsMessagesAPI = async (req: {
     method: "GET"
   });
 
-  setter("channels", channel => channel.id === req.channel_id, "messages", prev => [...(prev ?? []), ...data]
-    .sort((a, b) => Date.parse(a.timestamp) - Date.parse(b.timestamp))
-  );
+  const parsed_data = data.reduce((acc: Record<string, Message>, curr) => (acc[curr.id] = curr, acc), {});
+  setter("channels", channel => channel.id === req.channel_id, "messages", prev => ({...prev, ...parsed_data }));
 
   return data;
 };
@@ -51,7 +50,7 @@ export const callPostChannelsMessagesAPI = async (channel_id: string, req: {
     body
   });
 
-  setter("channels", channel => channel.id === channel_id, "messages", prev => [...(prev ?? []), data]);
+  setter("channels", channel => channel.id === channel_id, "messages", prev => ({ ...prev, [data.id]: data }));
 
   return data;
 };

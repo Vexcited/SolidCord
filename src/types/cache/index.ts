@@ -26,6 +26,7 @@ export interface CacheUser {
   accent_color: number | null;
 }
 
+type CachedChannelWithMessages<T> = T & { messages: Record<string, Message> };
 
-export type CacheDMChannel = (DMChannel | GroupDMChannel) & { messages: Message[] }
-export type CacheGuildChannel = (GuildVoiceChannel | GuildTextChannel | GuildCategoryChannel) & { messages: Message[] }
+export type CacheDMChannel = CachedChannelWithMessages<(DMChannel | GroupDMChannel)>
+export type CacheGuildChannel = CachedChannelWithMessages<(GuildVoiceChannel | GuildTextChannel | GuildCategoryChannel)>;
