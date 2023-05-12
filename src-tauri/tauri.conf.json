@@ -33,7 +33,8 @@
         "minimize": true,
         "unmaximize": true,
         "unminimize": true,
-        "startDragging": true
+        "startDragging": true,
+        "requestUserAttention": true
       },
       "notification": {
         "all": true
