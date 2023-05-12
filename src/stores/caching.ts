@@ -3,6 +3,10 @@ import { createSignal } from "solid-js";
 import { useParams } from "@solidjs/router";
 
 import type { OpDispatchReady } from "@/websockets/gateway/types";
+import type { CacheUser } from "@/types/cache";
+import type { User } from "@/types/discord/user";
+import type { Channel } from "@/types/discord/channel";
+import type { Message } from "@/types/discord/message";
 
 export interface CacheStoreDefault {
   token: null;
@@ -18,9 +22,11 @@ export interface CacheStoreReady {
   token: string;
   ready: true;
 
+  channels: Array<Channel & { messages: Message[] }>;
+
   gateway: {
-    user: OpDispatchReady["d"]["user"];
-    users: OpDispatchReady["d"]["users"];
+    user: CacheUser;
+    users: User[];
     guilds: OpDispatchReady["d"]["guilds"];
     relationships: OpDispatchReady["d"]["relationships"];
     private_channels: OpDispatchReady["d"]["private_channels"];
@@ -50,16 +56,16 @@ const useCurrent = <T extends CacheStore>() => {
     createAccountCache(account_id());
   }
 
-  return accounts_caches()[account_id()] as [get: T, set: SetStoreFunction<CacheStore>];
+  return accounts_caches()[account_id()] as unknown as [get: T, set: SetStoreFunction<T>];
 };
 
 /** Get the setter of the cache of an account. */
-const useSetterOf = (account_id: string) => {
+const useSetterOf = <T extends CacheStore>(account_id: string) => {
   if (!(account_id in accounts_caches())) {
     createAccountCache(account_id);
   }
 
-  return accounts_caches()[account_id][1];
+  return accounts_caches()[account_id][1] as SetStoreFunction<T>;
 };
 
 export default { useCurrent, useSetterOf };

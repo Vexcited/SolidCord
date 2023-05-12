@@ -9,11 +9,16 @@ export const getCurrentAccountID = () => {
   return account_id;
 };
 
-export const getCurrentAccountToken = () => {
+export const getCurrentAccount = () => {
   const account_id = getCurrentAccountID();
 
   const account = accounts.get(account_id);
   if (!account) throw new Error("account doesn't exist.");
 
+  return account;
+};
+
+export const getCurrentAccountToken = () => {
+  const account = getCurrentAccount();
   return account.token;
 };

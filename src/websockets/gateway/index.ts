@@ -1,7 +1,8 @@
+import type { CacheDMChannel, CacheGuildChannel } from "@/types/cache";
 import type { OpCode, OpDispatch, OpHearbeat } from "./types";
 import { OpCodes } from "./types";
 
-import caching from "@/stores/caching";
+import caching, { CacheStoreReady } from "@/stores/caching";
 
 import Bowser from "bowser";
 
@@ -139,10 +140,33 @@ class DiscordClientWS {
 
   private handleDispatchGatewayMessage = (message: OpDispatch) => {
     switch (message.t) {
-    case "READY":
+    case "READY": {
+      const channels: CacheStoreReady["channels"] = [];
+
+      // Append every DM channels.
+      for (const channel_raw of message.d.private_channels) {
+        const channel = channel_raw as CacheDMChannel;
+        channel.messages = [];
+
+        channels.push(channel);
+      }
+
+      // Append every guilds' channels.
+      for (const guild of message.d.guilds) {
+        for (const channel_raw of guild.channels) {
+          const channel = channel_raw as CacheGuildChannel;
+          channel.messages = [];
+
+          channels.push(channel);
+        }
+      }
+
       this.setAccountCache({
         token: this.token,
         ready: true,
+
+        channels,
+        requests: {},
 
         gateway: {
           users: message.d.users,
@@ -151,8 +175,9 @@ class DiscordClientWS {
           relationships: message.d.relationships,
           user: message.d.user
         }
-      });
+      } as CacheStoreReady);
       break;
+    }
 
     default:
       console.info("[websockets/gateway] unknown dispatch", message);

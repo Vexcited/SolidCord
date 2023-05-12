@@ -6,13 +6,15 @@ import { useParams } from "@solidjs/router";
 import { callGetChannelsMessagesAPI, callPostChannelsMessagesAPI } from "@/api/channels/messages";
 
 import { open } from "@tauri-apps/api/shell";
-
+import caching, { type CacheStoreReady } from "@/stores/caching";
 
 const Page: Component = () => {
   const params = useParams();
-  const channel_id = () => params.channel_id;
+  const [cache] = caching.useCurrent<CacheStoreReady>();
 
-  const [messages, setMessages] = createSignal<Message[] | null>(null);
+  const channel_id = () => params.channel_id;
+  const channel = () => cache.channels.find(channel => channel.id === channel_id());
+
   const [message_content, setMessageContent] = createSignal<string>("");
 
   let chatContainerRef: HTMLDivElement | undefined;
@@ -42,11 +44,6 @@ const Page: Component = () => {
     });
 
     if (data.length === 0) return;
-
-    setMessages(prev => (prev !== null ? [...data, ...prev] : data)
-      .sort((a, b) => Date.parse(a.timestamp) - Date.parse(b.timestamp))
-    );
-
     fetching = false;
 
     if (before) scrollUpChatContainer();
@@ -55,7 +52,7 @@ const Page: Component = () => {
 
   createEffect(on(channel_id, async () => {
     onCleanup(() => {
-      setMessages(null); fetching = false;
+      fetching = false;
     });
 
     await get();
@@ -66,18 +63,18 @@ const Page: Component = () => {
     <div class="h-full min-h-0 flex flex-col">
       <div ref={chatContainerRef} class="h-full min-h-0 flex flex-col gap-2 overflow-y-auto px-[72px] pb-[24px]"
         onScroll={(event) => {
-          const latest_messages = messages();
+          const latest_messages = channel()?.messages;
           if (latest_messages === null) return;
 
           const top = event.currentTarget.scrollTop;
           if (top <= 100) {
             // First index should always be the oldest.
-            get(latest_messages[0].id);
+            get(latest_messages?.[0].id);
           }
         }}
       >
-        <Show when={messages()} fallback={<p>Loading...</p>}>
-          <For each={messages()}>
+        <Show when={channel()?.messages} fallback={<p>Loading...</p>}>
+          <For each={channel()?.messages}>
             {message => (
               <div class="flex flex-col text-white">
                 <div class="flex gap-2">
@@ -123,14 +120,13 @@ const Page: Component = () => {
       <div class="h-auto">
         <form onSubmit={async (event) => {
           event.preventDefault();
-          const message = await callPostChannelsMessagesAPI(channel_id(), {
+          await callPostChannelsMessagesAPI(channel_id(), {
             content: message_content(),
             flags: 0,
             nonce: null,
             tts: false
           });
 
-          setMessages(prev => (prev !== null ? [...prev, message] : [message]));
           scrollDownChatContainer();
           setMessageContent("");
         }}>

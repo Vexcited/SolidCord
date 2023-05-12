@@ -138,10 +138,3 @@ export enum GuildMutableFeatures {
   /** Requires "Administrator" permissions. Enables discovery in the guild, making it publicly listed */
   DISCOVERABLE = GuildFeatures.DISCOVERABLE
 }
-
-export enum GuildChannelType {
-  Category = 4,
-  Text = 0,
-  Vocal = 2,
-  Announcements = 5
-}
