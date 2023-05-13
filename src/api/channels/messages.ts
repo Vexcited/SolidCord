@@ -1,25 +1,10 @@
-import { DISCORD_API_ENDPOINT } from "@/api";
-import { ResponseType } from "@tauri-apps/api/http";
+import type { Message } from "@/types/discord/message";
+
+import { DISCORD_API_ENDPOINT, getCurrentAccount } from "@/api";
+import { ResponseType, Body } from "@tauri-apps/api/http";
 import fetch from "@/utils/native/fetch";
 
-import { userStore } from "@/stores/user";
-
-export interface Message {
-  id: string;
-  type: 0;
-  content: string;
-  channel_id: string;
-
-  tts: boolean;
-  pinned: boolean;
-
-  timestamp: string;
-
-  author: {
-    id: string;
-    username: string;
-  };
-}
+import caching, { type CacheStoreReady } from "@/stores/caching";
 
 export const callGetChannelsMessagesAPI = async (req: {
   channel_id: string;
@@ -31,16 +16,41 @@ export const callGetChannelsMessagesAPI = async (req: {
   uri.searchParams.set("limit", (req.limit ?? 50).toString());
   if (req.before) uri.searchParams.set("before", req.before);
 
-  const token = userStore.token;
-  if (!token) throw new Error("Unauthenticated user, no token found.");
+  const account = getCurrentAccount();
+  const setter = caching.useSetterOf<CacheStoreReady>(account.id);
 
   const { data } = await fetch<Message[]>(uri.href, {
     responseType: ResponseType.JSON,
-    method: "GET",
-    headers: {
-      authorization: token
-    }
+    headers: { authorization: account.token },
+    method: "GET"
   });
+
+  const parsed_data = data.reduce((acc: Record<string, Message>, curr) => (acc[curr.id] = curr, acc), {});
+  setter("channels", channel => channel.id === req.channel_id, "messages", prev => ({...prev, ...parsed_data }));
+
+  return data;
+};
+
+export const callPostChannelsMessagesAPI = async (channel_id: string, req: {
+  content: string;
+  flags: number;
+  nonce?: string | null;
+  tts?: false;
+}): Promise<Message> => {
+  const uri = DISCORD_API_ENDPOINT + `v9/channels/${channel_id}/messages`;
+  const account = getCurrentAccount();
+  const setter = caching.useSetterOf<CacheStoreReady>(account.id);
+
+  const body = Body.json(req);
+
+  const { data } = await fetch<Message>(uri, {
+    responseType: ResponseType.JSON,
+    headers: { authorization: account.token },
+    method: "POST",
+    body
+  });
+
+  setter("channels", channel => channel.id === channel_id, "messages", prev => ({ ...prev, [data.id]: data }));
 
   return data;
 };

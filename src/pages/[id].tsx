@@ -1,75 +1,68 @@
 import type { Component } from "solid-js";
-import { onMount, onCleanup, Show, For } from "solid-js";
-import { Outlet, useParams, useNavigate, A } from "@solidjs/router";
+import { Show, For } from "solid-js";
+import { Outlet, useParams, A } from "@solidjs/router";
 
-import type { UserStoreReady } from "@/stores/user";
-import { setUserStore, userStore } from "@/stores/user";
-import accounts from "@/stores/accounts";
+import caching from "@/stores/caching";
+import { getGuildIconURL, getUserAvatarURL } from "@/utils/api/images";
 
-import DiscordClientWS from "@/websockets/gateway";
-import { getGuildIconURL } from "@/utils/api/images";
-
-const AppMainLayout: Component = () => {
-  const navigate = useNavigate();
+const Layout: Component = () => {
   const params = useParams();
 
-  let client: DiscordClientWS | undefined;
-
-  onMount(async () => {
-    const account = accounts.get(params.id);
-    if (!account) {
-      navigate("/?account_not_found=true");
-      return;
-    }
-
-    setUserStore({
-      token: account.token,
-      ready: false
-    });
-
-    client = new DiscordClientWS(account.token);
-  });
-
-  onCleanup(() => {
-    if (client) client.destroy();
-    setUserStore({ token: null });
-  });
+  const [cache] = caching.useCurrent();
+  localStorage.setItem("lastVisitedAccount", params.id);
 
   return (
-    <Show when={userStore.token && userStore.ready}>
-      <Layout store={userStore as UserStoreReady} />
+    <Show when={cache.token && cache.ready ? cache : null}
+      fallback={<p>Loading connection to gateway...</p>}
+    >
+      {cache => (
+        <div class="h-full flex bg-[#1e1f22]">
+          {/* Guild list. */}
+          <div class="w-[72px] flex flex-(shrink-0 col) items-center gap-2 overflow-y-auto pt-1">
+            <Show when={cache().gateway.user.avatar} fallback={
+              <A class="h-12 w-12 flex items-center justify-center bg-white font-medium text-black" href={`/${cache().gateway.user.id}/@me`}
+                classList={{ "rounded-lg": params.guild_id === "@me", "rounded-full": params.guild_id !== "@me" }}
+              >
+                {cache().gateway.user.username[0].toUpperCase()}
+              </A>
+            }>
+              {avatar_hash => (
+                <A href={`/${cache().gateway.user.id}/@me`}>
+                  <img
+                    class="h-12 w-12"
+                    classList={{ "rounded-lg": params.guild_id === "@me", "rounded-full": params.guild_id !== "@me" }}
+                    src={getUserAvatarURL(cache().gateway.user.id, avatar_hash())}
+                  />
+
+                </A>
+              )}
+            </Show>
+
+            <hr class="w-[32px] border-2 border-gray rounded-lg" />
+
+            <For each={cache().gateway.guilds}>
+              {guild => (
+                <A href={`/${cache().gateway.user.id}/${guild.id}`}>
+                  <Show when={guild.properties.icon}>
+                    {icon_hash => (
+                      <img
+                        class="h-12 w-12 rounded-full"
+                        classList={{ "rounded-lg": params.guild_id === guild.id, "rounded-full": params.guild_id !== guild.id }}
+                        src={getGuildIconURL(guild.properties.id, icon_hash())}
+                      />
+                    )}
+                  </Show>
+                </A>
+              )}
+            </For>
+          </div>
+          <div class="w-full">
+            <Outlet />
+          </div>
+        </div>
+      )}
     </Show>
   );
 };
 
-export default AppMainLayout;
-
-const Layout: Component<{ store: UserStoreReady }> = (props) => {
-  return (
-    <div class="h-full flex bg-[#1e1f22]">
-      {/* Guild list. */}
-      <div class="w-[72px] flex flex-(shrink-0 col) items-center gap-2 overflow-y-auto pt-1">
-        <A href={`/${props.store.user.id}/@me`}>
-          USER
-        </A>
-        <For each={props.store.guilds}>
-          {guild => (
-            <A href={`/${props.store.user.id}/${guild.id}`}>
-              <Show when={guild.properties.icon}>
-                {icon_hash => (
-                  <img
-                    class="h-12 w-12 rounded-full"
-                    src={getGuildIconURL(guild.properties.id, icon_hash())}
-                  />
-                )}
-              </Show>
-            </A>
-          )}
-        </For>
-      </div>
-      <div class="w-full">
-        <Outlet />
-      </div>
-    </div>
-  );
-};
+export default Layout;

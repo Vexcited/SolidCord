@@ -12,7 +12,7 @@ rust-version = "1.64"
 tauri-build = { version = "1.2", features = [] }
 
 [dependencies]
-tauri = { version = "1.2", features = ["dialog", "http-all", "shell-open", "system-tray", "window-close", "window-hide", "window-maximize", "window-minimize", "window-show", "window-start-dragging", "window-unmaximize", "window-unminimize"] }
+tauri = { version = "1.2", features = ["dialog", "http-all", "notification-all", "shell-open", "system-tray", "window-close", "window-hide", "window-maximize", "window-minimize", "window-request-user-attention", "window-show", "window-start-dragging", "window-unmaximize", "window-unminimize"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 window-shadows = "0.2.1"

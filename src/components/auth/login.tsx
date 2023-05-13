@@ -88,7 +88,7 @@ const AuthLogin: Component<{
   };
 
   const processUserToken = async (token: string) => {
-    const user = await callUsersMeAPI({ token });
+    const user = await callUsersMeAPI(token);
     console.info("[.][processUserToken]: received `/users/me` data", user);
 
     // Make sure to remove any instance of this user account before.

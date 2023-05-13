@@ -1,12 +1,23 @@
 import type { Component } from "solid-js";
-import { Switch, Match, createSignal } from "solid-js";
+import { Switch, Match, createSignal, onMount } from "solid-js";
 
 import AuthAccountSelector from "@/components/auth/account-selector";
 import AuthLogin from "@/components/auth/login";
 
 import accounts from "@/stores/accounts";
 
-const LoginPage: Component = () => {
+import { useNavigate } from "@solidjs/router";
+
+const AccountSelectorPage: Component = () => {
+  const navigate = useNavigate();
+
+  onMount(() => {
+    const lastVisitedAccount = localStorage.getItem("lastVisitedAccount");
+    if (!lastVisitedAccount) return;
+
+    navigate(`/${lastVisitedAccount}/@me`);
+  });
+
   const userHasNoAccount = () => accounts.values().length <= 0;
 
   const [component, setComponent] = createSignal<
@@ -23,7 +34,9 @@ const LoginPage: Component = () => {
     <div class="h-full flex items-center justify-center bg-[#5865F2]">
       <Switch>
         <Match when={component() === "ACCOUNT_SELECTOR"}>
-          <AuthAccountSelector onAddAccountClick={() => setComponent("SIGNIN")} />
+          <AuthAccountSelector
+            onAddAccountClick={() => setComponent("SIGNIN")}
+          />
         </Match>
         <Match when={component() === "SIGNIN"}>
           <AuthLogin
@@ -36,5 +49,5 @@ const LoginPage: Component = () => {
   );
 };
 
-export default LoginPage;
+export default AccountSelectorPage;
 

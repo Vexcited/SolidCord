@@ -1,6 +1,8 @@
 import type { Setter } from "solid-js";
 
-export interface AccountStorage {
+import DiscordClientWS from "@/websockets/gateway";
+
+export interface AccountStored {
   id: string;
   username: string;
   /** 4 numbers, containing an `#` at the start. */
@@ -12,38 +14,47 @@ export interface AccountStorage {
   token: string;
 }
 
+export interface Account extends AccountStored {
+  connection: DiscordClientWS | null;
+}
+
 /**
  * Storage for the user's connected accounts.
- *
- * Here, we don't use localforage, instead we use
- * [Window.localStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage).
- * With localStorage, the data we get doesn't need any load time
- * on contrary with localforage where we need to `await`.
- *
- * It allows us to directly get user's accounts and
- * do actions on first load without any loader.
- *
- * By the way, methods are arrow functions to prevent
- * re-binding `this` in the constructor.
+ * When enabled, accounts are all connected to the gateway on application start.
  */
 class AccountsStorage {
-  private accounts: AccountStorage[];
-  private setAccounts: Setter<AccountStorage[]>;
+  private accounts: Account[];
+  private setAccounts: Setter<Account[]>;
 
   /**
    * @param setAccounts - Pass a store setter to get updates on a signal.
    */
-  constructor (setAccounts: Setter<AccountStorage[]>) {
-    this.accounts = JSON.parse(localStorage.getItem("accounts") ?? "[]");
-    this.setAccounts = setAccounts;
+  constructor (setAccounts: Setter<AccountStored[]>) {
+    console.info("[utils/storage][accounts]: new instance of manager");
 
-    console.info("[utils/storage][accounts]: new instance of manager.");
+    const accounts: AccountStored[] = JSON.parse(localStorage.getItem("accounts") ?? "[]");
+    this.setAccounts = setAccounts;
+    this.accounts = [];
+
+    // We spawn the connection for each account.
+    for (const account of accounts) {
+      console.info("[utils/storage][accounts]: spawning new connection for account with username", account.username);
+      const connection = new DiscordClientWS(account.token, account.id);
+
+      this.accounts.push({
+        ...account,
+        connection
+      });
+    }
+
     this.updateAccountsStorageValue();
   }
 
   /** Sync value from `this.accounts` with localStorage value. */
   private updateAccountsStorageValue = (): void => {
-    localStorage.setItem("accounts", JSON.stringify(this.accounts));
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const accounts: AccountStored[] = this.accounts.map(({ connection, ...account }) => account);
+    localStorage.setItem("accounts", JSON.stringify(accounts));
     this.setAccounts(this.accounts);
   };
 
@@ -52,7 +63,7 @@ class AccountsStorage {
    * Returns `undefined` when no account using this user ID is found.
    * @param id - User ID that should be found across the accounts.
    */
-  public get = (id: string): AccountStorage | undefined => {
+  public get = (id: string): Account | undefined => {
     const account = this.accounts.find(
       user => user.id === id
     );
@@ -62,14 +73,23 @@ class AccountsStorage {
 
   /**
    * Append a new account into the storage.
-   * @param account - Account to add in the storage.
+   * @param account_raw - Account to add in the storage.
    */
-  public add = (account: AccountStorage): AccountStorage[] => {
-    // We add the new account into the accounts storage.
+  public add = (account_raw: AccountStored): Account => {
+    // We check if we already have this user in the storage.
+    const existing_account = this.get(account_raw.id);
+    if (existing_account) return existing_account;
+
+    const connection = new DiscordClientWS(account_raw.token, account_raw.id);
+    const account: Account = {
+      ...account_raw,
+      connection
+    };
+
     this.accounts.push(account);
     this.updateAccountsStorageValue();
 
-    return this.accounts;
+    return account;
   };
 
   /**
@@ -77,8 +97,14 @@ class AccountsStorage {
    * @param account - Account to remove from the storage.
    */
   public remove = (id: string): void => {
+    const account = this.get(id);
+    if (!account) return;
+
+    // Destroy connection before removing account from SolidCord.
+    if (account.connection) account.connection.destroy();
+
     this.accounts = this.accounts.filter(
-      user => user.id !== id
+      account => account.id !== id
     );
 
     this.updateAccountsStorageValue();

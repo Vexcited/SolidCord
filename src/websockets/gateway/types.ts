@@ -1,5 +1,7 @@
 import { LocalesIdentifier } from "@/locales";
+import { GuildCategoryChannel, DMChannel, GroupDMChannel, GuildTextChannel, GuildVoiceChannel } from "@/types/discord/channel";
 import { GuildExplicitContentFilterLevel, GuildFeatures, GuildMessageNotificationLevel, GuildMfaLevel, GuildNsfwLevel, GuildPremiumTier, GuildSystemChannelFlags, GuildVerificationLevel } from "@/types/discord/guild";
+import { Message } from "@/types/discord/message";
 import { User } from "@/types/discord/user";
 
 export enum OpCodes {
@@ -39,6 +41,7 @@ export type OpDispatch = (
   | OpDispatchReadySupplemental
   | OpDispatchRelationshipUpdate
   | OpDispatchPresenceUpdate
+  | OpDispatchMessageCreate
 );
 
 export type OpCode = (
@@ -47,40 +50,6 @@ export type OpCode = (
   | OpHello
   | OpAck
 );
-
-export enum OpDispatchReadyPrivateChannelType {
-  DM = 1,
-  Group = 3
-}
-
-export interface OpDispatchReadyPrivateChannelDM {
-  type: OpDispatchReadyPrivateChannelType.DM;
-
-  is_spam: boolean;
-  last_message_id: string;
-  /** date */
-  last_pin_timestamp?: string;
-}
-
-export interface OpDispatchReadyPrivateChannelGroup {
-  type: OpDispatchReadyPrivateChannelType.Group;
-
-  icon: string | null;
-  name: string | null;
-  last_message_id: string;
-}
-
-export type OpDispatchReadyPrivateChannel = (
-  {
-    flags: number;
-    id: string;
-
-    recipient_ids: string[];
-  } & (
-    | OpDispatchReadyPrivateChannelDM
-    | OpDispatchReadyPrivateChannelGroup
-  )
-)
 
 export interface OpDispatchReadyRelationship {
   type: 1;
@@ -99,54 +68,7 @@ export interface OpDispatchReady {
     v: number;
     guilds: ({
       application_command_counts: Record<number, number>;
-      channels: ({
-        flags: number;
-        id: string; // snowflake.
-        last_message_id: string; // snowflake.
-        name: string;
-        nsfw: boolean;
-        parent_id: string;
-        permission_overwrites: {
-          type: number;
-          allow: string;
-          deny: string;
-          id: string; // snowflake.
-        }[];
-        position: number;
-        rate_limit_per_user: number;
-        topic: string;
-        type: 0; // text channels.
-      } | {
-        flags: number;
-        bitrate: number;
-        id: string; // snowflake.
-        last_message_id: string; // snowflake.
-        name: string;
-        parent_id: string;
-        permission_overwrites: {
-          type: number;
-          allow: string;
-          deny: string;
-          id: string; // snowflake.
-        }[];
-        position: number;
-        rate_limit_per_user: number;
-        rtc_region: string | null;
-        type: 2; // probably vocals.
-        user_limit: number;
-      } | {
-        flags: number;
-        type: 4; // category: could be a parent for other channels.
-        position: number;
-        permission_overwrites: {
-          type: number;
-          allow: string;
-          deny: string;
-          id: string; // snowflake.
-        }[];
-        name: string;
-        id: string; // snowflake.
-      })[];
+      channels: (GuildTextChannel | GuildVoiceChannel | GuildCategoryChannel)[];
 
       data_mode: "full";
       emojis: ({
@@ -226,7 +148,10 @@ export interface OpDispatchReady {
 
     merged_members: unknown[]; // TODO (maybe)
 
-    private_channels: OpDispatchReadyPrivateChannel[];
+    private_channels: (
+      | DMChannel
+      | GroupDMChannel
+    )[];
 
     read_state: {
       entries: ({
@@ -377,4 +302,11 @@ export interface OpDispatchPresenceUpdate {
       }
     )[];
   };
+}
+
+export interface OpDispatchMessageCreate {
+  t: "MESSAGE_CREATE";
+  s: number;
+  op: OpCodes.Dispatch;
+  d: Message;
 }

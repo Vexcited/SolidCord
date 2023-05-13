@@ -1,18 +1,42 @@
-import { Component, Show, createEffect, on, onCleanup } from "solid-js";
-
-import { For, createSignal } from "solid-js";
+import { type Component, Match, Show, Switch, createEffect, createMemo, on, onCleanup, For, createSignal } from "solid-js";
 import { useParams } from "@solidjs/router";
-import { callGetChannelsMessagesAPI, type Message } from "@/api/channels/messages";
+
+import { callGetChannelsMessagesAPI, callPostChannelsMessagesAPI } from "@/api/channels/messages";
+
+import { open } from "@tauri-apps/api/shell";
+import caching, { type CacheStoreReady } from "@/stores/caching";
 
 const Page: Component = () => {
   const params = useParams();
-  const channel_id = () => params.channel_id;
+  const [cache] = caching.useCurrent<CacheStoreReady>();
 
-  const [messages, setMessages] = createSignal<Message[] | null>(null);
+  const channel_id = () => params.channel_id;
+  const channel = () => cache.channels.find(channel => channel.id === channel_id());
+  const channel_messages = createMemo(() => {
+    const messages = channel()?.messages;
+    if (!messages) return [];
+
+    return Object.values(messages)
+      .sort((a, b) => Date.parse(a.timestamp) - Date.parse(b.timestamp));
+  });
+
+  const [message_content, setMessageContent] = createSignal("");
 
   let chatContainerRef: HTMLDivElement | undefined;
   let oldScrollHeight = 0;
   let fetching = false;
+
+  const scrollUpChatContainer = () => {
+    if (!chatContainerRef) return;
+    chatContainerRef.scrollTop = chatContainerRef.scrollHeight - oldScrollHeight;
+    oldScrollHeight = chatContainerRef.scrollHeight;
+  };
+
+  const scrollDownChatContainer = () => {
+    if (!chatContainerRef) return;
+    chatContainerRef.scrollTop = chatContainerRef.scrollHeight;
+    oldScrollHeight = chatContainerRef.scrollHeight;
+  };
 
   const get = async (before?: string) => {
     if (fetching) return;
@@ -25,59 +49,103 @@ const Page: Component = () => {
     });
 
     if (data.length === 0) return;
-
-    setMessages(prev => (prev !== null ? [...data, ...prev] : data)
-      .sort((a, b) => Date.parse(a.timestamp) - Date.parse(b.timestamp))
-    );
-
     fetching = false;
 
-    if (before) {
-      if (!chatContainerRef) return;
-      chatContainerRef.scrollTop = chatContainerRef.scrollHeight - oldScrollHeight;
-      oldScrollHeight = chatContainerRef.scrollHeight;
-    }
+    if (before) scrollUpChatContainer();
+    else setTimeout(() => scrollDownChatContainer(), 0);
   };
 
+  // When switching channels, we fetch messages.
+  // Since messages are objects in the cache, cache will be displayed while fetching.
   createEffect(on(channel_id, async () => {
     onCleanup(() => {
-      setMessages(null); fetching = false;
+      fetching = false;
     });
 
-    await get();
+    const channel_data = channel();
+    if (!channel_data) return;
 
-    if (!chatContainerRef) return;
-    chatContainerRef.scrollTop = chatContainerRef.scrollHeight;
-    oldScrollHeight = chatContainerRef.scrollHeight;
+    await get();
+  }));
+
+  // When we received a new message, we automatically scroll down.
+  createEffect(on(channel_messages, () => {
+    scrollDownChatContainer();
   }));
 
   return (
-    <div ref={chatContainerRef} class="min-h-0 overflow-y-auto"
-      onScroll={(event) => {
-        const latest_messages = messages();
-        if (latest_messages === null) return;
+    <div class="h-full min-h-0 flex flex-col">
+      <div ref={chatContainerRef} class="h-full min-h-0 flex flex-col gap-2 overflow-y-auto px-[72px] pb-[24px]"
+        onScroll={(event) => {
+          const latest_messages = channel()?.messages;
+          if (!latest_messages) return;
 
-        const top = event.currentTarget.scrollTop;
-        if (top <= 100) {
-          // First index should always be the oldest.
-          get(latest_messages[0].id);
-        }
-      }}
-    >
-      {channel_id()}
-      <Show when={messages()} fallback={<p>Loading...</p>}>
-        <For each={messages()}>
-          {message => (
-            <div class="flex flex-col text-white">
-              <div class="flex gap-2">
-                <p class="text-lg font-bold">{message.author.username}</p>
-                <span>{new Date(message.timestamp).toLocaleString()}</span>
+          const top = event.currentTarget.scrollTop;
+          if (top <= 100) {
+            // First index should always be the oldest.
+            get(latest_messages[0]?.id);
+          }
+        }}
+      >
+        <Show when={channel_messages()} fallback={<p>Loading...</p>}>
+          <For each={channel_messages()}>
+            {message => (
+              <div class="flex flex-col text-white">
+                <div class="flex gap-2">
+                  <p class="text-lg font-bold">{message.author.username}</p>
+                  <span>{new Date(message.timestamp).toLocaleString()}</span>
+                </div>
+                <p>{message.content}</p>
+                <For each={message.attachments}>
+                  {attachment => (
+                    <Switch
+                      fallback={
+                        <button type="button" onClick={() => open(attachment.url)}
+                          class="w-fit rounded-lg bg-blue p-2 text-white"
+                        >
+                          {attachment.filename} ({attachment.content_type})
+                        </button>
+                      }
+                    >
+                      <Match when={attachment.content_type.startsWith("image/")}>
+                        <img class="block h-auto max-w-[550px] rounded-2 object-cover"
+                          src={attachment.url}
+                          alt={attachment.filename}
+                        />
+                      </Match>
+                      <Match when={attachment.content_type.startsWith("video/")}>
+                        <video controls class="block h-auto max-w-[550px] rounded-2 object-cover"
+                          src={attachment.url}
+                        />
+                      </Match>
+                      <Match when={attachment.content_type.startsWith("audio/")}>
+                        <audio controls
+                          src={attachment.url}
+                        />
+                      </Match>
+                    </Switch>
+                  )}
+                </For>
               </div>
-              <p>{message.content}</p>
-            </div>
-          )}
-        </For>
-      </Show>
+            )}
+          </For>
+        </Show>
+      </div>
+      <div class="h-auto">
+        <form onSubmit={async (event) => {
+          event.preventDefault();
+          await callPostChannelsMessagesAPI(channel_id(), {
+            content: message_content(),
+            flags: 0,
+            nonce: null,
+            tts: false
+          });
+
+          setMessageContent("");
+        }}>
+          <input class="w-full p-2 outline-none" type="text" onInput={(e) => setMessageContent(e.currentTarget.value)} value={message_content()} />
+        </form>
+      </div>
     </div>
   );
 };
