@@ -10,19 +10,21 @@ import Bowser from "bowser";
 import { sendNativeNotification } from "@/utils/native/notify";
 import { UserAttentionType, appWindow } from "@tauri-apps/api/window";
 
+import { listen, emit } from "@tauri-apps/api/event";
+
 /**
  * Here, we use version 10 of their API, with JSON encoding.
  * TODO: Compress using `zlib-stream`.
  * TODO: Encode using `etf`.
  */
-const DISCORD_WS_URL = "wss://gateway.discord.gg/?v=10&encoding=json";
+// const DISCORD_WS_URL = "wss://gateway.discord.gg/?v=10&encoding=json";
 
 class DiscordClientWS {
   private token: string;
   private account_id: string;
   private setAccountCache: SetStoreFunction<CacheStoreReady>;
 
-  public connection: WebSocket;
+  // public connection: WebSocket;
 
   private heartbeat_interval_ms?: number;
   private heartbeat_interval?: number;
@@ -37,21 +39,24 @@ class DiscordClientWS {
 
     console.info("[websockets/gateway] opening new connection for account", this.account_id);
 
-    this.connection = new WebSocket(DISCORD_WS_URL);
-    this.connection.addEventListener("open", this.handleGatewayOpen);
-    this.connection.addEventListener("message", this.handleGatewayMessage);
+    listen(`gateway/${this.account_id}`, (event) => {
+      if (typeof event.payload !== "string") return;
+      this.handleGatewayMessage(event.payload);
+    });
+
+    emit("gateway", this.account_id);
   }
 
-  public destroy = () => {
+  public destroy = async () => {
     this.stopHeartbeatInterval();
-    this.connection.close();
+    await emit(`gateway/${this.account_id}`, "destroy");
 
     console.info("[websockets/gateway] closed connection.");
   };
 
-  private sendJSON = <T>(message: T) => {
+  private sendJSON = async <T>(message: T) => {
     console.info("[websockets/gateway] sending message to gateway.", message);
-    this.connection.send(JSON.stringify(message));
+    await emit(`gateway/${this.account_id}`, message);
   };
 
   private handleGatewayOpen = () => {
@@ -101,8 +106,7 @@ class DiscordClientWS {
     });
   };
 
-  private handleGatewayMessage = async (event: MessageEvent<string>) => {
-    const message_raw = event.data;
+  private handleGatewayMessage = async (message_raw: string) => {
     // Remember we use JSON encoding, for now.
     const message = JSON.parse(message_raw) as OpCode;
 
@@ -114,6 +118,7 @@ class DiscordClientWS {
     case OpCodes.Hello:
       this.heartbeat_interval_ms = message.d.heartbeat_interval;
       this.startHeartbeatInterval();
+      this.handleGatewayOpen();
       break;
     case OpCodes.Dispatch:
       this.handleDispatchGatewayMessage(message);
