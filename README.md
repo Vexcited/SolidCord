@@ -8,13 +8,13 @@ A [Tauri](https://tauri.app/) + [SolidJS](https://www.solidjs.com/) handcrafted 
 
 ## Features
 
-### Simulataneous connections
+### Simultaneous connections
 
-Whenever you add an account, a connection to the gateway with this account will be kept until the app is quited or until you sign out the account from SolidCord.
+Whenever you add an account, a connection to the gateway with this account will be kept until the app is quitted or until you sign out the account from SolidCord.
 
 That allows to have notifications for multiple accounts.
 
-Of course, this behaviour can be disabled by signing out of the account in the account selector. 
+Of course, this behavior can be disabled by signing out of the account in the account selector.
 
 ## Development
 
@@ -31,7 +31,7 @@ cd SolidCord
 pnpm install
 ```
 
-Please, try to stick with `pnpm` so we don't confict with any other Node.js package manager.
+Please, try to stick with `pnpm` so we don't conflict with any other Node.js package manager.
 
 If you need to update `cargo` packages for `src-tauri` folder,
 
@@ -50,7 +50,7 @@ cargo update
 
 ### Recommended IDE Setup / Extensions
 
-Everything mentionned here is optional, but you'll get a better DX by installing them.
+Everything mentioned here is optional, but you'll get a better DX by installing them.
 
 #### [VS Code](https://code.visualstudio.com/)
 
