@@ -6,7 +6,7 @@ import { fetch as _fetch } from "@tauri-apps/api/http";
  * constant header (`User-Agent`) for every requests.
  *
  * We add `User-Agent` to every native requests to make
- * the client less detactable for Discord.
+ * the client less detectable for Discord.
  * Instead of Tauri's default User-Agent, we use the one from our WebView.
  */
 const fetch = <T>(url: string, raw_options?: FetchOptions): Promise<Response<T>> => {

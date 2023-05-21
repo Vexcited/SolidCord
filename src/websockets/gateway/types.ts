@@ -12,7 +12,7 @@ export enum OpCodes {
   Ack = 11
 }
 
-export interface OpHearbeat {
+export interface OpHeartbeat {
   op: OpCodes.Heartbeat;
   /** The inner d key is the last sequence number `s` received by the client. */
   d: number | null;
@@ -46,7 +46,7 @@ export type OpDispatch = (
 
 export type OpCode = (
   | OpDispatch
-  | OpHearbeat
+  | OpHeartbeat
   | OpHello
   | OpAck
 );

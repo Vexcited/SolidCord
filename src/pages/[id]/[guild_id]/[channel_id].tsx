@@ -5,6 +5,8 @@ import { callGetChannelsMessagesAPI, callPostChannelsMessagesAPI } from "@/api/c
 
 import { open } from "@tauri-apps/api/shell";
 import caching, { type CacheStoreReady } from "@/stores/caching";
+import { ChannelTypes } from "@/types/discord/channel";
+import { getPrivateChannelName } from "@/utils/api/channels";
 
 const Page: Component = () => {
   const params = useParams();
@@ -18,6 +20,17 @@ const Page: Component = () => {
 
     return Object.values(messages)
       .sort((a, b) => Date.parse(a.timestamp) - Date.parse(b.timestamp));
+  });
+
+  const channel_name = createMemo(() => {
+    const data = channel();
+    if (!data) return null;
+
+    switch (data.type) {
+    case ChannelTypes.DM:
+    case ChannelTypes.GROUP_DM:
+      return getPrivateChannelName(data);
+    }
   });
 
   const [message_content, setMessageContent] = createSignal("");
@@ -75,15 +88,19 @@ const Page: Component = () => {
 
   return (
     <div class="h-full min-h-0 flex flex-col">
+      <div class="h-[48px] bg-[#2b2d31] p-3 text-white">
+        {channel_name() ?? "Unknown"}
+      </div>
       <div ref={chatContainerRef} class="h-full min-h-0 flex flex-col gap-2 overflow-y-auto px-[72px] pb-[24px]"
         onScroll={(event) => {
-          const latest_messages = channel()?.messages;
-          if (!latest_messages) return;
+          const latest_messages = channel_messages();
 
           const top = event.currentTarget.scrollTop;
-          if (top <= 100) {
-            // First index should always be the oldest.
-            get(latest_messages[0]?.id);
+          // First index should always be the oldest.
+          const oldest_message_id = latest_messages[0]?.id;
+
+          if (top <= 100 && oldest_message_id) {
+            get(oldest_message_id);
           }
         }}
       >
@@ -134,6 +151,8 @@ const Page: Component = () => {
       <div class="h-auto">
         <form onSubmit={async (event) => {
           event.preventDefault();
+          if (!navigator.onLine) return;
+
           await callPostChannelsMessagesAPI(channel_id(), {
             content: message_content(),
             flags: 0,

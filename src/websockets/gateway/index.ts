@@ -1,16 +1,18 @@
 import type { SetStoreFunction } from "solid-js/store";
 import type { CacheDMChannel, CacheGuildChannel } from "@/types/cache";
-import type { OpCode, OpDispatch, OpHearbeat } from "./types";
+import type { OpCode, OpDispatch, OpHeartbeat } from "./types";
 import { OpCodes } from "./types";
 
 import caching, { CacheStoreReady } from "@/stores/caching";
 import app from "@/stores/app";
 
 import Bowser from "bowser";
+
 import { sendNativeNotification } from "@/utils/native/notify";
 import { UserAttentionType, appWindow } from "@tauri-apps/api/window";
 
 import { listen, emit } from "@tauri-apps/api/event";
+import { getCacheInStorage, setCacheInStorage } from "@/utils/storage/caching";
 
 /**
  * Here, we use version 10 of their API, with JSON encoding.
@@ -39,6 +41,45 @@ class DiscordClientWS {
 
     console.info("[websockets/gateway] opening new connection for account", this.account_id);
 
+    // When spawning a new connection while being offline,
+    // we'll get gateway data from cache and show it until we get back
+    // online to store new data in the store.
+    if (!navigator.onLine) {
+      getCacheInStorage<CacheStoreReady["gateway"]>(this.account_id, "__gateway")
+        .then(gateway_data => {
+          if (!gateway_data) return;
+          const channels: CacheStoreReady["channels"] = [];
+
+          // Append every DM channels.
+          for (const channel_raw of gateway_data.private_channels) {
+            const channel = channel_raw as CacheDMChannel;
+            channel.messages = {};
+
+            channels.push(channel);
+          }
+
+          // Append every guilds' channels.
+          for (const guild of gateway_data.guilds) {
+            for (const channel_raw of guild.channels) {
+              const channel = channel_raw as CacheGuildChannel;
+              channel.messages = {};
+
+              channels.push(channel);
+            }
+          }
+
+          this.setAccountCache({
+            token: this.token,
+            ready: true,
+
+            channels,
+            requests: {},
+
+            gateway: gateway_data
+          } as CacheStoreReady);
+        });
+    }
+
     listen(`gateway/${this.account_id}`, (event) => {
       if (typeof event.payload !== "string") return;
       this.handleGatewayMessage(event.payload);
@@ -62,7 +103,7 @@ class DiscordClientWS {
   private handleGatewayOpen = () => {
     console.info("[gateway] opened connection for account", this.account_id);
 
-    // Get informations on current browser to pass them in WS.
+    // Get information on current browser to pass them in WS.
     const browser_parser = Bowser.parse(window.navigator.userAgent);
 
     this.sendJSON({
@@ -136,7 +177,7 @@ class DiscordClientWS {
     if (typeof this.heartbeat_interval_ms === "undefined") return;
     console.info(`[websockets/gateway] starting \`OpHeartbeat\` interval (\`heartbeat_interval_ms\` -> ${this.heartbeat_interval_ms})`);
 
-    this.heartbeat_interval = setInterval(() => this.sendJSON<OpHearbeat>({
+    this.heartbeat_interval = setInterval(() => this.sendJSON<OpHeartbeat>({
       op: OpCodes.Heartbeat,
       d: this.sequence
     }), this.heartbeat_interval_ms);
@@ -170,6 +211,16 @@ class DiscordClientWS {
         }
       }
 
+      const gateway_data: CacheStoreReady["gateway"] = {
+        users: message.d.users,
+        guilds: message.d.guilds,
+        private_channels: message.d.private_channels,
+        relationships: message.d.relationships,
+        user: message.d.user
+      };
+
+      await setCacheInStorage<CacheStoreReady["gateway"]>(this.account_id, "__gateway", gateway_data);
+
       this.setAccountCache({
         token: this.token,
         ready: true,
@@ -177,13 +228,7 @@ class DiscordClientWS {
         channels,
         requests: {},
 
-        gateway: {
-          users: message.d.users,
-          guilds: message.d.guilds,
-          private_channels: message.d.private_channels,
-          relationships: message.d.relationships,
-          user: message.d.user
-        }
+        gateway: gateway_data
       } as CacheStoreReady);
       break;
     }
