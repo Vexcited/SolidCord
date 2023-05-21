@@ -151,16 +151,20 @@ const Page: Component = () => {
       <div class="h-auto">
         <form onSubmit={async (event) => {
           event.preventDefault();
-          if (!navigator.onLine) return;
 
-          await callPostChannelsMessagesAPI(channel_id(), {
-            content: message_content(),
-            flags: 0,
-            nonce: null,
-            tts: false
-          });
+          try {
+            await callPostChannelsMessagesAPI(channel_id(), {
+              content: message_content(),
+              flags: 0,
+              nonce: null,
+              tts: false
+            });
 
-          setMessageContent("");
+            setMessageContent("");
+          }
+          catch {
+            console.error("send message: action need internet access");
+          }
         }}>
           <input class="w-full p-2 outline-none" type="text" onInput={(e) => setMessageContent(e.currentTarget.value)} value={message_content()} />
         </form>

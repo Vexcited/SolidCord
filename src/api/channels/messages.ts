@@ -23,7 +23,7 @@ export const callGetChannelsMessagesAPI = async (req: {
 
   let data: Message[];
 
-  if (navigator.onLine) {
+  try {
     const response = await fetch<Message[]>(uri.href, {
       responseType: ResponseType.JSON,
       headers: { authorization: account.token },
@@ -32,7 +32,7 @@ export const callGetChannelsMessagesAPI = async (req: {
 
     data = response.data;
   }
-  else {
+  catch {
     const cache = await getCacheInStorage<Record<string, Message>>(account.id, endpoint_path) ?? {};
     const limit = req.limit ?? 50;
 

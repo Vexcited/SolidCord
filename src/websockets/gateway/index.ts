@@ -41,44 +41,42 @@ class DiscordClientWS {
 
     console.info("[websockets/gateway] opening new connection for account", this.account_id);
 
-    // When spawning a new connection while being offline,
-    // we'll get gateway data from cache and show it until we get back
-    // online to store new data in the store.
-    if (!navigator.onLine) {
-      getCacheInStorage<CacheStoreReady["gateway"]>(this.account_id, "__gateway")
-        .then(gateway_data => {
-          if (!gateway_data) return;
-          const channels: CacheStoreReady["channels"] = [];
+    // When spawning a new connection,
+    // we get gateway data from cache and show it until we get
+    // new data from gateway to update the store.
+    getCacheInStorage<CacheStoreReady["gateway"]>(this.account_id, "__gateway")
+      .then(gateway_data => {
+        if (!gateway_data) return;
+        const channels: CacheStoreReady["channels"] = [];
 
-          // Append every DM channels.
-          for (const channel_raw of gateway_data.private_channels) {
-            const channel = channel_raw as CacheDMChannel;
+        // Append every DM channels.
+        for (const channel_raw of gateway_data.private_channels) {
+          const channel = channel_raw as CacheDMChannel;
+          channel.messages = {};
+
+          channels.push(channel);
+        }
+
+        // Append every guilds' channels.
+        for (const guild of gateway_data.guilds) {
+          for (const channel_raw of guild.channels) {
+            const channel = channel_raw as CacheGuildChannel;
             channel.messages = {};
 
             channels.push(channel);
           }
+        }
 
-          // Append every guilds' channels.
-          for (const guild of gateway_data.guilds) {
-            for (const channel_raw of guild.channels) {
-              const channel = channel_raw as CacheGuildChannel;
-              channel.messages = {};
+        this.setAccountCache({
+          token: this.token,
+          ready: true,
 
-              channels.push(channel);
-            }
-          }
+          channels,
+          requests: {},
 
-          this.setAccountCache({
-            token: this.token,
-            ready: true,
-
-            channels,
-            requests: {},
-
-            gateway: gateway_data
-          } as CacheStoreReady);
-        });
-    }
+          gateway: gateway_data
+        } as CacheStoreReady);
+      });
 
     listen(`gateway/${this.account_id}`, (event) => {
       if (typeof event.payload !== "string") return;
