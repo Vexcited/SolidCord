@@ -24,7 +24,7 @@ export interface OpHello {
   t: null;
   s: null;
   d: {
-    /** After evey `heartbeat_interval`ms, we should send
+    /** After every `heartbeat_interval`ms, we should send
      * an OpCode = 1 to the gateway and they should respond
      * us with `OpAck`.
      */
