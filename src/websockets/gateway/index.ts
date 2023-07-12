@@ -6,13 +6,13 @@ import { OpCodes } from "./types";
 import caching, { CacheStoreReady } from "@/stores/caching";
 import app from "@/stores/app";
 
-import Bowser from "bowser";
-
 import { sendNativeNotification } from "@/utils/native/notify";
 import { UserAttentionType, appWindow } from "@tauri-apps/api/window";
 
 import { listen, emit } from "@tauri-apps/api/event";
 import { getCacheInStorage, setCacheInStorage } from "@/utils/storage/caching";
+
+import { buildClientPropertiesObject } from "@/utils/api/client-properties";
 
 /**
  * Here, we use version 10 of their API, with JSON encoding.
@@ -20,6 +20,8 @@ import { getCacheInStorage, setCacheInStorage } from "@/utils/storage/caching";
  * TODO: Encode using `etf`.
  */
 // const DISCORD_WS_URL = "wss://gateway.discord.gg/?v=10&encoding=json";
+
+
 
 class DiscordClientWS {
   private token: string;
@@ -98,33 +100,15 @@ class DiscordClientWS {
     await emit(`gateway/${this.account_id}`, message);
   };
 
-  private handleGatewayOpen = () => {
+  private handleGatewayOpen = async () => {
     console.info("[gateway] opened connection for account", this.account_id);
-
-    // Get information on current browser to pass them in WS.
-    const browser_parser = Bowser.parse(window.navigator.userAgent);
 
     this.sendJSON({
       op: OpCodes.Identify,
       d: {
         token: this.token,
         capabilities: 8189, // Where those numbers come from?
-        properties: {
-          os: browser_parser.os.name,
-          browser: browser_parser.browser.name,
-          device: "",
-          system_locale: window.navigator.language,
-          browser_user_agent: window.navigator.userAgent,
-          browser_version: browser_parser.browser.version,
-          os_version: browser_parser.os.versionName,
-          referrer: "",
-          referring_domain: "",
-          referrer_current: "",
-          referring_domain_current: "",
-          release_channel: "stable",
-          client_build_number: 195078, // Find a way to get this? Anyway, last updated, 03/05/2023 - in DD/MM/YYYY format.
-          client_event_source: null
-        },
+        properties: await buildClientPropertiesObject(),
         presence: {
           status: "unknown",
           since: 0,

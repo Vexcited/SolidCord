@@ -14,10 +14,9 @@ const fetch = <T>(url: string, raw_options?: FetchOptions): Promise<Response<T>>
     "User-Agent": navigator.userAgent
   };
 
+  // Add or override the "User-Agent" header.
   if (raw_options) {
-    // If options are passed, we check if some headers are set.
     if (!raw_options.headers) raw_options.headers = {};
-    // If yes, just add/override the "User-Agent" header.
     raw_options.headers["User-Agent"] = navigator.userAgent;
   }
 
