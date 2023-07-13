@@ -16,13 +16,7 @@ tauri = { version = "1.3", features = ["dialog", "http-all", "notification-all",
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 window-shadows = "0.2.1"
-tokio = { version = "*", features = ["full"] }
-tokio-tungstenite = { version = "*", features = ["native-tls"] }
-tokio-stream = "*"
-futures = "*"
-futures-channel = "0.3.28"
-futures-util = "0.3.28"
-tokio-util = "0.7.8"
+tauri-plugin-websocket = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
 
 [features]
 # This feature is used for production builds or when `devPath` points to the filesystem.
