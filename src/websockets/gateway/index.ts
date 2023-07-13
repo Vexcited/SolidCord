@@ -9,7 +9,7 @@ import app from "@/stores/app";
 import { sendNativeNotification } from "@/utils/native/notify";
 import { UserAttentionType, appWindow } from "@tauri-apps/api/window";
 
-import { listen, emit } from "@tauri-apps/api/event";
+import WebSocket from "tauri-plugin-websocket-api";
 import { getCacheInStorage, setCacheInStorage } from "@/utils/storage/caching";
 
 import { buildClientPropertiesObject } from "@/utils/api/client-properties";
@@ -19,16 +19,14 @@ import { buildClientPropertiesObject } from "@/utils/api/client-properties";
  * TODO: Compress using `zlib-stream`.
  * TODO: Encode using `etf`.
  */
-// const DISCORD_WS_URL = "wss://gateway.discord.gg/?v=10&encoding=json";
-
-
+const DISCORD_WS_URL = "wss://gateway.discord.gg/?v=10&encoding=json";
 
 class DiscordClientWS {
   private token: string;
   private account_id: string;
   private setAccountCache: SetStoreFunction<CacheStoreReady>;
 
-  // public connection: WebSocket;
+  private connection: WebSocket | undefined;
 
   private heartbeat_interval_ms?: number;
   private heartbeat_interval?: number;
@@ -80,24 +78,31 @@ class DiscordClientWS {
         } as CacheStoreReady);
       });
 
-    listen(`gateway/${this.account_id}`, (event) => {
-      if (typeof event.payload !== "string") return;
-      this.handleGatewayMessage(event.payload);
-    });
+    WebSocket.connect(DISCORD_WS_URL)
+      .then(connection => {
+        this.connection = connection;
 
-    emit("gateway", this.account_id);
+        this.connection.addListener((message) => {
+          if (message.type !== "Text") return;
+          this.handleGatewayMessage(message.data);
+        });
+      });
   }
 
   public destroy = async () => {
+    if (!this.connection) return;
+
     this.stopHeartbeatInterval();
-    await emit(`gateway/${this.account_id}`, "destroy");
+    await this.connection.disconnect();
 
     console.info("[websockets/gateway] closed connection.");
   };
 
-  private sendJSON = async <T>(message: T) => {
+  private sendJSON = async <T extends object>(message: T) => {
+    if (!this.connection) return;
+
     console.info("[websockets/gateway] sending message to gateway.", message);
-    await emit(`gateway/${this.account_id}`, message);
+    await this.connection.send(JSON.stringify(message));
   };
 
   private handleGatewayOpen = async () => {

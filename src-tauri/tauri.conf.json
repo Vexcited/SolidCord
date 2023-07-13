@@ -21,7 +21,8 @@
         "all": true,
         "request": true,
         "scope": [
-          "https://discord.com/api/*"
+          "https://discord.com/api/*",
+          "https://discordversion.voidfill.cc"
         ]
       },
       "window": {
