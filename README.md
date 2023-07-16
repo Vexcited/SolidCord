@@ -2,7 +2,7 @@
 
 > Still a WIP !
 
-A [Tauri](https://tauri.app/) + [SolidJS](https://www.solidjs.com/) handcrafted client for [Discord](https://discord.com/) that was made with performance in mind while keeping the look of Discord.
+A [Tauri](https://tauri.app/) + [SolidJS](https://www.solidjs.com/) **handcrafted client** for [Discord](https://discord.com/) that was made with *performance in mind*.
 
 > By "handcrafted", I actually mean "without using any package that gives us helpers for Discord's API, even typings".
 
@@ -10,11 +10,38 @@ A [Tauri](https://tauri.app/) + [SolidJS](https://www.solidjs.com/) handcrafted 
 
 ### Simultaneous connections
 
-Whenever you add an account, a connection to the gateway with this account will be kept until the app is quitted or until you sign out the account from SolidCord.
+Whenever you add an account, a connection to the gateway with this account will be kept until the app is exited - or you remove the account from SolidCord.
 
-That allows to have notifications for multiple accounts.
+That allows to have notifications and message caching for multiple accounts.
 
-Of course, this behavior can be disabled by signing out of the account in the account selector.
+Of course, this behavior can be toggled in the account selector - TODO.
+
+### SQLite caching
+
+> Internally uses [`tauri-plugin-sql#v1`](https://github.com/tauri-apps/plugins-workspace/tree/v1/plugins/sql)
+
+Messages, guilds, and basically anything Discord could return you is cached into multiple SQLite databases locally.
+
+This allows offline usage - readonly -, but also faster load times.
+
+If you don't want caching, just turn it off in settings ! (TODO)
+
+#### Where are the databases files ?
+
+- On Windows, `C:\Users\username\AppData\Roaming\com.github.vexcited.solidcord\`
+- On Linux, TODO
+- On macOS, TODO
+
+You can browse the content of those `.db` files using any SQLite browser,
+such as <https://sqliteviewer.app> if you want to do it in your browser directly, for example.
+
+### Native HTTP / WebSockets
+
+> Internally uses Tauri's HTTP API and [`tauri-plugin-websocket#v1`](https://github.com/tauri-apps/plugins-workspace/tree/v1/plugins/websocket)
+
+Requests aren't done by the WebView but by Rust directly !
+
+Concerning websockets, I'm trying to see if I can also do `zlib-stream` compression and `etf` encoding there.
 
 ## Development
 
