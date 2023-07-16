@@ -31,9 +31,24 @@ const fetch = async <T>(url: string, raw_options?: FetchOptions): Promise<Respon
   }
 
   const options: FetchOptions = raw_options ?? { method: "GET", headers: recommended_headers };
-  console.info("[@/utils/native/fetch]:", url, options);
 
-  return _fetch<T>(url, options);
+  // Add timing to debug.
+  const timerStart = performance.now();
+  console.groupCollapsed(`[native/fetch] -> ${url}`);
+  console.table(options.headers);
+  if (options.query) console.table(options.query);
+  console.info({ data: options.body, method: options.method });
+  console.groupEnd();
+
+  const data = await _fetch<T>(url, options);
+
+  const timerEnd = performance.now();
+  console.groupCollapsed(`[native/fetch] <- ${url} (took ~${Math.round(timerEnd - timerStart)}ms)`);
+  console.table(data.headers);
+  console.info({ status: data.status, data: data.data });
+  console.groupEnd();
+
+  return data;
 };
 
 export default fetch;
