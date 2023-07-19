@@ -18,7 +18,7 @@ export const callUsersMeAPI = async (token?: string) => {
   const uri = DISCORD_API_ENDPOINT + "v9/users/@me";
   const response = await fetch(uri, {
     method: "GET",
-    headers: { authorization: token }
+    headers: { Authorization: token }
   });
 
   const data = response.data as (

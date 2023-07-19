@@ -26,7 +26,7 @@ export const callGetChannelsMessagesAPI = async (req: {
   try {
     const response = await fetch<Message[]>(uri.href, {
       responseType: ResponseType.JSON,
-      headers: { authorization: account.token },
+      headers: { Authorization: account.token },
       method: "GET"
     });
 
@@ -76,7 +76,7 @@ export const callPostChannelsMessagesAPI = async (channel_id: string, req: {
 
   const { data } = await fetch<Message>(uri, {
     responseType: ResponseType.JSON,
-    headers: { authorization: account.token },
+    headers: { Authorization: account.token },
     method: "POST",
     body
   });
