@@ -54,7 +54,12 @@
       "identifier": "com.github.vexcited.solidcord",
       "longDescription": "A fast and open-source web client for Discord that is made with performance in mind.",
       "shortDescription": "A fast and open-source web client for Discord.",
-      "targets": "all"
+      "targets": [
+        "deb",
+        "nsis",
+        "app",
+        "updater"
+      ]
     },
     "security": {
       "csp": null
