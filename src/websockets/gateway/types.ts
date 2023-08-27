@@ -229,20 +229,20 @@ export interface OpDispatchReadySupplemental {
         client_status: {
           desktop: "online";
         };
-        activities: any[];
+        activities: unknown[];
       }[][];
 
-      friends: any[]; // TODO
+      friends: unknown[]; // TODO
     };
 
-    merged_members: any[][];
+    merged_members: unknown[][];
 
     lazy_private_channels: [];
 
     guilds: {
-      voice_states: any[]; // TODO
+      voice_states: unknown[]; // TODO
       id: string;
-      embedded_activities: any[]; // TODO
+      embedded_activities: unknown[]; // TODO
     }[];
 
     disclose: [];
