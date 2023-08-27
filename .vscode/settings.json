@@ -12,5 +12,8 @@
     "unresolved-proc-macro"
   ],
 
-  "unocss.underline": false
+  "cSpell.language": "en",
+  "cSpell.words": [
+    "solidcord"
+  ]
 }
