@@ -4,11 +4,8 @@ import accounts from "@/stores/accounts";
 import { Navigate } from "@solidjs/router";
 
 const Page: Component = () => {
-  const [account] = accounts.useCurrent();
-
-  return (
-    <Navigate href={`/${account().id}/@me`} />
-  );
+  const account = accounts.use();
+  return <Navigate href={`/${account.id}/@me`} />;
 };
 
 export default Page;

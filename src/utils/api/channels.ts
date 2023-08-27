@@ -1,6 +1,6 @@
 import { ChannelTypes, DMChannel, GroupDMChannel } from "@/types/discord/channel";
 import type { User } from "@/types/discord/user";
-import caching, { type CacheStoreReady } from "@/stores/caching";
+import caching, { type CacheStoreReady } from "@/stores/cache";
 
 /**
  * Priority:
@@ -9,7 +9,7 @@ import caching, { type CacheStoreReady } from "@/stores/caching";
  */
 export const getUserNameFromPriority = (user: User): string => {
   let name = user.username;
-  const [cache] = caching.useCurrent<CacheStoreReady>();
+  const [cache] = caching.use<CacheStoreReady>();
 
   const userInRelationships = cache.gateway.relationships.find(
     friend => friend.user_id === user.id
@@ -23,7 +23,7 @@ export const getUserNameFromPriority = (user: User): string => {
 };
 
 export const getRecipientsFromIds = (ids: string[]) => {
-  const [cache] = caching.useCurrent<CacheStoreReady>();
+  const [cache] = caching.use<CacheStoreReady>();
   return ids.map(id => cache.gateway.users.find(user => user.id === id));
 };
 

@@ -1,6 +1,6 @@
-import { Component, For, Match, Show, Switch, createMemo } from "solid-js";
+import { type Component, For, Match, Show, Switch, createMemo } from "solid-js";
 
-import caching, { type CacheStoreReady } from "@/stores/caching";
+import caching, { type CacheStoreReady } from "@/stores/cache";
 import accounts from "@/stores/accounts";
 
 import { getUserAvatarURL, getChannelIconURL } from "@/utils/api/images";
@@ -17,8 +17,8 @@ const AppHomePage: Component = () => {
   const guild_id = () => params.guild_id;
   const channel_id = () => params.channel_id;
 
-  const [cache] = caching.useCurrent<CacheStoreReady>();
-  const [account] = accounts.useCurrent();
+  const [cache] = caching.use<CacheStoreReady>();
+  const account = accounts.use();
 
   const guild = createMemo(() => cache.gateway.guilds.find(guild => guild.id === guild_id()));
   const guild_channels = createMemo(() => {
@@ -105,7 +105,7 @@ const AppHomePage: Component = () => {
     };
 
     return (
-      <A class="flex items-center gap-2" href={`/${account().id}/@me/${channel.id}`}>
+      <A class="flex items-center gap-2" href={`/${account.id}/@me/${channel.id}`}>
         <Show when={getChannelImageURL()}
           fallback={
             <div class="h-8 w-8 flex items-center justify-center rounded-full bg-black">
@@ -153,7 +153,7 @@ const AppHomePage: Component = () => {
                           <For each={category.text_channels}>
                             {channel => (
                               <A class="flex items-center gap-2 rounded-md px-2 py-1 pl-4"
-                                href={`/${account().id}/${guild_id()}/${channel.id}`}
+                                href={`/${account.id}/${guild_id()}/${channel.id}`}
                                 classList={{
                                   "bg-white/20 text-white ": channel.id === channel_id()
                                 }}
@@ -184,7 +184,7 @@ const AppHomePage: Component = () => {
             <nav class="h-full flex flex-col gap-4 overflow-y-auto p-4"
               aria-label="Private channels"
             >
-              <A class="flex items-center gap-2" href={`/${account().id}/@me/friends`}>
+              <A class="flex items-center gap-2" href={`/${account.id}/@me/friends`}>
                 <p class="text-white">
                   Friends
                 </p>

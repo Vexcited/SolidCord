@@ -1,16 +1,14 @@
 import type { SetStoreFunction } from "solid-js/store";
 import type { CacheDMChannel, CacheGuildChannel } from "@/types/cache";
-import type { OpCode, OpDispatch, OpHeartbeat } from "./types";
-import { OpCodes } from "./types";
+import { OpCodes, type OpCode, type OpDispatch, type OpHeartbeat } from "./types";
 
-import caching, { CacheStoreReady } from "@/stores/caching";
+import caching, { CacheStoreReady } from "@/stores/cache";
 import app from "@/stores/app";
 
-import { sendNativeNotification } from "@/utils/native/notify";
-import { UserAttentionType, appWindow } from "@tauri-apps/api/window";
+// import { sendNativeNotification } from "@/utils/native/notify";
+// import { UserAttentionType, appWindow } from "@tauri-apps/api/window";
 
 import WebSocket from "tauri-plugin-websocket-api";
-import { getCacheInStorage, setCacheInStorage } from "@/utils/storage/caching";
 
 import { buildClientPropertiesObject } from "@/utils/api/client-properties";
 
@@ -37,46 +35,9 @@ class DiscordClientWS {
   constructor (token: string, account_id: string) {
     this.token = token;
     this.account_id = account_id;
-    this.setAccountCache = caching.useSetterOf<CacheStoreReady>(this.account_id);
+    this.setAccountCache = caching.setterOf<CacheStoreReady>(this.account_id);
 
     console.info("[websockets/gateway] opening new connection for account", this.account_id);
-
-    // When spawning a new connection,
-    // we get gateway data from cache and show it until we get
-    // new data from gateway to update the store.
-    getCacheInStorage<CacheStoreReady["gateway"]>(this.account_id, "__gateway")
-      .then(gateway_data => {
-        if (!gateway_data) return;
-        const channels: CacheStoreReady["channels"] = [];
-
-        // Append every DM channels.
-        for (const channel_raw of gateway_data.private_channels) {
-          const channel = channel_raw as CacheDMChannel;
-          channel.messages = {};
-
-          channels.push(channel);
-        }
-
-        // Append every guilds' channels.
-        for (const guild of gateway_data.guilds) {
-          for (const channel_raw of guild.channels) {
-            const channel = channel_raw as CacheGuildChannel;
-            channel.messages = {};
-
-            channels.push(channel);
-          }
-        }
-
-        this.setAccountCache({
-          token: this.token,
-          ready: true,
-
-          channels,
-          requests: {},
-
-          gateway: gateway_data
-        } as CacheStoreReady);
-      });
 
     WebSocket.connect(DISCORD_WS_URL)
       .then(connection => {
@@ -206,8 +167,6 @@ class DiscordClientWS {
         user: message.d.user
       };
 
-      await setCacheInStorage<CacheStoreReady["gateway"]>(this.account_id, "__gateway", gateway_data);
-
       this.setAccountCache({
         token: this.token,
         ready: true,
@@ -225,11 +184,11 @@ class DiscordClientWS {
       this.setAccountCache("channels", channel => channel.id === channel_id, "messages", prev => ({ ...prev, [message.d.id]: message.d }));
 
       if (!app.isFocused()) {
-        await appWindow.requestUserAttention(UserAttentionType.Critical);
-        await sendNativeNotification({
-          title: message.d.author.username,
-          body: message.d.content
-        });
+        // await appWindow.requestUserAttention(UserAttentionType.Critical);
+        // await sendNativeNotification({
+        //   title: message.d.author.username,
+        //   body: message.d.content
+        // });
       }
 
       break;

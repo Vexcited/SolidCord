@@ -2,11 +2,11 @@ import type { Component } from "solid-js";
 
 import { Show, For, createMemo } from "solid-js";
 import { Navigate, useParams } from "@solidjs/router";
-import caching, { type CacheStoreReady } from "@/stores/caching";
+import caching, { type CacheStoreReady } from "@/stores/cache";
 
 const Page: Component = () => {
   const params = useParams();
-  const [cache] = caching.useCurrent<CacheStoreReady>();
+  const [cache] = caching.use<CacheStoreReady>();
 
   const friends = createMemo(() => {
     const users = cache.gateway.users;

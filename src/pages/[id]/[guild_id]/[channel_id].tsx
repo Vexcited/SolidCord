@@ -4,13 +4,13 @@ import { useParams } from "@solidjs/router";
 import { callGetChannelsMessagesAPI, callPostChannelsMessagesAPI } from "@/api/channels/messages";
 
 import { open } from "@tauri-apps/api/shell";
-import caching, { type CacheStoreReady } from "@/stores/caching";
+import caching, { type CacheStoreReady } from "@/stores/cache";
 import { ChannelTypes } from "@/types/discord/channel";
 import { getPrivateChannelName } from "@/utils/api/channels";
 
 const Page: Component = () => {
   const params = useParams();
-  const [cache] = caching.useCurrent<CacheStoreReady>();
+  const [cache] = caching.use<CacheStoreReady>();
 
   const channel_id = () => params.channel_id;
   const channel = () => cache.channels.find(channel => channel.id === channel_id());
