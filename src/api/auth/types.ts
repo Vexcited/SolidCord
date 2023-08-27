@@ -37,3 +37,20 @@ export interface DiscordLoginVerificationEmailResponse {
     };
   };
 }
+
+interface InvalidLogin {
+  _errors: [{
+    code: "INVALID_LOGIN";
+    message: string;
+  }];
+}
+
+export interface DiscordLoginInvalidLoginResponse {
+  code: 50035;
+  message: string;
+
+  errors: (
+    | { login: InvalidLogin; password: InvalidLogin }
+    | { password: InvalidLogin }
+  );
+}
