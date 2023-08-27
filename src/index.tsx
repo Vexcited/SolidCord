@@ -30,11 +30,13 @@ render(() => {
 }, mount);
 
 import fetch from "@/utils/native/fetch";
+import app from "@/stores/app";
 
 // Internal API
 // TODO: Declare a module exposing the types and publish it as a module to make external plugins easier to do.
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-expect-error
 window.api = {
-  native_fetch: fetch
+  native_fetch: fetch,
+  app
 };
