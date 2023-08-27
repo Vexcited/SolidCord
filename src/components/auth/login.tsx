@@ -9,7 +9,6 @@ import HCaptcha from "solid-hcaptcha";
 import { callAuthLoginAPI, callAuthMfaTotpAPI } from "@/api/auth";
 import { callUsersMeAPI } from "@/api/users";
 
-import { createCacheStorage } from "@/utils/storage/caching";
 import accounts from "@/stores/accounts";
 
 import { IoArrowBack } from "solid-icons/io";
@@ -23,55 +22,93 @@ const AuthLogin: Component<{
   const [state, setState] = createStore<{
     uid: string;
     password: string;
-    error: null | string;
 
     hcaptcha_sitekey: null | string;
     hcaptcha_token: null | string;
 
     mfa_ticket: null | string;
     mfa_code: string;
+
+    loading: boolean;
+    error: null | string;
   }>({
     uid: "",
     password: "",
-    error: null,
 
     hcaptcha_sitekey: null,
     hcaptcha_token: null,
 
     mfa_ticket: null,
-    mfa_code: ""
+    mfa_code: "",
+
+    loading: false,
+    error: null
   });
 
-  const sendLoginRequest = async () => {
-    if (!state.uid || !state.password) return;
+  const sendLoginRequest = async (): Promise<void> => {
+    if (!state.uid || !state.password) {
+      setState({
+        loading: false,
+        error: "Please, fill in the required fields."
+      });
+
+      return;
+    }
+
+    // Clear the state.
+    setState({
+      loading: true,
+      error: null
+    });
 
     const response = await callAuthLoginAPI({
       login: state.uid,
       password: state.password,
-
       hcaptcha_token: state.hcaptcha_token
     });
 
-    if (response.need_captcha) {
-      setState("hcaptcha_sitekey", response.sitekey);
-      return;
+    if (response.status === "TOKEN") {
+      return processUserToken(response.data.token);
     }
+    // Only the `processUserToken` function will edit the `state.loading`.
+    else setState("loading", false);
 
-    if (response.need_mfa) {
-      setState("mfa_ticket", response.ticket);
-      return;
+    // If we did not get the token, we do a switch case to handle.
+    switch (response.status) {
+    case "HCAPTCHA":
+      setState("hcaptcha_sitekey", response.data.sitekey);
+      break;
+    case "EMAIL_VERIFICATION":
+      setState("error", "New login location, please check your email address and verify the authentication.");
+      break;
+    case "MFA":
+      setState("mfa_ticket", response.data.ticket);
+      break;
+    case "INVALID_CREDENTIALS":
+      setState("error", "Bad credentials on " + [response.data.is_password ? "the password" : "", response.data.is_uid ? "the login" : ""].filter(Boolean).join(" and "));
+      break;
+    case "UNKNOWN":
+      setState("error", `An unknown error was thrown, please checkout this debug output: ${JSON.stringify(response.data.debug)}`);
+      break;
     }
-
-    if (response.need_email_verification) {
-      setState("error", "New location, please check your email for a quick verification.");
-      return;
-    }
-
-    await processUserToken(response.token);
   };
 
   const sendMfaRequest = async () => {
     if (!state.mfa_ticket) return;
+
+    if (!state.mfa_code) {
+      setState({
+        loading: false,
+        error: "Please, fill in your MFA code."
+      });
+
+      return;
+    }
+
+    setState({
+      loading: true,
+      error: null
+    });
 
     const response = await callAuthMfaTotpAPI({
       code: state.mfa_code,
@@ -84,14 +121,16 @@ const AuthLogin: Component<{
       return;
     }
 
-    await processUserToken(response.token);
+    return processUserToken(response.token);
   };
 
-  const processUserToken = async (token: string) => {
+  /**
+   * Process the token to get the first user information.
+   */
+  const processUserToken = async (token: string): Promise<void> => {
     const user = await callUsersMeAPI(token);
-    console.info("[.][processUserToken]: received `/users/me` data", user);
 
-    // Make sure to remove any instance of this user account before.
+    // Make sure to remove any existent instance of this account before.
     accounts.remove(user.id);
 
     // Add the account into our storage/store.
@@ -103,24 +142,32 @@ const AuthLogin: Component<{
       token
     });
 
-    await createCacheStorage(user);
+    setState({
+      loading: false,
+      error: null
+    });
 
     navigate(`/${user.id}`);
-    return;
   };
 
   const loginHandler: JSX.EventHandler<HTMLFormElement, SubmitEvent> = (event) => {
     event.preventDefault();
+    if (state.loading) return;
+
     return sendLoginRequest();
   };
 
   const mfaHandler: JSX.EventHandler<HTMLFormElement, SubmitEvent> = (event) => {
     event.preventDefault();
+    if (state.loading) return;
+
     return sendMfaRequest();
   };
 
   const hcaptchaVerifyHandler = (token: string) => {
     setState("hcaptcha_token", token);
+    if (state.loading) return;
+
     return sendLoginRequest();
   };
 
@@ -172,8 +219,15 @@ const AuthLogin: Component<{
               />
             </label>
 
+            <Show when={state.error}>
+              <p class="text-[#F23F42]">
+                Error: {state.error}
+              </p>
+            </Show>
+
             <button type="submit"
-              class="h-[44px] min-h-[44px] min-w-[130px] w-full rounded-[3px] bg-[#5865F2] px-4 py-0.5 text-(center [16px] white) font-medium leading-[24px]"
+              class="h-[44px] min-h-[44px] min-w-[130px] w-full rounded-[3px] bg-[#5865F2] px-4 py-0.5 text-(center [16px] white) font-medium leading-[24px] disabled:opacity-60"
+              disabled={state.loading}
             >
               Log In
             </button>
@@ -198,13 +252,13 @@ const AuthLogin: Component<{
               onChange={({ currentTarget }) => setState("mfa_code", currentTarget.value)}
             />
 
-            <button type="submit">
+            <button type="submit"
+              disabled={state.loading}
+            >
               Submit MFA code
             </button>
           </form>
         </Show>
-
-
       </div>
 
       {/* <div class="hidden md:flex flex-col gap-8 items-center flex-shrink-0 w-[240px]">
