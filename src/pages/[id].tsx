@@ -1,15 +1,18 @@
 import type { Component } from "solid-js";
-import { Show, For } from "solid-js";
+import { Show, For, createEffect, on } from "solid-js";
 import { Outlet, useParams, A } from "@solidjs/router";
 
-import caching from "@/stores/caching";
+import app from "@/stores/app";
+import caching from "@/stores/cache";
 import { getGuildIconURL, getUserAvatarURL } from "@/utils/api/images";
 
 const Layout: Component = () => {
   const params = useParams();
 
-  const [cache] = caching.useCurrent();
-  localStorage.setItem("lastVisitedAccount", params.id);
+  const [cache] = caching.use();
+  createEffect(on(() => params.id, (account_id) => {
+    app.setCurrentAccountID(account_id);
+  }));
 
   return (
     <Show when={cache.token && cache.ready ? cache : null}
