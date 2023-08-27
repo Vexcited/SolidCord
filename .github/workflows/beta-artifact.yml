@@ -16,7 +16,7 @@ jobs:
 
         target:
           - x86_64-unknown-linux-gnu
-          - aarch64-unknown-linux-gnu
+          # - aarch64-unknown-linux-gnu
           - x86_64-apple-darwin
           - aarch64-apple-darwin
           - x86_64-pc-windows-msvc
@@ -25,9 +25,9 @@ jobs:
             target: x86_64-unknown-linux-gnu
             use-cross: false
 
-          - os: ubuntu-20.04
-            target: aarch64-unknown-linux-gnu
-            use-cross: true
+          # - os: ubuntu-20.04
+          #   target: aarch64-unknown-linux-gnu
+          #   use-cross: true
 
           - os: macos-latest
             target: x86_64-apple-darwin
@@ -78,16 +78,16 @@ jobs:
       - name: Install pnpm dependencies
         run: pnpm install
 
-      - uses: taiki-e/install-action@cross
-        if: matrix.use-cross == true
+      # - uses: taiki-e/install-action@cross
+      #   if: matrix.use-cross == true
 
-      - name: Build using cross
-        if: matrix.use-cross == true
-        run: |
-          cd ./src-tauri
-          cross install tauri-cli
-          cross tauri build --target ${{ matrix.target }}
-          cd ../
+      # - name: Build using cross
+      #   if: matrix.use-cross == true
+      #   run: |
+      #     cd ./src-tauri
+      #     cross install tauri-cli
+      #     cross tauri build --target ${{ matrix.target }}
+      #     cd ../
 
       - name: Build using pnpm
         if: matrix.use-cross == false
