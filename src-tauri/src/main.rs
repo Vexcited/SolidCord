@@ -100,7 +100,6 @@ fn main() {
       _ => {}
     })
     .plugin(tauri_plugin_websocket::init())
-    .plugin(tauri_plugin_sql::Builder::default().build())
     .run(tauri::generate_context!())
     .expect("Error while running SolidCord.");
 }

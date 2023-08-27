@@ -1,8 +1,6 @@
 # SolidCord
 
-> Still a WIP !
-
-A [Tauri](https://tauri.app/) + [SolidJS](https://www.solidjs.com/) **handcrafted client** for [Discord](https://discord.com/) that was made with *performance in mind*.
+A work in progress fast and open-source handcrafted web client for [Discord](https://discord.com/) that is made with performance in mind. Uses [Tauri](https://tauri.app/) and [SolidJS](https://solidjs.com/).
 
 > By "handcrafted", I actually mean "without using any package that gives us helpers for Discord's API, even typings".
 
@@ -16,32 +14,13 @@ That allows to have notifications and message caching for multiple accounts.
 
 Of course, this behavior can be toggled in the account selector - TODO.
 
-### SQLite caching
-
-> Internally uses [`tauri-plugin-sql#v1`](https://github.com/tauri-apps/plugins-workspace/tree/v1/plugins/sql)
-
-Messages, guilds, and basically anything Discord could return you is cached into multiple SQLite databases locally.
-
-This allows offline usage - readonly -, but also faster load times.
-
-If you don't want caching, just turn it off in settings ! (TODO)
-
-#### Where are the databases files ?
-
-- On Windows, `C:\Users\username\AppData\Roaming\com.github.vexcited.solidcord\`
-- On Linux, TODO
-- On macOS, TODO
-
-You can browse the content of those `.db` files using any SQLite browser,
-such as <https://sqliteviewer.app> if you want to do it in your browser directly, for example.
-
 ### Native HTTP / WebSockets
 
 > Internally uses Tauri's HTTP API and [`tauri-plugin-websocket#v1`](https://github.com/tauri-apps/plugins-workspace/tree/v1/plugins/websocket)
 
-Requests aren't done by the WebView but by Rust directly !
+Requests aren't done in the WebView (using the web Fetch API) but within Rust directly !
 
-Concerning websockets, I'm trying to see if I can also do `zlib-stream` compression and `etf` encoding there.
+Concerning WebSockets, I'm trying to see if I can also do `zlib-stream` compression and `etf` encoding there.
 
 ## Development
 
@@ -60,7 +39,7 @@ pnpm install
 
 Please, try to stick with `pnpm` so we don't conflict with any other Node.js package manager.
 
-If you need to update `cargo` packages for `src-tauri` folder,
+If you need to update `cargo` packages for the `src-tauri` folder,
 
 ```bash
 cd src-tauri
@@ -71,6 +50,7 @@ cargo update
 
 | Command | Description |
 | ------- | ----------- |
+| `pnpm lint` | Runs ESLint on the codebase to detect any styling issue. |
 | `pnpm dev` | Runs front-end (Vite) development server, **without Tauri**. |
 | `pnpm build` | Builds the front-end, **without Tauri**. |
 | `pnpm tauri dev` | Runs front-end (Vite) development server, **with Tauri** at the same time. |
