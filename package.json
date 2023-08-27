@@ -36,8 +36,6 @@
     "@typescript-eslint/eslint-plugin": "^6.4.1",
     "@typescript-eslint/parser": "^6.4.1",
     "@unocss/eslint-config": "^0.53.6",
-    "@unocss/preset-uno": "^0.53.6",
-    "@unocss/transformer-variant-group": "^0.53.6",
     "eslint": "^8.48.0",
     "eslint-plugin-solid": "^0.13.0",
     "typescript": "^5.2.2",

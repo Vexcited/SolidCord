@@ -1,14 +1,8 @@
-import { defineConfig } from "unocss";
-
-import presetUno from "@unocss/preset-uno";
-import { presetScrollbar } from "unocss-preset-scrollbar";
-
-import transformerVariantGroup from "@unocss/transformer-variant-group";
+import { defineConfig, presetUno, transformerVariantGroup } from "unocss";
 
 export default defineConfig({
   presets: [
-    presetUno(),
-    presetScrollbar()
+    presetUno()
   ],
 
   transformers: [
@@ -17,7 +11,7 @@ export default defineConfig({
 
   theme: {
     fontFamily: {
-      sans: ["Rubik", "sans-serif"]
+      sans: "Rubik"
     }
   }
 });

@@ -52,12 +52,6 @@ devDependencies:
   '@unocss/eslint-config':
     specifier: ^0.53.6
     version: 0.53.6(eslint@8.48.0)(typescript@5.2.2)
-  '@unocss/preset-uno':
-    specifier: ^0.53.6
-    version: 0.53.6
-  '@unocss/transformer-variant-group':
-    specifier: ^0.53.6
-    version: 0.53.6
   eslint:
     specifier: ^8.48.0
     version: 8.48.0
