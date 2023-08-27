@@ -1,34 +1,16 @@
 import type { DiscordMeResponse } from "./types";
 
 import fetch from "@/utils/native/fetch";
-import { DISCORD_API_ENDPOINT, getCurrentAccountToken } from "@/api";
-
-// import caching from "@/stores/caching";
-
-// import { setCacheInStorage } from "@/utils/storage/caching";
+import { createApiEndpointURL, getCurrentAccountToken } from "@/api";
 
 export const callUsersMeAPI = async (token?: string) => {
-  // let isFromCurrent = false;
+  if (!token) token = getCurrentAccountToken();
 
-  if (!token) {
-    token = getCurrentAccountToken();
-    // isFromCurrent = true;
-  }
-
-  const uri = DISCORD_API_ENDPOINT + "v9/users/@me";
-  const response = await fetch(uri, {
+  const uri = createApiEndpointURL(9, "/users/@me");
+  const response = await fetch<DiscordMeResponse>(uri, {
     method: "GET",
     headers: { Authorization: token }
   });
 
-  const data = response.data as (
-    DiscordMeResponse
-  );
-
-  // if (isFromCurrent) {
-  //   const [_, setCache] = caching.useCurrent();
-  //   setCacheInStorage<DiscordMeResponse>(userStore.id, CachingStorageEndpoints.USERS_ME, data);
-  // }
-
-  return data;
+  return response.data;
 };
