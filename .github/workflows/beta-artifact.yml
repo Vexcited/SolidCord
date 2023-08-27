@@ -72,21 +72,25 @@ jobs:
       - name: Handle Rust dependencies caching
         uses: Swatinem/rust-cache@v2
         with:
+          workspaces: "./src-tauri -> target"
           key: v1-${{ matrix.target }}
 
       - name: Install pnpm dependencies
         run: pnpm install
 
-      - run: |
-          cargo install tauri-cli
-          cd ./src-tauri
+      - uses: taiki-e/install-action@cross
+        if: matrix.use-cross == true
 
-      - name: Build using cargo
-        uses: actions-rs/cargo@v1
-        with:
-          use-cross: true
-          command: tauri
-          args: build --release --target ${{ matrix.target }}
+      - name: Build using cross
+        if: matrix.use-cross == true
+        run: |
+          cd ./src-tauri
+          cross tauri build --target ${{ matrix.target }}
+      
+      - name: Build using pnpm
+        if: matrix.use-cross == false
+        run: |
+          pnpm tauri build --target ${{ matrix.target }}
 
       - run: |
           ls ./target/release
