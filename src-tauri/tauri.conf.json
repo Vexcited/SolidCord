@@ -52,8 +52,8 @@
         "icons/icon.ico"
       ],
       "identifier": "com.github.vexcited.solidcord",
-      "longDescription": "A Tauri+SolidJS client for Discord that was made with performance in mind while keeping the look of Discord.",
-      "shortDescription": "A Tauri+SolidJS client for Discord.",
+      "longDescription": "A fast and open-source web client for Discord that is made with performance in mind.",
+      "shortDescription": "A fast and open-source web client for Discord.",
       "targets": "all"
     },
     "security": {
@@ -82,7 +82,7 @@
       }
     ],
     "systemTray": {
-      "iconPath": "icons/icon.png",
+      "iconPath": "icons/tray.png",
       "iconAsTemplate": true
     }
   }
