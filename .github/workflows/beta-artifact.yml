@@ -87,11 +87,12 @@ jobs:
           cd ./src-tauri
           cross install tauri-cli
           cross tauri build --target ${{ matrix.target }}
-      
+          cd ../
+
       - name: Build using pnpm
         if: matrix.use-cross == false
         run: |
           pnpm tauri build --target ${{ matrix.target }}
 
       - run: |
-          ls ./target/**/*
+          ls ./src-tauri/target/**/*
