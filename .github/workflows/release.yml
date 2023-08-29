@@ -1,9 +1,13 @@
-name: Create beta artifacts
+name: Make release
 
 on:
   push:
-    branches:
-      - main
+    tags:
+      - 'v*'
+
+env:
+  TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+  TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
 
 jobs:
   make:
