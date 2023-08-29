@@ -1,6 +1,6 @@
 {
   "name": "solidcord",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A fast and open-source web client for Discord that is made with performance in mind.",
   "type": "module",
   "private": true,
