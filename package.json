@@ -9,7 +9,8 @@
     "dev": "vite",
     "build": "vite build",
     "tauri": "tauri",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "release": "release-it"
   },
   "author": "Mikkel RINGAUD <mikkel@milescode.dev> (https://github.com/Vexcited)",
   "bugs": {
@@ -38,6 +39,7 @@
     "@unocss/eslint-config": "^0.53.6",
     "eslint": "^8.48.0",
     "eslint-plugin-solid": "^0.13.0",
+    "release-it": "^16.1.5",
     "typescript": "^5.2.2",
     "unocss": "^0.53.6",
     "vite": "^4.4.9",
