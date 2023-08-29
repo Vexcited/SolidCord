@@ -1,6 +1,6 @@
 {
   "name": "solidcord",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "A fast and open-source web client for Discord that is made with performance in mind.",
   "type": "module",
   "private": true,
@@ -45,5 +45,23 @@
     "vite": "^4.4.9",
     "vite-plugin-pages": "^0.31.0",
     "vite-plugin-solid": "^2.7.0"
+  },
+  "release-it": {
+    "git": {
+      "requireBranch": "main",
+      "tagName": "v${version}",
+      "tagAnnotation": "Release v${version}",
+      "commitMessage": "chore: release v${version}",
+      "requireCleanWorkingDir": false
+    },
+    "github": {
+      "release": false
+    },
+    "npm": {
+      "publish": false
+    },
+    "hooks": {
+      "after:bump": "node ./scripts/on-version-bump.js ${version}"
+    }
   }
 }

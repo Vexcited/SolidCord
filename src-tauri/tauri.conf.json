@@ -8,7 +8,7 @@
   },
   "package": {
     "productName": "SolidCord",
-    "version": "0.1.0"
+    "version": "0.0.1"
   },
   "tauri": {
     "allowlist": {
@@ -74,12 +74,9 @@
         "visible": true,
         "center": true,
         "focus": true,
-        
         "decorations": false,
         "titleBarStyle": "Overlay",
-        
         "title": "SolidCord",
-
         "width": 1280,
         "height": 720,
         "minWidth": 940,
