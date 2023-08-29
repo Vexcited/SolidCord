@@ -92,12 +92,25 @@ jobs:
       - name: Build using pnpm
         if: matrix.use-cross == false
         run: |
-          pnpm tauri build --target ${{ matrix.target }}
+          pnpm tauri build --target ${{ matrix.target }} -c ./src-tauri/tauri.beta.conf.json --ci
 
-      - uses: actions/upload-artifact@v3
+      - name: Upload macOS artifacts
+        uses: actions/upload-artifact@v3
+        if: matrix.target == 'x86_64-apple-darwin' || matrix.target == 'aarch64-apple-darwin'
         with:
-          name: my-artifact
-          path: |
-            src-tauri/target/**/*.exe
-            src-tauri/target/**/*.deb
-            src-tauri/target/**/*.app
+          name: ${{ matrix.target }}
+          path: src-tauri/target/${{ matrix.target }}/release/bundle/macos/SolidCord.app
+          
+      - name: Upload Windows artifacts
+        uses: actions/upload-artifact@v3
+        if: matrix.os == 'windows-latest'
+        with:
+          name: ${{ matrix.target }}
+          path: src-tauri/target/${{ matrix.target }}/release/SolidCord.exe
+      
+      - name: Upload Linux artifacts
+        uses: actions/upload-artifact@v3
+        if: matrix.os == 'ubuntu-20.04'
+        with:
+          name: ${{ matrix.target }}
+          path: src-tauri/target/${{ matrix.target }}/release/bundle/deb/*_amd64.deb
