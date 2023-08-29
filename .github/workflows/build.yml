@@ -1,0 +1,247 @@
+name: Build SolidCord
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+  TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    outputs:
+      release_id: ${{ steps.release.outputs.id }}
+
+    steps:
+      - id: release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          draft: true
+          prerelease: false
+          generate_release_notes: true
+
+  build:
+    needs: release
+    strategy:
+      fail-fast: false
+      matrix:
+        toolchain: [stable]
+
+        target:
+          - x86_64-unknown-linux-gnu
+          # - aarch64-unknown-linux-gnu
+          - x86_64-apple-darwin
+          - aarch64-apple-darwin
+          - x86_64-pc-windows-msvc
+        include:
+          - os: ubuntu-20.04
+            target: x86_64-unknown-linux-gnu
+            use-cross: false
+
+          # - os: ubuntu-20.04
+          #   target: aarch64-unknown-linux-gnu
+          #   use-cross: true
+
+          - os: macos-latest
+            target: x86_64-apple-darwin
+            use-cross: false
+
+          - os: macos-11
+            target: aarch64-apple-darwin
+            use-cross: false
+
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            use-cross: false
+    
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'pnpm'
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: ${{ matrix.toolchain }}
+          target: ${{ matrix.target }}
+
+      - name: Additional Ubuntu dependencies
+        if: matrix.os == 'ubuntu-20.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: "./src-tauri -> target"
+          key: v1-${{ matrix.target }}
+
+      - name: Install pnpm dependencies
+        run: pnpm install
+
+      # -> We're not building a stable release.
+      - name: Build beta release
+        if: matrix.use-cross == false && startsWith(github.ref, 'refs/tags/') == false
+        run: |
+          pnpm tauri build --target ${{ matrix.target }} -c ./src-tauri/tauri.beta.conf.json --ci
+      
+      # -> We're building a stable release.
+      - name: Build stable release
+        if: matrix.use-cross == false && startsWith(github.ref, 'refs/tags/') == true
+        run: |
+          pnpm tauri build --target ${{ matrix.target }} -c ./src-tauri/tauri.conf.json --ci
+
+      - name: Upload workflow artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          if-no-files-found: ignore
+          name: ${{ matrix.target }}
+          path: |
+            src-tauri/target/${{ matrix.target }}/release/bundle/macos/SolidCord.app
+            src-tauri/target/${{ matrix.target }}/release/bundle/deb/solid-cord_*_amd64.deb
+            src-tauri/target/${{ matrix.target }}/release/SolidCord.exe
+
+      - name: Upload assets to release
+        if: startsWith(github.ref, 'refs/tags/') == true
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const { existsSync, readFileSync } = require('fs');
+            const { join } = require('path');
+
+            const release_id = "${{ needs.release.outputs.release_id }}";
+            const target = "${{ matrix.target }}";
+            const os = "${{ matrix.os }}";
+            
+            const version = "${{ github.ref }}".replace('refs/tags/v', '');
+            
+            let root_path = join(__dirname, 'src-tauri/target/' + target + '/release/bundle/');
+            let artifacts = [];
+
+            if (os.startsWith("macos-")) {
+              artifacts.push(
+                join(root_path, 'macos/SolidCord.app'),
+                join(root_path, 'macos/SolidCord.app.tar.gz'),
+                join(root_path, 'macos/SolidCord.app.tar.gz.sig')
+              );
+            }
+            else if (os === "windows-latest") {
+              artifacts.push(
+                join(root_path, 'nsis/SolidCord_' + version + '_x64-setup.exe'),
+                join(root_path, 'nsis/SolidCord_' + version + '_x64-setup.nsis.zip'),
+                join(root_path, 'nsis/SolidCord_' + version + '_x64-setup.nsis.zip.sig')
+              );
+            }
+            else if (os === "ubuntu-20.04") {
+              artifacts.push(
+                join(root_path, 'deb/solid-cord_' + version + '_amd64.deb'),
+              );
+            }
+
+            artifacts = artifacts.filter(artifact => existsSync(artifact));
+
+            (async () => {
+              for (const artifact of artifacts) {
+                let name = artifact.split('/').pop();
+
+                if (os.startsWith("macos-")) {
+                  name = name.replace("SolidCord", "SolidCord-" + target.split("-")[0]);
+                }
+
+                console.log(`Uploading ${artifact} to release ${release_id}`);
+                await github.repos.uploadReleaseAsset({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  release_id,
+                  name,
+                  data: readFileSync(artifact)
+                });
+              }
+            })();
+
+  updater:
+    needs: [release, build]
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Make 'updater.json' file for release
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const version = "${{ github.ref }}".replace('refs/tags/', '');
+            const release_id = "${{ needs.release.outputs.release_id }}";
+
+            const updater_json_content = {
+              version,
+              notes: "A new version of SolidCord is available!",
+              pub_date: new Date().toISOString(),
+              platforms: {}
+            };
+
+            const download_base_url = "https://github.com/Vexcited/SolidCord/releases/download/" + version + "/";
+
+            (async () => {
+              const assets = (await github.repos.listReleaseAssets({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                release_id,
+                per_page: 50
+              })).data;
+
+              for (const asset of assets) {
+                if (!asset.name.endsWith('.sig')) continue;
+
+                // We get the signature of the asset, to add it in our 'updater.json' file.
+                const signature = (await github.repos.getReleaseAsset({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  asset_id: asset.id,
+                  headers: {
+                    Accept: 'application/octet-stream'
+                  }
+                })).data.toString();
+
+                let platform = "";
+
+                if (asset.name.endsWith('nsis.zip.sig')) {
+                  platform = "windows-x86_64";
+                }
+                else if (asset.name.endsWith('app.tar.gz.sig')) {
+                  // For macOS assets, we named the app as "SolidCord-ARCH.app",
+                  // so we can just get the arch like that.
+                  let arch = asset.name.split('.')[0].split('-')[1];
+                  platform = "darwin-" + arch;
+                }
+
+                if (!platform) continue;
+
+                updater_json_content.platforms[platform] = {
+                  signature,
+                  url: download_base_url + asset.name.replace('.sig', '')
+                };
+              }
+
+              await github.repos.uploadReleaseAsset({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                release_id,
+                name: "updater.json",
+                data: Buffer.from(JSON.stringify(updater_json_content))
+              });
+            })();
