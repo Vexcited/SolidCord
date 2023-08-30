@@ -102,7 +102,7 @@ jobs:
         with:
           script: |
             const { existsSync, readFileSync } = require('fs');
-            const { join } = require('path');
+            const { join, sep } = require('path');
 
             const release_id = "${{ needs.release.outputs.release_id }}";
             const target = "${{ matrix.target }}";
@@ -115,7 +115,6 @@ jobs:
 
             if (os.startsWith("macos-")) {
               artifacts.push(
-                join(root_path, 'macos/SolidCord.app'),
                 join(root_path, 'macos/SolidCord.app.tar.gz'),
                 join(root_path, 'macos/SolidCord.app.tar.gz.sig')
               );
@@ -137,7 +136,7 @@ jobs:
 
             (async () => {
               for (const artifact of artifacts) {
-                let name = artifact.split('/').pop();
+                let name = artifact.split(sep).pop();
 
                 if (os.startsWith("macos-")) {
                   name = name.replace("SolidCord", "SolidCord-" + target.split("-")[0]);
