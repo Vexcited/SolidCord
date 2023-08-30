@@ -2,6 +2,8 @@ name: "stable: release"
 
 on:
   push:
+    branches:
+      - stable
     tags:
       - "v*.*.*"
 
@@ -185,15 +187,17 @@ jobs:
               for (const asset of assets) {
                 if (!asset.name.endsWith('.sig')) continue;
 
-                // We get the signature of the asset, to add it in our 'updater.json' file.
-                const signature = (await github.rest.repos.getReleaseAsset({
+                // We get the signature ArrayBuffer of the asset, to add it in our 'updater.json' file.
+                const signature_asset = await github.rest.repos.getReleaseAsset({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
                   asset_id: asset.id,
                   headers: {
                     Accept: 'application/octet-stream'
                   }
-                })).data.toString();
+                });
+
+                const signature = new TextDecoder().decode(signature_asset.data);
 
                 let platform = "";
 
