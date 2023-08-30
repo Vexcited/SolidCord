@@ -3,9 +3,7 @@ name: "beta: build"
 on:
   push:
     branches:
-      - main
-    tags-ignore:
-      - '**'
+      - beta
 
 jobs:
   build:
