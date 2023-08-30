@@ -1,6 +1,6 @@
 {
   "name": "solidcord",
-  "version": "0.0.3",
+  "version": "0.0.2",
   "description": "A fast and open-source web client for Discord that is made with performance in mind.",
   "type": "module",
   "private": true,
@@ -51,9 +51,9 @@
       "requireBranch": "main",
       "tagName": "v${version}",
       "tagAnnotation": "Release v${version}",
+      "commitMessage": "chore: release v${version}",
       "requireCleanWorkingDir": false,
-      "push": false,
-      "commit": false
+      "push": false
     },
     "github": {
       "release": false
@@ -63,13 +63,8 @@
     },
     "hooks": {
       "after:bump": "node ./scripts/on-version-bump.js ${version}",
-      "before:release": [
-        "git add . --update",
-        "git commit --message \"chore: release v${version}\"",
-        "git push"
-      ],
       "after:release": [
-        "git push origin v${version}"
+        "git push --atomic origin main v${version}"
       ]
     }
   }
