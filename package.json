@@ -48,7 +48,6 @@
   },
   "release-it": {
     "git": {
-      "requireBranch": "main",
       "tagName": "v${version}",
       "tagAnnotation": "Release v${version}",
       "commitMessage": "chore: release v${version}",
@@ -64,7 +63,7 @@
     "hooks": {
       "after:bump": "node ./scripts/on-version-bump.js ${version}",
       "after:release": [
-        "git push --atomic origin main v${version}"
+        "git push --atomic origin stable v${version}"
       ]
     }
   }
