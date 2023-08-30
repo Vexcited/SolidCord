@@ -1,9 +1,9 @@
-name: Build SolidCord
+name: "stable: release"
 
 on:
   push:
-    branches:
-      - main
+    tags:
+      - "v*.*.*"
 
 env:
   TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
@@ -21,7 +21,6 @@ jobs:
     steps:
       - id: release
         uses: softprops/action-gh-release@v1
-        if: startsWith(github.event.ref, 'refs/tags/v')
         with:
           draft: true
           prerelease: false
@@ -94,30 +93,11 @@ jobs:
       - name: Install pnpm dependencies
         run: pnpm install
 
-      # -> We're not building a stable release.
-      - name: Build beta release
-        if: startsWith(github.event.ref, 'refs/tags/v') == false
-        run: |
-          pnpm tauri build --target ${{ matrix.target }} -c ./src-tauri/tauri.beta.conf.json --ci
-      
-      # -> We're building a stable release.
       - name: Build stable release
-        if: startsWith(github.event.ref, 'refs/tags/v')
         run: |
           pnpm tauri build --target ${{ matrix.target }} -c ./src-tauri/tauri.conf.json --ci
 
-      - name: Upload workflow artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          if-no-files-found: ignore
-          name: ${{ matrix.target }}
-          path: |
-            src-tauri/target/${{ matrix.target }}/release/bundle/macos/SolidCord.app
-            src-tauri/target/${{ matrix.target }}/release/bundle/deb/solid-cord_*_amd64.deb
-            src-tauri/target/${{ matrix.target }}/release/SolidCord.exe
-
       - name: Upload assets to release
-        if: startsWith(github.event.ref, 'refs/tags/v')
         uses: actions/github-script@v6
         with:
           script: |
@@ -176,7 +156,6 @@ jobs:
 
   updater:
     needs: [release, build]
-    if: startsWith(github.event.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
 
     steps:

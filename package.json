@@ -51,8 +51,9 @@
       "requireBranch": "main",
       "tagName": "v${version}",
       "tagAnnotation": "Release v${version}",
-      "commitMessage": "chore: release v${version}",
-      "requireCleanWorkingDir": false
+      "requireCleanWorkingDir": false,
+      "push": false,
+      "commit": false
     },
     "github": {
       "release": false
@@ -61,7 +62,15 @@
       "publish": false
     },
     "hooks": {
-      "after:bump": "node ./scripts/on-version-bump.js ${version}"
+      "after:bump": "node ./scripts/on-version-bump.js ${version}",
+      "before:release": [
+        "git add . --update",
+        "git commit --message \"chore: release v${version}\"",
+        "git push"
+      ],
+      "after:release": [
+        "git push origin v${version}"
+      ]
     }
   }
 }
