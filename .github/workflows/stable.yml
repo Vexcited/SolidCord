@@ -144,7 +144,7 @@ jobs:
                 }
 
                 console.log(`Uploading ${artifact} to release ${release_id}`);
-                await github.repos.uploadReleaseAsset({
+                await github.rest.repos.uploadReleaseAsset({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
                   release_id,
@@ -176,7 +176,7 @@ jobs:
             const download_base_url = "https://github.com/Vexcited/SolidCord/releases/download/" + version + "/";
 
             (async () => {
-              const assets = (await github.repos.listReleaseAssets({
+              const assets = (await github.rest.repos.listReleaseAssets({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 release_id,
@@ -187,7 +187,7 @@ jobs:
                 if (!asset.name.endsWith('.sig')) continue;
 
                 // We get the signature of the asset, to add it in our 'updater.json' file.
-                const signature = (await github.repos.getReleaseAsset({
+                const signature = (await github.rest.repos.getReleaseAsset({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
                   asset_id: asset.id,
@@ -216,7 +216,7 @@ jobs:
                 };
               }
 
-              await github.repos.uploadReleaseAsset({
+              await github.rest.repos.uploadReleaseAsset({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 release_id,
