@@ -42,7 +42,7 @@
     "release-it": "^16.1.5",
     "typescript": "^5.2.2",
     "unocss": "^0.53.6",
-    "vite": "^4.4.9",
+    "vite": "^4.4.12",
     "vite-plugin-pages": "^0.31.0",
     "vite-plugin-solid": "^2.7.0"
   },
