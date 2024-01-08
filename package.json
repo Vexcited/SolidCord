@@ -22,7 +22,7 @@
   "dependencies": {
     "@fontsource/rubik": "^5.0.9",
     "@solidjs/router": "^0.8.3",
-    "@tauri-apps/api": "^1.4.0",
+    "@tauri-apps/api": "^1.5.3",
     "@unocss/reset": "^0.53.6",
     "bowser": "^2.11.0",
     "localforage": "^1.10.0",
@@ -32,7 +32,7 @@
     "tauri-plugin-websocket-api": "github:tauri-apps/tauri-plugin-websocket#v1"
   },
   "devDependencies": {
-    "@tauri-apps/cli": "^1.4.0",
+    "@tauri-apps/cli": "^1.5.9",
     "@types/node": "^18.17.11",
     "@typescript-eslint/eslint-plugin": "^6.4.1",
     "@typescript-eslint/parser": "^6.4.1",
