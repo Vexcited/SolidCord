@@ -1,0 +1,55 @@
+{
+  "productName": "solidcord",
+  "version": "0.1.0",
+  "identifier": "app.solidcord",
+  "build": {
+    "beforeDevCommand": "bun run dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "bun run build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "macOSPrivateApi": true,
+    "trayIcon": {
+      "iconPath": "icons/tray.png",
+      "iconAsTemplate": false
+    },
+    "windows": [
+      {
+        "shadow": true,
+        "decorations": true,
+        "transparent": true,
+        "center": true,
+        "focus": true,
+        "title": "SolidCord",
+        "titleBarStyle": "Visible",
+        "width": 1280,
+        "height": 720,
+        "minWidth": 940,
+        "minHeight": 500
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "category": "SocialNetworking",
+    "longDescription": "A fast and open-source client for Discord that is made with performance in mind.",
+    "shortDescription": "A fast and open-source client for Discord.",
+    "targets": [
+      "app",
+      "dmg",
+      "deb",
+      "msi"
+    ],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ]
+  }
+}

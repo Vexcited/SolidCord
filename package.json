@@ -1,0 +1,41 @@
+{
+  "name": "solidcord",
+  "version": "0.1.0",
+  "description": "A fast and open-source client for Discord that is made with performance in mind.",
+  "type": "module",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "start": "vite",
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "vite preview",
+    "tauri": "tauri"
+  },
+  "author": "Mikkel ALMONTE--RINGAUD <vexitofficial@gmail.com> (https://github.com/Vexcited)",
+  "bugs": {
+    "url": "https://github.com/Vexcited/SolidCord/issues",
+    "email": "vexitofficial@gmail.com"
+  },
+  "homepage": "https://github.com/Vexcited/SolidCord",
+  "repository": "github:Vexcited/SolidCord",
+  "dependencies": {
+    "@solidjs/router": "^0.14.3",
+    "@tauri-apps/api": ">=2.0.0-rc.0",
+    "@tauri-apps/plugin-http": ">=2.0.0-rc.1",
+    "@tauri-apps/plugin-os": ">=2.0.0-rc.0",
+    "@tauri-apps/plugin-shell": ">=2.0.0-rc.0",
+    "@tauri-apps/plugin-websocket": ">=2.0.0-rc.0",
+    "@unocss/reset": "^0.62.2",
+    "solid-hcaptcha": "^0.4.0",
+    "solid-icons": "^1.1.0",
+    "solid-js": "^1.7.8"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": ">=2.0.0-rc.0",
+    "typescript": "^5.2.2",
+    "unocss": "^0.62.2",
+    "vite": "^5.3.1",
+    "vite-plugin-solid": "^2.8.0"
+  }
+}
