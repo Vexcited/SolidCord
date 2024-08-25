@@ -1,6 +1,7 @@
 import type { ParentComponent } from "solid-js";
 import { Show, For, createEffect, on } from "solid-js";
 import { useParams, A } from "@solidjs/router";
+import { type } from "@tauri-apps/plugin-os"
 
 import app from "@/stores/app";
 import caching from "@/stores/cache";
@@ -19,9 +20,11 @@ const AccountLayout: ParentComponent = (props) => {
       fallback={<p>Loading connection to gateway...</p>}
     >
       {cache => (
-        <div class="h-screen flex bg-[#1e1f22]/30">
+        <div class="h-screen flex"
+          classList={{ "border-t border-white/10": type() === "windows" }}
+        >
           {/* Guild list. */}
-          <div class="w-[72px] flex flex-(shrink-0 col) items-center gap-2 overflow-y-auto pt-3 bg-black/10 border-r border-white/20">
+          <div class="w-[72px] flex flex-(shrink-0 col) items-center gap-2 overflow-y-auto pt-3 bg-black/10 border-r border-white/10">
             <Show when={cache().gateway.user.avatar} fallback={
               <A class="h-12 w-12 flex items-center justify-center bg-white font-medium text-black transition-[border-radius]" href={`/${cache().gateway.user.id}/@me`}
                 classList={{ "rounded-lg": !params.guild_id, "rounded-[50%]": Boolean(params.guild_id) }}
