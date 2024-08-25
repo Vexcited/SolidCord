@@ -20,8 +20,8 @@ export const PrivateDMLayout: ParentComponent = (props) => {
 
   return (
     <div class="h-full flex">
-      <div class="h-full w-[240px] flex-shrink-0 rounded-tl-lg border-r border-white/20">
-        <div class="h-full flex flex-col divide-white/20 divide-y">
+      <div class="h-full w-[240px] flex-shrink-0 rounded-tl-lg border-r border-white/10">
+        <div class="h-full flex flex-col divide-white/10 divide-y">
           <div class="flex justify-center items-center w-full p-3 h-[54px] flex-shrink-0">
             <input placeholder="Find or start a conversation" class="w-full bg-white/10 rounded-md px-2 h-full text-white" />
           </div>

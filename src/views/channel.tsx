@@ -90,10 +90,10 @@ const ChannelView: Component = () => {
 
   return (
     <div class="h-full min-h-0 flex flex-col">
-      <div class="flex-shrink-0 h-[54px] flex items-center px-6 text-white bg-[#313338]">
+      <div class="flex-shrink-0 h-[54px] flex items-center px-6 text-white">
         {channel_name() ?? "Unknown"}
       </div>
-      <div ref={chatContainerRef} class="border-t border-white/20 h-full min-h-0 flex flex-col gap-2 overflow-y-auto px-[72px] pb-[24px] bg-[#313338]/80"
+      <div ref={chatContainerRef} class="border-t border-white/10 h-full min-h-0 flex flex-col gap-2 overflow-y-auto px-[72px] pb-[24px] bg-black/5"
         onScroll={(event) => {
           const latest_messages = channel_messages();
 
@@ -114,7 +114,9 @@ const ChannelView: Component = () => {
                   <p class="text-lg font-bold">{message.author.username}</p>
                   <span>{new Date(message.timestamp).toLocaleString()}</span>
                 </div>
-                <p>{message.content}</p>
+                <p class="select-text">
+                  {message.content}
+                </p>
                 <For each={message.attachments}>
                   {attachment => (
                     <Switch
@@ -150,7 +152,7 @@ const ChannelView: Component = () => {
           </For>
         </Show>
       </div>
-      <div class="h-auto bg-[#313338]/80">
+      <div class="h-auto bg-black/5">
         <form class="px-6 pb-4" onSubmit={async (event) => {
           event.preventDefault();
 
@@ -168,7 +170,13 @@ const ChannelView: Component = () => {
             console.error("send message: action need internet access");
           }
         }}>
-          <input class="w-full p-2 rounded-md text-white bg-white/10 outline-none" placeholder="Send a message !" type="text" onInput={(e) => setMessageContent(e.currentTarget.value)} value={message_content()} />
+          <input
+            class="w-full py-2.5 px-6 rounded-md text-white bg-white/5 outline-none"
+            placeholder={`Message @${channel_name()}`}
+            type="text"
+            onInput={(e) => setMessageContent(e.currentTarget.value)}
+            value={message_content()}
+          />
         </form>
       </div>
     </div>
