@@ -1,4 +1,4 @@
-import { isPermissionGranted, requestPermission, sendNotification, type Options } from "@tauri-apps/api/notification";
+import { isPermissionGranted, requestPermission, sendNotification, type Options } from "@tauri-apps/plugin-notification";
 
 export const checkNativeNotificationPermission = async () => {
   let permissionGranted = await isPermissionGranted();
