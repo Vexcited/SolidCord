@@ -66,22 +66,24 @@ const GuildLayout: ParentComponent = (props) => {
             <p class="font-semibold text-white">{guild()?.properties.name}</p>
           </div>
 
-          <nav class="h-full flex flex-col gap-4 overflow-y-auto p-4 text-white"
+          <nav class="h-full flex flex-col gap-4 overflow-y-auto p-4"
             aria-label="Channels of the guild"
           >
             <For each={guild_channels()}>
               {category => (
                 <div class="flex flex-col gap-1">
-                  <p class="text-sm font-semibold uppercase">
+                  <p class="text-sm font-semibold uppercase text-white/65">
                     {category.data.name}
                   </p>
+
                   <div class="flex flex-col gap-1">
                     <For each={category.text_channels}>
                       {channel => (
                         <A class="flex items-center gap-2 rounded-md px-2 py-1 pl-4"
                           href={`/${account.id}/${guild_id()}/${channel.id}`}
                           classList={{
-                            "bg-white/20 text-white ": channel.id === channel_id()
+                            "text-white/50": channel.id !== channel_id(),
+                            "bg-white/15 text-white": channel.id === channel_id()
                           }}
                         >
                           <p>{channel.name}</p>
@@ -90,8 +92,12 @@ const GuildLayout: ParentComponent = (props) => {
                     </For>
                     <For each={category.vocal_channels}>
                       {channel => (
-                        <div class="ml-4 flex items-center gap-2">
-                          <p>(vocal) {channel.name}</p>
+                        <div class="flex items-center gap-2 rounded-md px-2 py-1 pl-4">
+                          <p class="text-white/50 cursor-not-allowed truncate"
+                            title="Voice channels are not supported yet."
+                          >
+                            (VC) {channel.name}
+                          </p>
                         </div>
                       )}
                     </For>
