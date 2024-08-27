@@ -40,11 +40,11 @@ git clone https://github.com/Vexcited/SolidCord
 # Navigate into the folder, if not done.
 cd SolidCord
 
-# Use bun to install dependencies.
-bun install
+# Use pnpm to install dependencies.
+pnpm install
 ```
 
-Please, try to stick with `bun` so we don't conflict with any other Node.js package manager.
+Please, try to stick with `pnpm` so we don't conflict with any other package manager.
 
 If you need to update `cargo` packages for the `src-tauri` folder,
 
@@ -57,9 +57,9 @@ cargo update
 
 | Command | Description |
 | ------- | ----------- |
-| `bun run lint` | Lint the codebase to detect any styling issue. |
-| `bun run tauri dev` | Run a development version of the app. |
-| `bun run tauri build` | Build into a binary. |
+| `pnpm lint` | Lint the codebase to detect any styling issue. |
+| `pnpm tauri dev` | Run a development version of the app. |
+| `pnpm tauri build` | Build into a binary. |
 
 ### Recommended IDE Setup / Extensions
 
