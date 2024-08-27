@@ -3,12 +3,12 @@ import { type ParentComponent, For, createMemo } from "solid-js";
 import caching, { type CacheStoreReady } from "@/stores/cache";
 import accounts from "@/stores/accounts";
 
-import { A, useNavigate, useParams } from "@solidjs/router";
+import { A, useParams } from "@solidjs/router";
 import { ChannelTypes } from "@/types/discord/channel";
+import UserWidget from "@/components/panels/user-widget";
 
 const GuildLayout: ParentComponent = (props) => {
   const params = useParams();
-  const navigate = useNavigate();
   const guild_id = () => params.guild_id;
   const channel_id = () => params.channel_id;
 
@@ -100,16 +100,8 @@ const GuildLayout: ParentComponent = (props) => {
               )}
             </For>
           </nav>
-          <div class="h-[58px] w-full p-3">
-            <button type="submit" class="font-semibold text-white"
-              onClick={() => {
-                localStorage.removeItem("lastVisitedAccount");
-                navigate("/");
-              }}
-            >
-              Switch Account
-            </button>
-          </div>
+
+          <UserWidget />
         </div>
       </div>
       <div class="w-full flex flex-col">
