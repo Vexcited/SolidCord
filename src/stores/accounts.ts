@@ -24,7 +24,7 @@ export interface Account extends AccountStored {
 const accountsStored: AccountStored[] = JSON.parse(localStorage.getItem("accounts") ?? "[]");
 // We instantiate the gateway for those accounts, and global store them.
 const [accountsStore, setAccountsStore] = createSignal<Account[]>(accountsStored.map(
-  account => ({ ...account, connection: new DiscordClientWS(account.token, account.id) })
+  (account) => ({ ...account, connection: new DiscordClientWS(account.token, account.id) })
 ));
 
 /**
@@ -34,7 +34,7 @@ const [accountsStore, setAccountsStore] = createSignal<Account[]>(accountsStored
  */
 const get = (id: string): Account | undefined => {
   const account = accountsStore().find(
-    user => user.id === id
+    (user) => user.id === id
   );
 
   return account;
@@ -61,7 +61,6 @@ const use = (from_id?: string) => {
 
 /** Update the values in localStorage with the ones from the signal. */
 const syncWithLocalStorage = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const accounts: AccountStored[] = accountsStore().map(({ connection, ...account }) => account);
   localStorage.setItem("accounts", JSON.stringify(accounts));
 };
@@ -82,7 +81,7 @@ const add = (account_raw: AccountStored): Account => {
     connection
   };
 
-  setAccountsStore(prev => [...prev, account]);
+  setAccountsStore((prev) => [...prev, account]);
   syncWithLocalStorage();
 
   return account;
@@ -99,7 +98,7 @@ const remove = (id: string): boolean => {
   // Destroy connection before removing account from SolidCord.
   if (account.connection) account.connection.destroy();
 
-  setAccountsStore(prev => prev.filter(account => account.id !== id));
+  setAccountsStore((prev) => prev.filter((account) => account.id !== id));
   syncWithLocalStorage();
 
   return true;

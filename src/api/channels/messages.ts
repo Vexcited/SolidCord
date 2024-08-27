@@ -28,8 +28,8 @@ export const callGetChannelsMessagesAPI = async (req: {
   );
 
   setter(
-    "channels", channel => channel.id === req.channel_id,
-    "messages", prev => ({ ...prev, ...parsed_data })
+    "channels", (channel) => channel.id === req.channel_id,
+    "messages", (prev) => ({ ...prev, ...parsed_data })
   );
 
   return response.data;
@@ -54,8 +54,8 @@ export const callPostChannelsMessagesAPI = async (channel_id: string, req: {
   });
 
   setter(
-    "channels", channel => channel.id === channel_id,
-    "messages", prev => ({ ...prev, [data.id]: data })
+    "channels", (channel) => channel.id === channel_id,
+    "messages", (prev) => ({ ...prev, [data.id]: data })
   );
 
   return data;

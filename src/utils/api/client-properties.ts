@@ -1,5 +1,5 @@
 import fetch from "@/utils/native/fetch";
-import { type } from "@tauri-apps/plugin-os"
+import { type } from "@tauri-apps/plugin-os";
 
 export interface DiscordClientProperties {
   browser: string
@@ -19,7 +19,7 @@ let client_properties_cache: DiscordClientProperties | undefined;
 
 export const findClientProperties = async (): Promise<DiscordClientProperties> => {
   if (!client_properties_cache) {
-    let os = type() as string
+    let os = type() as string;
     if (os === "macos") os = "osx";
 
     const response = await fetch<{ properties: DiscordClientProperties }>("https://cordapi.dolfi.es/api/v2/properties/" + os, {

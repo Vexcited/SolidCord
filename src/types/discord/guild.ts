@@ -127,7 +127,7 @@ export enum GuildFeatures {
   /** Guild has access to set 384kbps bitrate in voice (previously VIP voice servers). */
   VIP_REGIONS = "VIP_REGIONS",
   /** Guild has enabled the welcome screen. */
-  WELCOME_SCREEN_ENABLED = "WELCOME_SCREEN_ENABLED",
+  WELCOME_SCREEN_ENABLED = "WELCOME_SCREEN_ENABLED"
 }
 
 export enum GuildMutableFeatures {

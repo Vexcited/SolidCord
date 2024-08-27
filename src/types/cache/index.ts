@@ -28,5 +28,5 @@ export interface CacheUser {
 
 type CachedChannelWithMessages<T> = T & { messages: Record<string, Message> };
 
-export type CacheDMChannel = CachedChannelWithMessages<(DMChannel | GroupDMChannel)>
+export type CacheDMChannel = CachedChannelWithMessages<(DMChannel | GroupDMChannel)>;
 export type CacheGuildChannel = CachedChannelWithMessages<(GuildVoiceChannel | GuildTextChannel | GuildCategoryChannel)>;

@@ -7,6 +7,7 @@
   "license": "MIT",
   "scripts": {
     "lint": "tsc && eslint",
+    "lint:fix": "eslint --fix",
     "dev": "vite",
     "build": "vite build",
     "tauri": "tauri"
@@ -32,7 +33,9 @@
     "solid-js": "^1.7.8"
   },
   "devDependencies": {
+    "@stylistic/eslint-plugin": "^2.6.4",
     "@tauri-apps/cli": ">=2.0.0-rc.0",
+    "@typescript-eslint/parser": "^8.3.0",
     "eslint": "^9.9.1",
     "typescript": "^5.2.2",
     "unocss": "^0.62.2",

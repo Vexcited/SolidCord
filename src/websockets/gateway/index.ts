@@ -38,7 +38,7 @@ class DiscordClientWS {
     console.info("[websockets/gateway] opening new connection for account", this.account_id);
 
     WebSocket.connect(DISCORD_WS_URL)
-      .then(connection => {
+      .then((connection) => {
         this.connection = connection;
 
         this.connection.addListener((message) => {
@@ -102,20 +102,20 @@ class DiscordClientWS {
     }
 
     switch (message.op) {
-    case OpCodes.Hello:
-      this.heartbeat_interval_ms = message.d.heartbeat_interval;
-      this.startHeartbeatInterval();
-      this.handleGatewayOpen();
-      break;
-    case OpCodes.Dispatch:
-      this.handleDispatchGatewayMessage(message);
-      break;
-    case OpCodes.Ack:
-      console.info("[websockets/gateway] server received heartbeat - we got `ack`.");
-      break;
-    default:
-      console.warn("[websockets/gateway] unknown message from gateway", message);
-      break;
+      case OpCodes.Hello:
+        this.heartbeat_interval_ms = message.d.heartbeat_interval;
+        this.startHeartbeatInterval();
+        this.handleGatewayOpen();
+        break;
+      case OpCodes.Dispatch:
+        this.handleDispatchGatewayMessage(message);
+        break;
+      case OpCodes.Ack:
+        console.info("[websockets/gateway] server received heartbeat - we got `ack`.");
+        break;
+      default:
+        console.warn("[websockets/gateway] unknown message from gateway", message);
+        break;
     }
   };
 
@@ -136,64 +136,64 @@ class DiscordClientWS {
 
   private handleDispatchGatewayMessage = async (message: OpDispatch) => {
     switch (message.t) {
-    case "READY": {
-      const channels: CacheStoreReady["channels"] = [];
+      case "READY": {
+        const channels: CacheStoreReady["channels"] = [];
 
-      // Append every DM channels.
-      for (const channel_raw of message.d.private_channels) {
-        const channel = channel_raw as CacheDMChannel;
-        channel.messages = {};
-
-        channels.push(channel);
-      }
-
-      // Append every guilds' channels.
-      for (const guild of message.d.guilds) {
-        for (const channel_raw of guild.channels) {
-          const channel = channel_raw as CacheGuildChannel;
+        // Append every DM channels.
+        for (const channel_raw of message.d.private_channels) {
+          const channel = channel_raw as CacheDMChannel;
           channel.messages = {};
 
           channels.push(channel);
         }
+
+        // Append every guilds' channels.
+        for (const guild of message.d.guilds) {
+          for (const channel_raw of guild.channels) {
+            const channel = channel_raw as CacheGuildChannel;
+            channel.messages = {};
+
+            channels.push(channel);
+          }
+        }
+
+        const gateway_data: CacheStoreReady["gateway"] = {
+          users: message.d.users,
+          guilds: message.d.guilds,
+          private_channels: message.d.private_channels,
+          relationships: message.d.relationships,
+          user: message.d.user
+        };
+
+        this.setAccountCache({
+          token: this.token,
+          ready: true,
+
+          channels,
+          requests: {},
+
+          gateway: gateway_data
+        } as CacheStoreReady);
+        break;
       }
 
-      const gateway_data: CacheStoreReady["gateway"] = {
-        users: message.d.users,
-        guilds: message.d.guilds,
-        private_channels: message.d.private_channels,
-        relationships: message.d.relationships,
-        user: message.d.user
-      };
+      case "MESSAGE_CREATE": {
+        const { channel_id } = message.d;
+        this.setAccountCache("channels", (channel) => channel.id === channel_id, "messages", (prev) => ({ ...prev, [message.d.id]: message.d }));
 
-      this.setAccountCache({
-        token: this.token,
-        ready: true,
-
-        channels,
-        requests: {},
-
-        gateway: gateway_data
-      } as CacheStoreReady);
-      break;
-    }
-
-    case "MESSAGE_CREATE": {
-      const { channel_id } = message.d;
-      this.setAccountCache("channels", channel => channel.id === channel_id, "messages", prev => ({ ...prev, [message.d.id]: message.d }));
-
-      if (!app.isFocused()) {
+        if (!app.isFocused()) {
         // await appWindow.requestUserAttention(UserAttentionType.Critical);
         // await sendNativeNotification({
         //   title: message.d.author.username,
         //   body: message.d.content
         // });
+        }
+
+        break;
       }
 
-      break;
-    }
-
-    default:
-      console.info("[websockets/gateway] unknown dispatch", message);
+      default:
+        console.info("[websockets/gateway] unknown dispatch", message);
     }
   };
 }

@@ -109,4 +109,4 @@ export type Channel =
   | GroupDMChannel
   | GuildVoiceChannel
   | GuildTextChannel
-  | GuildCategoryChannel
+  | GuildCategoryChannel;

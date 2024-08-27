@@ -52,11 +52,11 @@ const fetch = async <T>(url: string | URL, options: {
   if (options.body && typeof options.body === "object") {
     options.headers["Content-Type"] = "application/json";
   }
-  
+
   // Prettify request in console.
   console.groupCollapsed(`[native/fetch] ${options.method} -> ${url}`);
   console.table(options.headers);
-  console.log(options.body)
+  console.log(options.body);
   console.groupEnd();
 
   // Add a timer for the request.
