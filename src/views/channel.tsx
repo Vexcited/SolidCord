@@ -7,6 +7,7 @@ import { callGetChannelsMessagesAPI, callPostChannelsMessagesAPI } from "@/api/c
 import caching, { type CacheStoreReady } from "@/stores/cache";
 import { ChannelTypes } from "@/types/discord/channel";
 import { getPrivateChannelName } from "@/utils/api/channels";
+import { type } from "@tauri-apps/plugin-os";
 
 const ChannelView: Component = () => {
   const params = useParams();
@@ -90,10 +91,18 @@ const ChannelView: Component = () => {
 
   return (
     <div class="h-full min-h-0 flex flex-col">
-      <div class="flex-shrink-0 h-[54px] flex items-center px-6 text-white">
+      <div class="flex-shrink-0 h-[54px] flex items-center px-6 text-white"
+        classList={{
+          "bg-[#38383b]": type() === "macos",
+        }}
+      >
         {channel_name() ?? "Unknown"}
       </div>
-      <div ref={chatContainerRef} class="border-t border-white/10 h-full min-h-0 flex flex-col gap-2 overflow-y-auto px-[72px] pb-[24px] bg-black/5"
+      <div ref={chatContainerRef} class="border-t  h-full min-h-0 flex flex-col gap-2 overflow-y-auto px-[72px] pb-[24px]"
+        classList={{
+          "bg-[#222124] border-black": type() === "macos",
+          "bg-black/5 border-white/10": type() !== "macos"
+        }}
         onScroll={(event) => {
           const latest_messages = channel_messages();
 
@@ -152,7 +161,12 @@ const ChannelView: Component = () => {
           </For>
         </Show>
       </div>
-      <div class="h-auto bg-black/5">
+      <div class="h-auto"
+        classList={{
+          "bg-[#222124]": type() === "macos",
+          "bg-black/5": type() !== "macos"
+        }}
+      >
         <form class="px-6 pb-4" onSubmit={async (event) => {
           event.preventDefault();
 
