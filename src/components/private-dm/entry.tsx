@@ -50,7 +50,7 @@ const PrivateChannelEntry: Component<CacheStoreReady["gateway"]["private_channel
     <A class="flex items-center gap-2" href={`/${account.id}/@me/${channel.id}`}>
       <Show when={getChannelImageURL()}
         fallback={
-          <div class="h-8 w-8 flex items-center justify-center rounded-full bg-black">
+          <div class="flex-shrink-0 h-8 w-8 flex items-center justify-center rounded-full bg-black">
             <Switch>
               <Match when={channel.type === ChannelTypes.GROUP_DM}>
                 <BsPeopleFill color="white" />
@@ -60,12 +60,12 @@ const PrivateChannelEntry: Component<CacheStoreReady["gateway"]["private_channel
         }
       >
         {url => (
-          <img class="h-8 w-8 rounded-full"
+          <img class="flex-shrink-0 h-8 w-8 rounded-full"
             src={url()}
           />
         )}
       </Show>
-      <p class="text-white">
+      <p class="text-white truncate">
         {getPrivateChannelName(channel)}
       </p>
     </A>
