@@ -33,8 +33,8 @@ importers:
         specifier: ^0.63.4
         version: 0.63.4
       solid-hcaptcha:
-        specifier: ^0.4.0
-        version: 0.4.0(solid-js@1.9.2)
+        specifier: ^1.0.0
+        version: 1.0.0(solid-js@1.9.2)
       solid-icons:
         specifier: ^1.1.0
         version: 1.1.0(solid-js@1.9.2)
@@ -480,6 +480,9 @@ packages:
     resolution: {integrity: sha512-vH9PiIMMwvhCx31Af3HiGzsVNULDbyVkHXwlemn/B0TFj/00ho3y55efXrUZTfQipxoHC5u4xq6zblww1zm1Ig==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
+  '@hcaptcha/loader@1.2.4':
+    resolution: {integrity: sha512-3MNrIy/nWBfyVVvMPBKdKrX7BeadgiimW0AL/a/8TohNtJqxoySKgTJEXOQvYwlHemQpUzFrIsK74ody7JiMYw==}
+
   '@hcaptcha/types@1.0.4':
     resolution: {integrity: sha512-4CBrdr9DFC7sYZPRvLol82UVZVne8B2skBGfMDUqPC6q9vzHMwv/cNxXW44EIa6DaFDr+EWNSnKJpHxWr7Q42Q==}
 
@@ -633,11 +636,6 @@ packages:
 
   '@sinclair/typebox@0.27.8':
     resolution: {integrity: sha512-+Fj43pSMwJs4KRrH/938Uf+uAELIgVBmQzg/q1YG10djyfA3TnrU8N8XzqCh/okZdszqBQTZf96idMfE5lnwTA==}
-
-  '@solid-primitives/script-loader@2.2.0':
-    resolution: {integrity: sha512-PlQEcdpvhtWUsceDp1Miyn49v74QNx/Xv7bpdqVTL6GvvQNuXF0qtpDrOZ+jZvOQiHLlnzNWrBk6YdWwenqcnw==}
-    peerDependencies:
-      solid-js: ^1.6.12
 
   '@solidjs/router@0.14.8':
     resolution: {integrity: sha512-S+rD5Twp0820cM03wEIYtb7/4KN7Cfr3BP+qPIqb7IXO/SZ72tWqHEMQsmcjDbr4yVfpA+5Sq0Y+xcq09y1gQA==}
@@ -1479,10 +1477,10 @@ packages:
     resolution: {integrity: sha512-94Bdh3cC2PKrbgSOUqTiGPWVZeSiXfKOVZNJniWoqrWrRkB1CJzBU3NEbiTsPcYy1lDsANA/THzS+9WBiy5nfQ==}
     engines: {node: '>= 10'}
 
-  solid-hcaptcha@0.4.0:
-    resolution: {integrity: sha512-ermYlhU09wPxqNZujVJr6NQI0T/25Ru8rN9a3gGjB83vqpQTapzP3HujmRBDGTF0Ghuy6r0xexhDnOYVTPrxhw==}
+  solid-hcaptcha@1.0.0:
+    resolution: {integrity: sha512-TV7RY96IHU8TtPyi11kzwGiJF4kABdG8pOWnmOj+53NN37bHu2r+fjXkpNxTRnh0WwCJqjjx6uF6xy0N5VFWqg==}
     peerDependencies:
-      solid-js: ^1.6.15 || ^1.7.12
+      solid-js: ^1.6.0 || ^1.7.0 || ^1.8.0 || ^1.9.0
 
   solid-icons@1.1.0:
     resolution: {integrity: sha512-IesTfr/F1ElVwH2E1110s2RPXH4pujKfSs+koT8rwuTAdleO5s26lNSpqJV7D1+QHooJj18mcOiz2PIKs0ic+A==}
@@ -1967,6 +1965,8 @@ snapshots:
     dependencies:
       levn: 0.4.1
 
+  '@hcaptcha/loader@1.2.4': {}
+
   '@hcaptcha/types@1.0.4': {}
 
   '@humanfs/core@0.19.0': {}
@@ -2086,10 +2086,6 @@ snapshots:
     optional: true
 
   '@sinclair/typebox@0.27.8': {}
-
-  '@solid-primitives/script-loader@2.2.0(solid-js@1.9.2)':
-    dependencies:
-      solid-js: 1.9.2
 
   '@solidjs/router@0.14.8(solid-js@1.9.2)':
     dependencies:
@@ -3027,10 +3023,10 @@ snapshots:
       mrmime: 2.0.0
       totalist: 3.0.1
 
-  solid-hcaptcha@0.4.0(solid-js@1.9.2):
+  solid-hcaptcha@1.0.0(solid-js@1.9.2):
     dependencies:
+      '@hcaptcha/loader': 1.2.4
       '@hcaptcha/types': 1.0.4
-      '@solid-primitives/script-loader': 2.2.0(solid-js@1.9.2)
       solid-js: 1.9.2
 
   solid-icons@1.1.0(solid-js@1.9.2):

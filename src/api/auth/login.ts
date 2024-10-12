@@ -28,7 +28,7 @@ type FunctionResponse = (
   }
   | {
     status: "HCAPTCHA";
-    data: { sitekey: string };
+    data: { sitekey: string, rqdata: string, rqtoken: string };
   }
   | {
     status: "MFA";
@@ -40,6 +40,7 @@ export const callAuthLoginAPI = async (req: {
   login: string;
   password: string;
   hcaptcha_token: string | null;
+  hcaptcha_rqtoken: string | null;
 }): Promise<FunctionResponse> => {
   const uri = createApiEndpointURL(9, "/auth/login");
 
@@ -55,18 +56,25 @@ export const callAuthLoginAPI = async (req: {
       body: {
         login: req.login,
         password: req.password,
-        captcha_key: req.hcaptcha_token,
 
         undelete: false,
         login_source: null,
         gift_code_sku_id: null
-      }
+      },
+      headers: req.hcaptcha_token && req.hcaptcha_rqtoken ? {
+        "x-captcha-key": req.hcaptcha_token,
+        "x-captcha-rqtoken": req.hcaptcha_rqtoken
+      } : void 0
     });
 
   if ("captcha_sitekey" in data) {
     return {
       status: "HCAPTCHA",
-      data: { sitekey: data.captcha_sitekey }
+      data: {
+        sitekey: data.captcha_sitekey,
+        rqdata: data.captcha_rqdata,
+        rqtoken: data.captcha_rqtoken
+      }
     };
   }
 

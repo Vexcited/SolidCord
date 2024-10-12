@@ -25,6 +25,8 @@ const AuthLogin: Component<{
 
     hcaptcha_sitekey: null | string;
     hcaptcha_token: null | string;
+    hcaptcha_rqdata: null | string;
+    hcaptcha_rqtoken: null | string;
 
     mfa_ticket: null | string;
     mfa_code: string;
@@ -37,6 +39,8 @@ const AuthLogin: Component<{
 
     hcaptcha_sitekey: null,
     hcaptcha_token: null,
+    hcaptcha_rqdata: null,
+    hcaptcha_rqtoken: null,
 
     mfa_ticket: null,
     mfa_code: "",
@@ -64,7 +68,8 @@ const AuthLogin: Component<{
     const response = await callAuthLoginAPI({
       login: state.uid,
       password: state.password,
-      hcaptcha_token: state.hcaptcha_token
+      hcaptcha_token: state.hcaptcha_token,
+      hcaptcha_rqtoken: state.hcaptcha_rqtoken
     });
 
     if (response.status === "TOKEN") {
@@ -76,7 +81,11 @@ const AuthLogin: Component<{
     // If we did not get the token, we do a switch case to handle.
     switch (response.status) {
     case "HCAPTCHA":
-      setState("hcaptcha_sitekey", response.data.sitekey);
+      setState({
+        hcaptcha_sitekey: response.data.sitekey,
+        hcaptcha_rqdata: response.data.rqdata,
+        hcaptcha_rqtoken: response.data.rqtoken
+      });
       break;
     case "EMAIL_VERIFICATION":
       setState("error", "New login location, please check your email address and verify the authentication.");
@@ -240,8 +249,14 @@ const AuthLogin: Component<{
              * Workaround to bypass the `localhost` check.
              * Took from <https://github.com/hCaptcha/react-native-hcaptcha/blob/1569dc22501cfa63754d49683f6c278cee2bab80/Hcaptcha.js#L25>.
              */
-            config={{ host: `${state.hcaptcha_sitekey}.react-native.hcaptcha.com` }}
+            host={`${state.hcaptcha_sitekey}.react-native.hcaptcha.com`}
             onVerify={hcaptchaVerifyHandler}
+            sentry={false}
+            onLoad={(hcaptcha) => {
+              hcaptcha.setData({
+                rqdata: state.hcaptcha_rqdata!
+              });
+            }}
           />
         </Show>
 

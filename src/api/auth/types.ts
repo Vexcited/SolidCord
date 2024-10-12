@@ -2,6 +2,12 @@ export interface DiscordCaptchaRequiredResponse {
   captcha_key: ["captcha-required"];
   captcha_service: "hcaptcha";
 
+  /** should be set in the enterprise payload for hcaptcha. */
+  captcha_rqdata: string;
+
+  /** should be sent in the login http request. */
+  captcha_rqtoken: string;
+
   /** `sitekey` to use in the `HCaptcha` component. */
   captcha_sitekey: string;
 }
