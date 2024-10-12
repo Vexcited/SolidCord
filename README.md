@@ -19,15 +19,11 @@ Whenever you add an account, a connection to the gateway with this account will 
 
 That allows to have notifications and message caching for multiple accounts.
 
-Of course, this behavior can be toggled in the account selector - TODO.
-
 ### Native HTTP / WebSockets
 
-> Internally uses Tauri's HTTP API and [`tauri-plugin-websocket#v1`](https://github.com/tauri-apps/plugins-workspace/tree/v1/plugins/websocket)
+Internally uses [`tauri-plugin-http#v2`](https://github.com/tauri-apps/plugins-workspace/tree/v2/plugins/http) and [`tauri-plugin-websocket#v2`](https://github.com/tauri-apps/plugins-workspace/tree/v2/plugins/websocket), the webview doesn't handle any HTTP requests.
 
-Requests aren't done in the WebView (using the web Fetch API) but within Rust directly !
-
-Concerning WebSockets, I'm trying to see if I can also do `zlib-stream` compression and `etf` encoding there.
+Maybe in the future we might also be able to do `zlib-stream` compression and `etf` encoding in the Rust side, but that's not a priority since it's not implemented yet.
 
 ## Development
 
