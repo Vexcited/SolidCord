@@ -21,6 +21,7 @@ export const findClientProperties = async (): Promise<DiscordClientProperties> =
   if (!client_properties_cache) {
     let os = type() as string;
     if (os === "macos") os = "osx";
+    else if (os === "android") os = "linux";
 
     const response = await fetch<{ properties: DiscordClientProperties }>("https://cordapi.dolfi.es/api/v2/properties/" + os, {
       method: "POST"
